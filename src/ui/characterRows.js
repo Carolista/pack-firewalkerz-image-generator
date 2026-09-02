@@ -1,5 +1,5 @@
-import PACK_DATABASE from '../data.json' with { type: 'json' };
 import { FORM_OPTIONS } from '../constants.js';
+import PACK_DATA from '../packData.json' with { type: 'json' };
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
 let containerEl;
@@ -24,7 +24,7 @@ export function getCharacterSelections() {
 	return [...containerEl.querySelectorAll('.character-row')].map(row => {
 		const charKey = row.querySelector('.charRowSelect').value;
 		const formKey = row.querySelector('.formRowSelect').value;
-		const character = PACK_DATABASE.characters[charKey];
+		const character = PACK_DATA.characters[charKey];
 		return { name: character.name, formKey, formDesc: character[formKey] };
 	});
 }
@@ -37,7 +37,7 @@ function getAvailableCharacterKeys(excludeSelectEl) {
 	const chosenElsewhere = [...containerEl.querySelectorAll('.charRowSelect')]
 		.filter(select => select !== excludeSelectEl)
 		.map(select => select.value);
-	return Object.keys(PACK_DATABASE.characters).filter(
+	return Object.keys(PACK_DATA.characters).filter(
 		key => !chosenElsewhere.includes(key),
 	);
 }
@@ -48,7 +48,7 @@ function refreshCharacterOptions() {
 		const availableKeys = getAvailableCharacterKeys(select);
 		select.innerHTML = '';
 		for (const key of availableKeys) {
-			select.add(new Option(PACK_DATABASE.characters[key].name, key));
+			select.add(new Option(PACK_DATA.characters[key].name, key));
 		}
 		if (availableKeys.includes(currentValue)) select.value = currentValue;
 	}
@@ -56,7 +56,7 @@ function refreshCharacterOptions() {
 
 function updateAddButtonState() {
 	const rowCount = containerEl.querySelectorAll('.character-row').length;
-	const totalCharacters = Object.keys(PACK_DATABASE.characters).length;
+	const totalCharacters = Object.keys(PACK_DATA.characters).length;
 	addBtnEl.hidden = rowCount >= totalCharacters;
 }
 
@@ -79,7 +79,7 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 	const charSelect = document.createElement('select');
 	charSelect.className = 'charRowSelect';
 	for (const key of getAvailableCharacterKeys(charSelect)) {
-		charSelect.add(new Option(PACK_DATABASE.characters[key].name, key));
+		charSelect.add(new Option(PACK_DATA.characters[key].name, key));
 	}
 	if (presetCharKey) charSelect.value = presetCharKey;
 	charField.append(charLabel, charSelect);
@@ -134,7 +134,7 @@ function restoreCharacterRows() {
 
 	const validRows = stored.filter(
 		entry =>
-			PACK_DATABASE.characters[entry.char] &&
+			PACK_DATA.characters[entry.char] &&
 			FORM_OPTIONS.some(([value]) => value === entry.form),
 	);
 

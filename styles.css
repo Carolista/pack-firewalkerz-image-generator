@@ -31,9 +31,9 @@ input {
 }
 
 textarea {
-    resize: vertical;
-    min-height: 80px;
-    max-height: 300px;
+	resize: vertical;
+	min-height: 80px;
+	max-height: 300px;
 }
 
 button {
