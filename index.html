@@ -3,45 +3,8 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Pack Generator - WW20</title>
-		<style>
-			body {
-				font-family: sans-serif;
-				max-width: 700px;
-				margin: 2rem auto;
-				padding: 0 1rem;
-			}
-			.card {
-				border: 1px solid #ccc;
-				padding: 1rem;
-				border-radius: 8px;
-				margin-bottom: 1rem;
-			}
-			.field {
-				margin-bottom: 1rem;
-			}
-			label {
-				display: block;
-				font-weight: bold;
-				margin-bottom: 0.25rem;
-			}
-			textarea,
-			select,
-			input {
-				width: 100%;
-				padding: 0.5rem;
-				box-sizing: border-box;
-			}
-			button {
-				padding: 0.75rem 1.5rem;
-				cursor: pointer;
-			}
-			#outputImg {
-				max-width: 100%;
-				margin-top: 1rem;
-				border-radius: 8px;
-				display: none;
-			}
-		</style>
+		<link href="styles.css" rel="stylesheet" />
+		<script src="script.js" type="module" defer></script>
 	</head>
 	<body>
 		<h1>🐺 WW20 Scene Visualizer</h1>
@@ -62,10 +25,7 @@
 			<h3>Character & Form</h3>
 			<div class="field">
 				<label for="charSelect">Select Character</label>
-				<select id="charSelect">
-					<option value="river">River-That-Remembers</option>
-					<option value="dmitri">Dmitri</option>
-				</select>
+				<select id="charSelect"></select>
 			</div>
 			<div class="field">
 				<label for="formSelect">Active Form</label>
@@ -77,18 +37,25 @@
 			</div>
 		</div>
 
+		<div class="card">
+			<h3>Setting</h3>
+			<div class="field">
+				<label for="locationSelect">Select Location</label>
+				<select id="locationSelect"></select>
+			</div>
+		</div>
+
 		<!-- Scene Action -->
 		<div class="card">
 			<div class="field">
-				<label for="sceneText">Scene Action</label>
+				<label for="sceneText">Describe Scene & Actions</label>
 				<textarea
 					id="sceneText"
 					rows="3"
-					placeholder="e.g. Trying to press tiny buttons on an iPhone while in 9-foot Crinos form and looking deeply frustrated."></textarea>
+					placeholder="e.g. Trying to press tiny buttons on an iPhone while in 8-foot Crinos form and looking deeply frustrated."></textarea>
 			</div>
-			<button id="generateBtn" onclick="generateSceneImage()">
-				Generate Image
-			</button>
+			<button id="generateBtn">Generate Image</button>
+			<button id="resetBtn" type="button">Reset Scene</button>
 		</div>
 
 		<!-- Output Area -->
@@ -96,122 +63,8 @@
 			<div id="statusText">Ready.</div>
 			<img id="outputImg" alt="Generated Scene" />
 			<div style="margin-top: 0.5rem">
-				<button id="shareBtn" style="display: none" onclick="shareImage()">
-					Share to Device
-				</button>
+				<button id="shareBtn" style="display: none">Share to Device</button>
 			</div>
 		</div>
-
-		<script>
-			const PACK_DATABASE = {
-				river: {
-					name: 'River-That-Remembers',
-					homid:
-						"Petite 5'1 woman dressed in wide-leg jeans, sneakers, and a boxy cropped sweater in dusty rose.",
-					lupus:
-						'A slender grey wolf with reddish trim around the ears and amber eyes.',
-					crinos:
-						'An 8-foot lean, athletic werewolf form with dusty grey fur and sharp features.',
-				},
-				dmitri: {
-					name: 'Dmitri',
-					homid:
-						'Broad-shouldered Russian man with a messy beard and leather jacket.',
-					lupus: 'Massive black timber wolf with scars across the muzzle.',
-					crinos:
-						'A terrifying 9-foot hulking wall of dark fur and razor-sharp claws, giant hands with massive digits.',
-				},
-			};
-
-			let generatedBlob = null;
-
-			async function generateSceneImage() {
-				const apiKey = document.getElementById('apiKey').value.trim();
-				const statusText = document.getElementById('statusText');
-				const imgElem = document.getElementById('outputImg');
-				const shareBtn = document.getElementById('shareBtn');
-
-				if (!apiKey) {
-					alert('Please paste your API key first.');
-					return;
-				}
-
-				const charKey = document.getElementById('charSelect').value;
-				const formKey = document.getElementById('formSelect').value;
-				const scene = document.getElementById('sceneText').value;
-
-				const character = PACK_DATABASE[charKey];
-				const formDesc = character[formKey];
-
-				const fullPrompt = `Dark fantasy illustration, Werewolf: The Apocalypse RPG style. Character: ${character.name} in ${formKey.toUpperCase()} form (${formDesc}). Action/Scene: ${scene}`;
-
-				statusText.innerText = 'Generating image (takes ~5-10 seconds)...';
-				imgElem.style.display = 'none';
-				shareBtn.style.display = 'none';
-
-				try {
-					const response = await fetch('http://localhost:3000/generate-image', {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({
-							apiKey: apiKey,
-							prompt: fullPrompt,
-						}),
-					});
-
-					const data = await response.json();
-
-					if (data.error) throw new Error(data.error);
-
-					// Server directly returns `{ imageUrl: "data:image/jpeg;base64,..." }`
-					if (data.imageUrl) {
-						const imageUrl = data.imageUrl;
-
-						imgElem.src = imageUrl;
-						imgElem.style.display = 'block';
-						statusText.innerText = 'Done!';
-
-						const fetchRes = await fetch(imageUrl);
-						generatedBlob = await fetchRes.blob();
-
-						if (
-							navigator.canShare &&
-							navigator.canShare({
-								files: [
-									new File([generatedBlob], 'scene.jpg', {
-										type: 'image/jpeg',
-									}),
-								],
-							})
-						) {
-							shareBtn.style.display = 'inline-block';
-						}
-					} else {
-						statusText.innerText =
-							'Response received, but no inline image data was returned.';
-						console.log('Response payload:', data);
-					}
-				} catch (err) {
-					statusText.innerText = `Error: ${err.message}`;
-					console.error('Client Error:', err);
-				}
-			}
-
-			async function shareImage() {
-				if (!generatedBlob) return;
-				const file = new File([generatedBlob], 'ww20-scene.jpg', {
-					type: 'image/jpeg',
-				});
-				try {
-					await navigator.share({
-						title: 'WW20 Session Moment',
-						text: "Look at what happened in tonight's session!",
-						files: [file],
-					});
-				} catch (err) {
-					console.log('Share canceled or failed:', err);
-				}
-			}
-		</script>
 	</body>
 </html>

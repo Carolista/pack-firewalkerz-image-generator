@@ -1,0 +1,29 @@
+{
+	"characters": {
+		"river": {
+			"name": "River-That-Remembers",
+			"tribe": "Uktena",
+			"homid": "Petite 5'1\" woman, honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
+			"lupus": "Slender black wolf with sleek fur and amber eyes.",
+			"crinos": "9-foot lean, athletic werewolf form with pure black fur, sharp features, long limbs."
+		},
+		"dmitri": {
+			"name": "Dmitri",
+			"tribe": "Silver Fangs",
+			"homid": "Broad-shouldered Russian man, messy beard, heavy worn leather jacket.",
+			"lupus": "Massive black timber wolf with noticeable battle scars across the muzzle.",
+			"crinos": "Terrifying 8-foot hulking wall of dark fur, broad shoulders, massive claws."
+		}
+	},
+	"settings": {
+		"appalachianWoods": {
+			"name": "Appalachian Woods of Tennessee",
+			"description": "Dense, misty Appalachian pine and oak forest in North Carolina, damp earthy floor, thick canopy, mossy boulders."
+		},
+		"urbanChattanooga": {
+			"name": "Urban Chattanooga",
+			"description": "City alleyway, cracked asphalt, brick walls with peeling paint, rusted steel fire escapes, dumpster, murky water puddles, dark moody lighting."
+		},
+		"caern": {"name": "Caern", "description": "A hidden glade surrounding a moonlit natural spring, ancient carved stones marked with glowing Garou glyphs, ethereal spirit fog."}
+	}
+}
