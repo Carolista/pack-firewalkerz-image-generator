@@ -1,0 +1,26 @@
+{
+	"name": "pack-firewalkerz-image-generator",
+	"version": "1.0.0",
+	"description": "A POC app to serve players in a Werewolf: The Apocalypse campaign; keeps descriptions and reference images of players and common NPCs on hand in app so that specific scenes and interactions can be rendered at will.",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Carolista/pack-firewalkerz-image-generator.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"type": "module",
+	"bugs": {
+		"url": "https://github.com/Carolista/pack-firewalkerz-image-generator/issues"
+	},
+	"homepage": "https://github.com/Carolista/pack-firewalkerz-image-generator#readme",
+	"dependencies": {
+		"@google/genai": "^2.20.0",
+		"cors": "^2.8.6",
+		"express": "^5.2.1"
+	}
+}
