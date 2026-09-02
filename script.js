@@ -2,43 +2,178 @@ import PACK_DATABASE from './data.json' with { type: 'json' };
 
 let generatedBlob = null;
 
+const FORM_OPTIONS = [
+	['homid', 'Homid (Human)'],
+	['lupus', 'Lupus (Wolf)'],
+	['crinos', 'Crinos (Werewolf)'],
+];
+
 const statusText = document.getElementById('statusText');
 const imgElem = document.getElementById('outputImg');
 const generateBtn = document.getElementById('generateBtn');
 const shareBtn = document.getElementById('shareBtn');
 const resetBtn = document.getElementById('resetBtn');
 const apiKeyInput = document.getElementById('apiKey');
-const charSelect = document.getElementById('charSelect');
-const formSelect = document.getElementById('formSelect');
+const characterRowsContainer = document.getElementById('characterRows');
+const addCharacterBtn = document.getElementById('addCharacterBtn');
 const locationSelect = document.getElementById('locationSelect');
 const sceneText = document.getElementById('sceneText');
 
 const API_KEY_STORAGE_KEY = 'geminiApiKey';
+const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
 const SELECTION_STORAGE_KEYS = {
-	[charSelect.id]: 'ww20CharSelect',
-	[formSelect.id]: 'ww20FormSelect',
 	[locationSelect.id]: 'ww20LocationSelect',
 };
 
-populateSelects();
+populateLocationSelect();
 restoreApiKey();
 restoreSelections();
+restoreCharacterRows();
 
 generateBtn.addEventListener('click', generateSceneImage);
 shareBtn.addEventListener('click', shareImage);
 resetBtn.addEventListener('click', resetScene);
 apiKeyInput.addEventListener('input', persistApiKey);
-for (const select of [charSelect, formSelect, locationSelect]) {
-	select.addEventListener('change', persistSelection);
-}
+addCharacterBtn.addEventListener('click', () => {
+	createCharacterRow();
+	refreshCharacterOptions();
+	updateAddButtonState();
+	updateRemoveButtonsVisibility();
+	persistCharacterRows();
+});
+locationSelect.addEventListener('change', persistSelection);
 
-function populateSelects() {
-	for (const [key, character] of Object.entries(PACK_DATABASE.characters)) {
-		charSelect.add(new Option(character.name, key));
-	}
+function populateLocationSelect() {
 	for (const [key, setting] of Object.entries(PACK_DATABASE.settings)) {
 		locationSelect.add(new Option(setting.name, key));
 	}
+}
+
+function getAvailableCharacterKeys(excludeSelectEl) {
+	const chosenElsewhere = [
+		...characterRowsContainer.querySelectorAll('.charRowSelect'),
+	]
+		.filter(select => select !== excludeSelectEl)
+		.map(select => select.value);
+	return Object.keys(PACK_DATABASE.characters).filter(
+		key => !chosenElsewhere.includes(key),
+	);
+}
+
+function refreshCharacterOptions() {
+	for (const select of characterRowsContainer.querySelectorAll(
+		'.charRowSelect',
+	)) {
+		const currentValue = select.value;
+		const availableKeys = getAvailableCharacterKeys(select);
+		select.innerHTML = '';
+		for (const key of availableKeys) {
+			select.add(new Option(PACK_DATABASE.characters[key].name, key));
+		}
+		if (availableKeys.includes(currentValue)) select.value = currentValue;
+	}
+}
+
+function updateAddButtonState() {
+	const rowCount =
+		characterRowsContainer.querySelectorAll('.character-row').length;
+	const totalCharacters = Object.keys(PACK_DATABASE.characters).length;
+	addCharacterBtn.hidden = rowCount >= totalCharacters;
+}
+
+function updateRemoveButtonsVisibility() {
+	const rows = characterRowsContainer.querySelectorAll('.character-row');
+	for (const row of rows) {
+		const removeBtn = row.querySelector('.removeRowBtn');
+		if (removeBtn) removeBtn.hidden = rows.length <= 1;
+	}
+}
+
+function createCharacterRow(presetCharKey, presetFormKey) {
+	const row = document.createElement('div');
+	row.className = 'character-row';
+
+	const charField = document.createElement('div');
+	charField.className = 'field';
+	const charLabel = document.createElement('label');
+	charLabel.textContent = 'Character';
+	const charSelect = document.createElement('select');
+	charSelect.className = 'charRowSelect';
+	for (const key of getAvailableCharacterKeys(charSelect)) {
+		charSelect.add(new Option(PACK_DATABASE.characters[key].name, key));
+	}
+	if (presetCharKey) charSelect.value = presetCharKey;
+	charField.append(charLabel, charSelect);
+
+	const formField = document.createElement('div');
+	formField.className = 'field';
+	const formLabel = document.createElement('label');
+	formLabel.textContent = 'Active Form';
+	const formSelect = document.createElement('select');
+	formSelect.className = 'formRowSelect';
+	for (const [value, label] of FORM_OPTIONS) {
+		formSelect.add(new Option(label, value));
+	}
+	if (presetFormKey) formSelect.value = presetFormKey;
+	formField.append(formLabel, formSelect);
+
+	row.append(charField, formField);
+
+	const handleRowChange = () => {
+		refreshCharacterOptions();
+		persistCharacterRows();
+	};
+	charSelect.addEventListener('change', handleRowChange);
+	formSelect.addEventListener('change', handleRowChange);
+
+	const removeBtn = document.createElement('button');
+	removeBtn.type = 'button';
+	removeBtn.className = 'removeRowBtn';
+	removeBtn.textContent = '✕';
+	removeBtn.addEventListener('click', () => {
+		row.remove();
+		refreshCharacterOptions();
+		updateAddButtonState();
+		updateRemoveButtonsVisibility();
+		persistCharacterRows();
+	});
+	row.append(removeBtn);
+
+	characterRowsContainer.append(row);
+}
+
+function persistCharacterRows() {
+	const rows = [
+		...characterRowsContainer.querySelectorAll('.character-row'),
+	].map(row => ({
+		char: row.querySelector('.charRowSelect').value,
+		form: row.querySelector('.formRowSelect').value,
+	}));
+	localStorage.setItem(CHARACTER_ROWS_STORAGE_KEY, JSON.stringify(rows));
+}
+
+function restoreCharacterRows() {
+	let stored = [];
+	try {
+		stored = JSON.parse(localStorage.getItem(CHARACTER_ROWS_STORAGE_KEY)) || [];
+	} catch {
+		stored = [];
+	}
+
+	const validRows = stored.filter(
+		entry =>
+			PACK_DATABASE.characters[entry.char] &&
+			FORM_OPTIONS.some(([value]) => value === entry.form),
+	);
+
+	if (validRows.length === 0) {
+		createCharacterRow();
+	} else {
+		for (const { char, form } of validRows) createCharacterRow(char, form);
+	}
+	refreshCharacterOptions();
+	updateAddButtonState();
+	updateRemoveButtonsVisibility();
 }
 
 function restoreApiKey() {
@@ -54,7 +189,7 @@ function persistApiKey() {
 }
 
 function restoreSelections() {
-	for (const select of [charSelect, formSelect, locationSelect]) {
+	for (const select of [locationSelect]) {
 		const storedValue = localStorage.getItem(SELECTION_STORAGE_KEYS[select.id]);
 		// only restore if the stored value still matches an available option
 		if (storedValue && [...select.options].some(o => o.value === storedValue)) {
@@ -85,18 +220,32 @@ async function generateSceneImage() {
 		return;
 	}
 
+	const characterRows = [
+		...characterRowsContainer.querySelectorAll('.character-row'),
+	];
+	if (characterRows.length === 0) {
+		alert('Please add at least one character.');
+		return;
+	}
+
 	// User input
-	const charKey = charSelect.value;
-	const formKey = formSelect.value;
 	const locationKey = locationSelect.value;
 	const scene = sceneText.value;
 
-	const character = PACK_DATABASE.characters[charKey];
-	const formDesc = character[formKey];
 	const locationDesc = PACK_DATABASE.settings[locationKey].description;
 
+	const characterBlocks = characterRows
+		.map(row => {
+			const charKey = row.querySelector('.charRowSelect').value;
+			const formKey = row.querySelector('.formRowSelect').value;
+			const character = PACK_DATABASE.characters[charKey];
+			const formDesc = character[formKey];
+			return `Character: ${character.name} in ${formKey.toUpperCase()} form (${formDesc}).`;
+		})
+		.join('\n');
+
 	const fullPrompt = `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style. 
-Character: ${character.name} in ${formKey.toUpperCase()} form (${formDesc}). 
+${characterBlocks}
 Environment/Setting: ${locationDesc}. 
 Action/Scene: ${scene}`;
 

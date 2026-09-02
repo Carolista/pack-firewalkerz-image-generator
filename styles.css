@@ -41,3 +41,24 @@ button {
 	border-radius: 8px;
 	display: none;
 }
+
+.character-row {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-end;
+	margin-bottom: 1rem;
+}
+
+.character-row .field {
+	flex: 1;
+	margin-bottom: 0;
+}
+
+.character-row .removeRowBtn {
+	padding: 0.5rem 0.75rem;
+	flex: 0 0 auto;
+}
+
+#addCharacterBtn[hidden] {
+	display: none;
+}
