@@ -17,10 +17,14 @@ const apiKeyInput = document.getElementById('apiKey');
 const characterRowsContainer = document.getElementById('characterRows');
 const addCharacterBtn = document.getElementById('addCharacterBtn');
 const locationSelect = document.getElementById('locationSelect');
+const locationDescText = document.getElementById('locationDescText');
+const otherLocationText = document.getElementById('otherLocationText');
 const sceneText = document.getElementById('sceneText');
 
+const OTHER_LOCATION_KEY = 'other';
 const API_KEY_STORAGE_KEY = 'geminiApiKey';
 const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
+const OTHER_LOCATION_TEXT_STORAGE_KEY = 'ww20OtherLocationText';
 const SELECTION_STORAGE_KEYS = {
 	[locationSelect.id]: 'ww20LocationSelect',
 };
@@ -29,6 +33,8 @@ populateLocationSelect();
 restoreApiKey();
 restoreSelections();
 restoreCharacterRows();
+restoreOtherLocationText();
+updateLocationDescDisplay();
 
 generateBtn.addEventListener('click', generateSceneImage);
 shareBtn.addEventListener('click', shareImage);
@@ -42,11 +48,36 @@ addCharacterBtn.addEventListener('click', () => {
 	persistCharacterRows();
 });
 locationSelect.addEventListener('change', persistSelection);
+locationSelect.addEventListener('change', updateLocationDescDisplay);
+otherLocationText.addEventListener('input', persistOtherLocationText);
 
 function populateLocationSelect() {
 	for (const [key, setting] of Object.entries(PACK_DATABASE.settings)) {
 		locationSelect.add(new Option(setting.name, key));
 	}
+	locationSelect.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));
+}
+
+function updateLocationDescDisplay() {
+	const isOther = locationSelect.value === OTHER_LOCATION_KEY;
+	locationDescText.hidden = isOther;
+	otherLocationText.hidden = !isOther;
+	if (!isOther) {
+		locationDescText.textContent =
+			PACK_DATABASE.settings[locationSelect.value]?.description ?? '';
+	}
+}
+
+function restoreOtherLocationText() {
+	const storedText = localStorage.getItem(OTHER_LOCATION_TEXT_STORAGE_KEY);
+	if (storedText) otherLocationText.value = storedText;
+}
+
+function persistOtherLocationText() {
+	localStorage.setItem(
+		OTHER_LOCATION_TEXT_STORAGE_KEY,
+		otherLocationText.value,
+	);
 }
 
 function getAvailableCharacterKeys(excludeSelectEl) {
@@ -232,7 +263,16 @@ async function generateSceneImage() {
 	const locationKey = locationSelect.value;
 	const scene = sceneText.value;
 
-	const locationDesc = PACK_DATABASE.settings[locationKey].description;
+	let locationDesc;
+	if (locationKey === OTHER_LOCATION_KEY) {
+		locationDesc = otherLocationText.value.trim();
+		if (!locationDesc) {
+			alert('Please describe the custom setting.');
+			return;
+		}
+	} else {
+		locationDesc = PACK_DATABASE.settings[locationKey].description;
+	}
 
 	const characterBlocks = characterRows
 		.map(row => {
