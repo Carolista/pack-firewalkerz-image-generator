@@ -3,16 +3,44 @@
 		"river": {
 			"name": "River-That-Remembers",
 			"tribe": "Uktena",
-			"homid": "Petite 5'1\" woman, honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
-			"lupus": "Slender black wolf with sleek fur and amber eyes.",
-			"crinos": "9-foot lean, athletic werewolf form with pure black fur, sharp features, long limbs."
+			"forms": {
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "Petite 5'1\" woman, honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "9-foot lean, athletic werewolf form with pure black fur, sharp features, long limbs.",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "Slender black wolf with sleek fur and amber eyes.",
+					"imageFile": ""
+				}
+			}
 		},
 		"dmitri": {
 			"name": "Dmitri",
 			"tribe": "Silver Fangs",
-			"homid": "Broad-shouldered Russian man, messy beard, heavy worn leather jacket.",
-			"lupus": "Massive black timber wolf with noticeable battle scars across the muzzle.",
-			"crinos": "Terrifying 8-foot hulking wall of dark fur, broad shoulders, massive claws."
+			"forms": {
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "Broad-shouldered Russian man, messy beard, heavy worn leather jacket.",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "Terrifying 8-foot hulking wall of dark fur, broad shoulders, massive claws.",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "Massive black timber wolf with noticeable battle scars across the muzzle.",
+					"imageFile": ""
+				}
+			}
 		}
 	},
 	"settings": {

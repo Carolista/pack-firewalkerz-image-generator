@@ -1,9 +1,3 @@
-export const FORM_OPTIONS = [
-	['homid', 'Homid (Human)'],
-	['lupus', 'Lupus (Wolf)'],
-	['crinos', 'Crinos (Werewolf)'],
-];
-
 export const OTHER_LOCATION_KEY = 'other';
 
 export const API_KEY_STORAGE_KEY = 'geminiApiKey';

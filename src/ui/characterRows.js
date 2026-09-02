@@ -1,4 +1,3 @@
-import { FORM_OPTIONS } from '../constants.js';
 import PACK_DATA from '../packData.json' with { type: 'json' };
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
@@ -25,7 +24,13 @@ export function getCharacterSelections() {
 		const charKey = row.querySelector('.charRowSelect').value;
 		const formKey = row.querySelector('.formRowSelect').value;
 		const character = PACK_DATA.characters[charKey];
-		return { name: character.name, formKey, formDesc: character[formKey] };
+		const form = character.forms[formKey];
+		return {
+			name: character.name,
+			formKey,
+			formName: form.name,
+			formDesc: form.description,
+		};
 	});
 }
 
@@ -68,6 +73,18 @@ function updateRemoveButtonsVisibility() {
 	}
 }
 
+// Rebuilds the Active Form select to match whichever character is currently chosen in this row.
+function populateFormOptions(charSelect, formSelect, presetFormKey) {
+	const character = PACK_DATA.characters[charSelect.value];
+	formSelect.innerHTML = '';
+	for (const [formKey, form] of Object.entries(character.forms)) {
+		formSelect.add(new Option(form.name, formKey));
+	}
+	if (presetFormKey && character.forms[presetFormKey]) {
+		formSelect.value = presetFormKey;
+	}
+}
+
 function createCharacterRow(presetCharKey, presetFormKey) {
 	const row = document.createElement('div');
 	row.className = 'character-row';
@@ -90,20 +107,17 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 	formLabel.textContent = 'Active Form';
 	const formSelect = document.createElement('select');
 	formSelect.className = 'formRowSelect';
-	for (const [value, label] of FORM_OPTIONS) {
-		formSelect.add(new Option(label, value));
-	}
-	if (presetFormKey) formSelect.value = presetFormKey;
 	formField.append(formLabel, formSelect);
+	populateFormOptions(charSelect, formSelect, presetFormKey);
 
 	row.append(charField, formField);
 
-	const handleRowChange = () => {
+	charSelect.addEventListener('change', () => {
+		populateFormOptions(charSelect, formSelect);
 		refreshCharacterOptions();
 		persistCharacterRows();
-	};
-	charSelect.addEventListener('change', handleRowChange);
-	formSelect.addEventListener('change', handleRowChange);
+	});
+	formSelect.addEventListener('change', persistCharacterRows);
 
 	const removeBtn = document.createElement('button');
 	removeBtn.type = 'button';
@@ -134,11 +148,10 @@ function persistCharacterRows() {
 function restoreCharacterRows() {
 	const stored = getCharacterRows();
 
-	const validRows = stored.filter(
-		entry =>
-			PACK_DATA.characters[entry.char] &&
-			FORM_OPTIONS.some(([value]) => value === entry.form),
-	);
+	const validRows = stored.filter(entry => {
+		const character = PACK_DATA.characters[entry.char];
+		return character && character.forms[entry.form];
+	});
 
 	if (validRows.length === 0) {
 		createCharacterRow();

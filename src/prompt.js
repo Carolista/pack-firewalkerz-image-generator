@@ -1,8 +1,8 @@
 export function buildPrompt({ characters, locationDesc, scene }) {
 	const characterBlocks = characters
 		.map(
-			({ name, formKey, formDesc }) =>
-				`Character: ${name} in ${formKey.toUpperCase()} form (${formDesc}).`,
+			({ name, formName, formDesc }) =>
+				`Character: ${name} in ${formName} form (${formDesc}).`,
 		)
 		.join('\n');
 
