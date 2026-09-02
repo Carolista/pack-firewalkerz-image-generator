@@ -17,7 +17,9 @@ export function setApiKeyIfChanged(value) {
 
 export function getCharacterRows() {
 	try {
-		return JSON.parse(localStorage.getItem(CHARACTER_ROWS_STORAGE_KEY)) || [];
+		return (
+			JSON.parse(localStorage.getItem(CHARACTER_ROWS_STORAGE_KEY)) || []
+		);
 	} catch {
 		return [];
 	}

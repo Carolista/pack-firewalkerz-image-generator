@@ -27,7 +27,9 @@ app.post('/generate-image', async (req, res) => {
 		const part = candidates?.[0]?.content?.parts?.find(p => p.inlineData);
 
 		if (!part || !part.inlineData) {
-			return res.status(500).json({ error: 'No image returned in response.' });
+			return res
+				.status(500)
+				.json({ error: 'No image returned in response.' });
 		}
 
 		const base64Data = part.inlineData.data;
@@ -36,7 +38,9 @@ app.post('/generate-image', async (req, res) => {
 		res.json({ imageUrl: `data:${mimeType};base64,${base64Data}` });
 	} catch (error) {
 		console.error('Server Error:', error);
-		res.status(500).json({ error: error.message || 'Internal Server Error' });
+		res.status(500).json({
+			error: error.message || 'Internal Server Error',
+		});
 	}
 });
 

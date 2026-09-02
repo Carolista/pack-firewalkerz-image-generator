@@ -122,10 +122,12 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 }
 
 function persistCharacterRows() {
-	const rows = [...containerEl.querySelectorAll('.character-row')].map(row => ({
-		char: row.querySelector('.charRowSelect').value,
-		form: row.querySelector('.formRowSelect').value,
-	}));
+	const rows = [...containerEl.querySelectorAll('.character-row')].map(
+		row => ({
+			char: row.querySelector('.charRowSelect').value,
+			form: row.querySelector('.formRowSelect').value,
+		}),
+	);
 	setCharacterRows(rows);
 }
 

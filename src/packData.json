@@ -24,6 +24,9 @@
 			"name": "Urban Chattanooga",
 			"description": "City alleyway, cracked asphalt, brick walls with peeling paint, rusted steel fire escapes, dumpster, murky water puddles, dark moody lighting."
 		},
-		"caern": {"name": "Caern", "description": "A hidden glade surrounding a moonlit natural spring, ancient carved stones marked with glowing Garou glyphs, ethereal spirit fog."}
+		"caern": {
+			"name": "Caern",
+			"description": "A hidden glade surrounding a moonlit natural spring, ancient carved stones marked with glowing Garou glyphs, ethereal spirit fog."
+		}
 	}
 }

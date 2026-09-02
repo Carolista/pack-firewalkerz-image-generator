@@ -51,13 +51,17 @@ function updateLocationDescDisplay() {
 	descEl.hidden = isOther;
 	otherTextEl.hidden = !isOther;
 	if (!isOther) {
-		descEl.textContent = PACK_DATA.settings[selectEl.value]?.description ?? '';
+		descEl.textContent =
+			PACK_DATA.settings[selectEl.value]?.description ?? '';
 	}
 }
 
 function restoreLocationSelection() {
 	const storedValue = getLocationSelection();
-	if (storedValue && [...selectEl.options].some(o => o.value === storedValue)) {
+	if (
+		storedValue &&
+		[...selectEl.options].some(o => o.value === storedValue)
+	) {
 		selectEl.value = storedValue;
 	}
 }
