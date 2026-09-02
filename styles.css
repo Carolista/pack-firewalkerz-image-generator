@@ -30,6 +30,12 @@ input {
 	box-sizing: border-box;
 }
 
+textarea {
+    resize: vertical;
+    min-height: 80px;
+    max-height: 300px;
+}
+
 button {
 	padding: 0.75rem 1.5rem;
 	cursor: pointer;
