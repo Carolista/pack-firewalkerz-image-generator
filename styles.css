@@ -10,10 +10,10 @@
 	--dark-gray: #504e4b;
 	--gray: #bdbbb8;
 	--light-gray: #dcd9d5;
-	--font-regular: 'Libertinus Sans', sans-serif; 
+	--font-regular: 'Libertinus Sans', sans-serif;
 	--font-title: 'Trade Winds', fantasy;
-	--font-heading: 'New Amsterdam', Impact, sans-serif; 
-	--font-card-heading: 'Lilex', sans-serif; 
+	--font-heading: 'New Amsterdam', Impact, sans-serif;
+	--font-card-heading: 'Lilex', sans-serif;
 	--font-label: 'Libertinus Sans', serif;
 	--font-mono: 'Lilex', monospace;
 	--border-radius-form-elements: 2px;
@@ -125,6 +125,36 @@ button {
 	display: none;
 }
 
+.image-placeholder {
+	background-color: var(--dark-gray);
+	aspect-ratio: 1 / 1;
+	max-width: 100%;
+	margin-top: 1rem;
+	border-radius: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.image-placeholder[hidden] {
+	display: none;
+}
+
+.image-spinner {
+	width: 3rem;
+	height: 3rem;
+	border: 0.35rem solid var(--cream);
+	border-top-color: transparent;
+	border-radius: 50%;
+	animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
 .character-row {
 	display: flex;
 	gap: 0.5rem;
@@ -173,9 +203,14 @@ button {
 	position: absolute;
 	top: 0.5rem;
 	right: 0.5rem;
+	color: var(--dark-gray);
 	padding: 0.25rem 0.5rem;
 	border: none;
 	background: none;
 	font-size: 1.2rem;
 	cursor: pointer;
+}
+
+.modal input {
+	background-color: var(--cream);
 }

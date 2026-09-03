@@ -66,6 +66,9 @@
 			<button id="retryBtn" type="button" style="display: none">
 				Retry
 			</button>
+			<div id="imagePlaceholder" class="image-placeholder" hidden>
+				<span class="image-spinner" aria-hidden="true"></span>
+			</div>
 			<img id="outputImg" alt="Generated Scene" />
 			<div style="margin-top: 0.5rem">
 				<button id="shareBtn" style="display: none">
@@ -88,11 +91,13 @@
 				<h3>Gemini API Key</h3>
 				<p id="apiKeyModalMessage"></p>
 				<div class="field">
-					<label for="apiKeyModalInput">Gemini API Key</label>
+					<label for="apiKeyModalInput"
+						>Google AI Studio API Key</label
+					>
 					<input
 						type="password"
 						id="apiKeyModalInput"
-						placeholder="Paste your Google AI Studio API key here"
+						placeholder="Paste key here"
 					/>
 				</div>
 				<button id="apiKeyModalSubmitBtn" type="button">

@@ -59,6 +59,7 @@ initApiKeyModal({
 initGenerationOutput({
 	status: statusText,
 	image: document.getElementById('outputImg'),
+	placeholder: document.getElementById('imagePlaceholder'),
 	shareBtn,
 	retryBtn,
 });
