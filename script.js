@@ -53,7 +53,7 @@ function resetScene() {
 	imgElem.style.display = 'none';
 	shareBtn.style.display = 'none';
 	retryBtn.style.display = 'none';
-	statusText.innerText = 'Ready.';
+	statusText.innerText = 'Waiting for prompt...';
 	generatedBlob = null;
 }
 
@@ -122,7 +122,8 @@ async function generateSceneImage() {
 	const scene = sceneText.value;
 	const fullPrompt = buildPrompt({ characters, locationDesc, scene });
 
-	statusText.innerText = 'Generating image (takes ~5-10 seconds)...';
+	statusText.innerText =
+		'Generating image (this will take about 5-10 seconds)...';
 	imgElem.style.display = 'none';
 	shareBtn.style.display = 'none';
 

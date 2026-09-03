@@ -6,17 +6,17 @@
 			"forms": {
                 "lupus": {
                     "name": "Lupus (Wolf)",
-                    "description": "Slender black wolf with sleek fur and amber eyes.",
+                    "description": "A young, slender black wolf with sleek fur and sparkling amber eyes. This is her natural form and she is most comfortable and at peace as a wolf, away from human civilization.",
                     "imageFile": ""
                 },
 				"homid": {
 					"name": "Homid (Human)",
-					"description": "Petite 5'1\" woman, about 18 years old. Honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
+					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. She wears wide-leg jeans, sneakers, boxy cropped sweater in colors like dusty rose and pistachio green. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
 					"imageFile": ""
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
-					"description": "9-foot lean, athletic werewolf form with pure black fur, sharp features, long limbs.",
+					"description": "As a werewolf, River is about 8.5' tall with dark, sleek fur reminiscent of wet stones in a river. Her jet-black fur flows down her back like rushing water, and she has bits of bone and river-polished stones interwoven in her coat that catch the light of the moon. Her eyes are amber, flashing with fire like the sunset just as it disappears behind the mountains she calls home. She moves very gracefully, flowing forward like the rush of river rapids, but she is astonishingly silent as she moves with quiet rage, ready for the fight.",
 					"imageFile": ""
 				}
 			}
