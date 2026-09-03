@@ -4,19 +4,19 @@
 			"name": "River-That-Remembers",
 			"tribe": "Uktena",
 			"forms": {
+                "lupus": {
+                    "name": "Lupus (Wolf)",
+                    "description": "Slender black wolf with sleek fur and amber eyes.",
+                    "imageFile": ""
+                },
 				"homid": {
 					"name": "Homid (Human)",
-					"description": "Petite 5'1\" woman, honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
+					"description": "Petite 5'1\" woman, about 18 years old. Honey-colored hair with bangs, wide-leg jeans, sneakers, boxy cropped sweater in dusty rose.",
 					"imageFile": ""
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
 					"description": "9-foot lean, athletic werewolf form with pure black fur, sharp features, long limbs.",
-					"imageFile": ""
-				},
-				"lupus": {
-					"name": "Lupus (Wolf)",
-					"description": "Slender black wolf with sleek fur and amber eyes.",
 					"imageFile": ""
 				}
 			}
@@ -46,10 +46,10 @@
 	"settings": {
 		"appalachianWoods": {
 			"name": "Appalachian Woods of Tennessee",
-			"description": "Dense, misty Appalachian pine and oak forest in North Carolina, damp earthy floor, thick canopy, mossy boulders."
+			"description": "Misty Appalachian forest in the Great Smoky Mountains of Tennessee. Maples, redbuds, and dogwoods flourish beneath the canopy of tall oaks and pines. Dappled light filters through the canopy above and the mist. A river with rapids flows on one side."
 		},
 		"urbanChattanooga": {
-			"name": "Urban Chattanooga",
+			"name": "Urban Chattanooga at Night",
 			"description": "City alleyway, cracked asphalt, brick walls with peeling paint, rusted steel fire escapes, dumpster, murky water puddles, dark moody lighting."
 		},
 		"caern": {

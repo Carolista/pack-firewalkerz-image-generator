@@ -3,37 +3,33 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>Pack Generator - WW20</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=Major+Mono+Display&family=New+Amsterdam&family=Sono:wght,MONO@200..800,1&family=Trade+Winds&display=swap"
+			rel="stylesheet"
+		/>
+
 		<link href="styles.css" rel="stylesheet" />
 		<script src="script.js" type="module" defer></script>
 	</head>
 	<body>
-		<h1>🐺 WW20 Scene Visualizer</h1>
-
-		<!-- API Key Setup (Kept local for personal app) -->
-		<div class="card">
-			<div class="field">
-				<label for="apiKey">Gemini API Key</label>
-				<input
-					type="password"
-					id="apiKey"
-					placeholder="Paste your Google AI Studio API key here"
-				/>
-			</div>
-		</div>
+		<h1>Pack Firewalkerz</h1>
+		<h2>Scene Image Generator</h2>
 
 		<!-- Character Selector -->
 		<div class="card">
 			<h3>Characters & Forms</h3>
 			<div id="characterRows"></div>
 			<button id="addCharacterBtn" type="button">
-				+ Add another character
+				Add another character
 			</button>
 		</div>
 
 		<div class="card">
 			<h3>Setting</h3>
 			<div class="field">
-				<label for="locationSelect">Select Location</label>
+				<label for="locationSelect">Scene Location</label>
 				<select id="locationSelect"></select>
 			</div>
 			<div class="field">
@@ -48,11 +44,14 @@
 
 		<!-- Scene Action -->
 		<div class="card">
+			<h3>SCENE DESCRIPTION</h3>
 			<div class="field">
-				<label for="sceneText">Describe Scene & Actions</label>
+				<label for="sceneText"
+					>Description of characters' facial expressions, placement within setting, actions, props, etc.
+				</label>
 				<textarea
 					id="sceneText"
-					placeholder="e.g. Trying to press tiny buttons on an iPhone while in 8-foot Crinos form and looking deeply frustrated."
+					placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."
 				></textarea>
 			</div>
 			<button id="generateBtn">Generate Image</button>
@@ -61,11 +60,42 @@
 
 		<!-- Output Area -->
 		<div class="card">
-			<div id="statusText">Ready.</div>
+            <h3>IMAGE</h3>
+			<div id="statusText">Waiting for prompt...</div>
+			<button id="retryBtn" type="button" style="display: none">
+				Retry
+			</button>
 			<img id="outputImg" alt="Generated Scene" />
 			<div style="margin-top: 0.5rem">
 				<button id="shareBtn" style="display: none">
 					Share to Device
+				</button>
+			</div>
+		</div>
+
+		<!-- Gemini API Key Modal (shown on demand, not always visible) -->
+		<div id="apiKeyModalOverlay" class="modal-overlay" hidden>
+			<div class="modal">
+				<button
+					id="apiKeyModalCloseBtn"
+					class="modal-close"
+					type="button"
+					aria-label="Close"
+				>
+					✕
+				</button>
+				<h3>Gemini API Key</h3>
+				<p id="apiKeyModalMessage"></p>
+				<div class="field">
+					<label for="apiKeyModalInput">Gemini API Key</label>
+					<input
+						type="password"
+						id="apiKeyModalInput"
+						placeholder="Paste your Google AI Studio API key here"
+					/>
+				</div>
+				<button id="apiKeyModalSubmitBtn" type="button">
+					Save & Continue
 				</button>
 			</div>
 		</div>
