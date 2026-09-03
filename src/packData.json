@@ -4,14 +4,14 @@
 			"name": "River-That-Remembers",
 			"tribe": "Uktena",
 			"forms": {
-                "lupus": {
-                    "name": "Lupus (Wolf)",
-                    "description": "A young, slender black wolf with sleek fur and sparkling amber eyes. This is her natural form and she is most comfortable and at peace as a wolf, away from human civilization.",
-                    "imageFile": ""
-                },
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "A young, slender black wolf with sleek fur and sparkling amber eyes. This is her natural form and she is most comfortable and at peace as a wolf, away from human civilization.",
+					"imageFile": ""
+				},
 				"homid": {
 					"name": "Homid (Human)",
-					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. She wears wide-leg jeans, sneakers, boxy cropped sweater in colors like dusty rose and pistachio green. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
+					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
 					"imageFile": ""
 				},
 				"crinos": {
