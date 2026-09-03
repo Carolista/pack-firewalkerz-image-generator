@@ -1,43 +1,171 @@
 {
 	"characters": {
-		"river": {
-			"name": "River-That-Remembers",
-			"tribe": "Uktena",
+		"dmitri": {
+			"name": "Dmitri",
+			"nickname": "Dmitri",
+			"breed": "homid",
+			"tribe": "",
+			"auspice": "",
 			"forms": {
-				"lupus": {
-					"name": "Lupus (Wolf)",
-					"description": "A young, slender black wolf with sleek fur and sparkling amber eyes. This is her natural form and she is most comfortable and at peace as a wolf, away from human civilization.",
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "",
 					"imageFile": ""
 				},
+				"glabro": {
+					"name": "Glabro (Hulked-Out Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "",
+					"imageFile": ""
+				},
+				"hispo": {
+					"name": "Hispo (Near-Wolf Beast)",
+					"description": "",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "",
+					"imageFile": ""
+				}
+			}
+		},
+		"lorica": {
+			"name": "Lorica",
+			"nickname": "Lorica",
+			"breed": "lupus",
+			"tribe": "",
+			"auspice": "",
+			"forms": {
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"glabro": {
+					"name": "Glabro (Hulked-Out Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "",
+					"imageFile": ""
+				},
+				"hispo": {
+					"name": "Hispo (Near-Wolf Beast)",
+					"description": "",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "",
+					"imageFile": ""
+				}
+			}
+		},
+		"devin": {
+			"name": "Devin",
+			"nickname": "Devin",
+			"breed": "homid",
+			"tribe": "",
+			"auspice": "",
+			"forms": {
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"glabro": {
+					"name": "Glabro (Hulked-Out Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "",
+					"imageFile": ""
+				},
+				"hispo": {
+					"name": "Hispo (Near-Wolf Beast)",
+					"description": "",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "",
+					"imageFile": ""
+				}
+			}
+		},
+		"river": {
+			"name": "River-That-Remembers",
+			"nickname": "River",
+			"breed": "Lupus",
+			"tribe": "Uktena",
+			"auspice": "Theurge",
+			"forms": {
 				"homid": {
 					"name": "Homid (Human)",
 					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
+					"imageFile": ""
+				},
+				"glabro": {
+					"name": "Glabro (Hulked-Out Human)",
+					"description": "River still looks small by human standards—perhaps reaching a dense, formidable 5’3”. However, she now appears to be forged of compact muscle and bone. Her dusty rose cropped sweater fits much more tightly across her shoulders, which have broadened considerably. Her hair is still honey-colored, but it grows darker, coarse, and thick, spilling down her back like wild grass; her curtain bangs are heavier, partially obscuring eyes that have turned a dark, guarded gold. Her facial structure becomes sharper, more wolf-like, with a strong, pronounced jawline and heavy brow. Her nails don't quite become claws, but they grow thick and dark like hardened flint. She smells intensely of river clay and dry pine needles, and when she moves, she has a heavy, compact gait, no longer petite but powerfully dangerous.",
 					"imageFile": ""
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
 					"description": "As a werewolf, River is about 8.5' tall with dark, sleek fur reminiscent of wet stones in a river. Her jet-black fur flows down her back like rushing water, and she has bits of bone and river-polished stones interwoven in her coat that catch the light of the moon. Her eyes are amber, flashing with fire like the sunset just as it disappears behind the mountains she calls home. She moves very gracefully, flowing forward like the rush of river rapids, but she is astonishingly silent as she moves with quiet rage, ready for the fight.",
 					"imageFile": ""
-				}
-			}
-		},
-		"dmitri": {
-			"name": "Dmitri",
-			"tribe": "Silver Fangs",
-			"forms": {
-				"homid": {
-					"name": "Homid (Human)",
-					"description": "Broad-shouldered Russian man, messy beard, heavy worn leather jacket.",
-					"imageFile": ""
 				},
-				"crinos": {
-					"name": "Crinos (Werewolf)",
-					"description": "Terrifying 8-foot hulking wall of dark fur, broad shoulders, massive claws.",
+				"hispo": {
+					"name": "Hispo (Near-Wolf Beast)",
+					"description": "In Hispo form, River is a massive, primal beast. Standing nearly 5 feet tall at the shoulder, she is a colossal, sleek-coated wolf that looks less like a mammal and more like an elemental force of nature. Her fur is jet-black and incredibly dense, sharing the texture of wet stones in a river. Down her massive spine, the fur lies smooth, looking exactly like the rush of deep, fast-flowing water. The amber fire in her eyes burns brightly, appearing as intelligent as any human’s. When she drops her powerful head, faint, ghostly blue tracery of Uktena spirit-tattoos seems to momentarily glow just beneath the surface of her black pelt. In this form, she is perfectly silent; she doesn't pad along—she glides, flowing over terrain like water, her long snout tested for spirits, ready to hunt, kill, and guard the Wyrm-secrets she protects.",
 					"imageFile": ""
 				},
 				"lupus": {
 					"name": "Lupus (Wolf)",
-					"description": "Massive black timber wolf with noticeable battle scars across the muzzle.",
+					"description": "In her natural form, River is a young, slender wolf of ancient Uktena lineage. Her pelt is a profound, uniform black—not the deep dark of a forest night, but the shimmering, fluid darkness of the deep Hiwassee River where the shadows are smoothest. Her fur is unusually sleek and close-cropped, offering zero resistance to the brush, appearing to have been polished by the passage of current over millennia. She possesses the sharp, observant features and sensitive, upright ears of a predator designed to navigate both the dense Southern forests and the tricky Umbral pathways. The defining element of this form, however, is her eyes: bright, piercing amber that flashes with the intelligent fire of a sunset hitting the water. She moves with a beautiful, liquid economy, always quiet, always watchful, perfectly adapted for the silent hunt. In this form, separated from the loud, confused clatter of the human world, River-that-Remembers finds her true peace.",
+					"imageFile": ""
+				}
+			}
+		},
+		"monkshood": {
+			"name": "Monkshood",
+			"nickname": "",
+			"breed": "",
+			"tribe": "",
+			"auspice": "",
+			"forms": {
+				"homid": {
+					"name": "Homid (Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"glabro": {
+					"name": "Glabro (Hulked-Out Human)",
+					"description": "",
+					"imageFile": ""
+				},
+				"crinos": {
+					"name": "Crinos (Werewolf)",
+					"description": "",
+					"imageFile": ""
+				},
+				"hispo": {
+					"name": "Hispo (Near-Wolf Beast)",
+					"description": "",
+					"imageFile": ""
+				},
+				"lupus": {
+					"name": "Lupus (Wolf)",
+					"description": "",
 					"imageFile": ""
 				}
 			}
