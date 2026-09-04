@@ -5,4 +5,8 @@ export const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
 export const OTHER_LOCATION_TEXT_STORAGE_KEY = 'ww20OtherLocationText';
 export const LOCATION_STORAGE_KEY = 'ww20LocationSelect';
 
-export const SERVER_URL = 'http://localhost:3000/generate-image';
+export const SERVER_URL =
+	window.location.hostname === 'localhost' ||
+	window.location.hostname === '127.0.0.1'
+		? 'http://localhost:3000/generate-image'
+		: 'https://rpg-image-generator-proxy.onrender.com/generate-image';

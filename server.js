@@ -1,14 +1,29 @@
 import { GoogleGenAI } from '@google/genai';
 import cors from 'cors';
 import express from 'express';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-app.use(cors());
+
+app.use(
+	cors({
+		origin: [
+			'http://codewithcarrie.com',
+			'https://codewithcarrie.com',
+			'http://127.0.0.1:5500',
+			'http://localhost:5500',
+		],
+	}),
+);
 app.use(express.json({ limit: '20mb' }));
 
 app.post('/generate-image', async (req, res) => {
 	try {
-		const { apiKey, prompt, referenceImages = [] } = req.body;
+		const { prompt, referenceImages = [] } = req.body;
+
+		const apiKey = process.env.GEMINI_API_KEY;
 
 		if (!apiKey) {
 			return res.status(400).json({ error: 'API key is required.' });
@@ -66,6 +81,7 @@ app.post('/generate-image', async (req, res) => {
 	}
 });
 
-app.listen(3000, () => {
-	console.log('🚀 Local WW20 Proxy Server running on http://localhost:3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+	console.log(`🚀 Local WW20 Proxy Server running on port ${PORT}`);
 });
