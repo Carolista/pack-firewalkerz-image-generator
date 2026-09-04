@@ -100,7 +100,6 @@ async function generateSceneImage() {
 			if (result.imageUrl) generatedBlob = showSuccess(result);
 			else showEmptyResponse(result.raw);
 		} catch (err) {
-            console.error(error.message);
 			showError(formatError(err));
 		}
 	} finally {
