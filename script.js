@@ -100,6 +100,7 @@ async function generateSceneImage() {
 			if (result.imageUrl) generatedBlob = showSuccess(result);
 			else showEmptyResponse(result.raw);
 		} catch (err) {
+            console.error(error.message);
 			showError(formatError(err));
 		}
 	} finally {
@@ -110,7 +111,7 @@ async function generateSceneImage() {
 
 function formatError(error) {
 	return isNetworkError(error)
-		? 'Could not reach the local server. Make sure `node server.js` is running.'
+		? 'Could not reach the server. Please try again.'
 		: error.message;
 }
 
