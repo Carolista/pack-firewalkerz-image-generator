@@ -1,19 +1,8 @@
 import {
-	API_KEY_STORAGE_KEY,
 	CHARACTER_ROWS_STORAGE_KEY,
 	LOCATION_STORAGE_KEY,
 	OTHER_LOCATION_TEXT_STORAGE_KEY,
 } from '../constants.js';
-
-export function getApiKey() {
-	return localStorage.getItem(API_KEY_STORAGE_KEY);
-}
-
-export function setApiKeyIfChanged(value) {
-	if (value && value !== localStorage.getItem(API_KEY_STORAGE_KEY)) {
-		localStorage.setItem(API_KEY_STORAGE_KEY, value);
-	}
-}
 
 export function getCharacterRows() {
 	try {

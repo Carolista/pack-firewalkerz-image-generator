@@ -75,27 +75,26 @@ export async function loadReferenceImages(characters) {
 
 // Retries once when the local server is unreachable.
 export async function generateImageWithNetworkRetry({
-	apiKey,
 	prompt,
 	referenceImages,
 	onRetry,
 }) {
 	try {
-		return await generateImage({ apiKey, prompt, referenceImages });
+		return await generateImage({ prompt, referenceImages });
 	} catch (error) {
 		if (!isNetworkError(error)) throw error;
 		onRetry?.();
 		await delay(NETWORK_RETRY_DELAY_MS);
-		return generateImage({ apiKey, prompt, referenceImages });
+		return generateImage({ prompt, referenceImages });
 	}
 }
 
 // Returns { imageUrl: null, blob: null, raw } when the server responds without inline image data.
-export async function generateImage({ apiKey, prompt, referenceImages }) {
+export async function generateImage({ prompt, referenceImages }) {
 	const response = await fetch(SERVER_URL, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ apiKey, prompt, referenceImages }),
+		body: JSON.stringify({ prompt, referenceImages }),
 	});
 
 	const data = await response.json();

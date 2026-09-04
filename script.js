@@ -5,8 +5,6 @@ import {
 	loadReferenceImages,
 } from './src/services/api.js';
 import { shareFile } from './src/services/share.js';
-import { getApiKey } from './src/services/storage.js';
-import { initApiKeyModal, requestApiKey } from './src/ui/apiKeyModal.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
 import {
 	getCharacterSelections,
@@ -49,14 +47,6 @@ initSettingField({
 	otherTextEl: document.getElementById('otherLocationText'),
 });
 
-initApiKeyModal({
-	overlay: document.getElementById('apiKeyModalOverlay'),
-	closeBtn: document.getElementById('apiKeyModalCloseBtn'),
-	input: document.getElementById('apiKeyModalInput'),
-	submitBtn: document.getElementById('apiKeyModalSubmitBtn'),
-	messageEl: document.getElementById('apiKeyModalMessage'),
-});
-
 initGenerationOutput({
 	status: statusText,
 	image: document.getElementById('outputImg'),
@@ -76,8 +66,6 @@ function resetScene() {
 	generatedBlob = null;
 }
 
-const INVALID_API_KEY_PATTERN = /api[ _-]?key/i;
-
 async function generateSceneImage() {
 	if (generationInProgress) return;
 	generationInProgress = true;
@@ -95,12 +83,6 @@ async function generateSceneImage() {
 			return;
 		}
 
-		let apiKey = getApiKey();
-		if (!apiKey) {
-			apiKey = await requestApiKey();
-			if (!apiKey) return;
-		}
-
 		const characters = getCharacterSelections();
 		const scene = sceneText.value;
 		const fullPrompt = buildPrompt({ characters, locationDesc, scene });
@@ -110,7 +92,6 @@ async function generateSceneImage() {
 
 		try {
 			const result = await generateImageWithNetworkRetry({
-				apiKey,
 				prompt: fullPrompt,
 				referenceImages,
 				onRetry: () =>
@@ -119,29 +100,7 @@ async function generateSceneImage() {
 			if (result.imageUrl) generatedBlob = showSuccess(result);
 			else showEmptyResponse(result.raw);
 		} catch (err) {
-			if (!INVALID_API_KEY_PATTERN.test(err.message)) {
-				showError(formatError(err));
-				return;
-			}
-
-			const newApiKey = await requestApiKey({ invalid: true });
-			if (!newApiKey) {
-				showError(formatError(err));
-				return;
-			}
-
-			try {
-				const retryResult = await generateImageWithNetworkRetry({
-					apiKey: newApiKey,
-					prompt: fullPrompt,
-					referenceImages,
-				});
-				if (retryResult.imageUrl)
-					generatedBlob = showSuccess(retryResult);
-				else showEmptyResponse(retryResult.raw);
-			} catch (retryErr) {
-				showError(formatError(retryErr));
-			}
+			showError(formatError(err));
 		}
 	} finally {
 		generationInProgress = false;
