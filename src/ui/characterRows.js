@@ -30,6 +30,7 @@ export function getCharacterSelections() {
 			formKey,
 			formName: form.name,
 			formDesc: form.description,
+			imageFile: form.imageFile,
 		};
 	});
 }

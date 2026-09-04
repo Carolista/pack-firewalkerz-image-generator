@@ -4,11 +4,11 @@ import express from 'express';
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '20mb' }));
 
 app.post('/generate-image', async (req, res) => {
 	try {
-		const { apiKey, prompt } = req.body;
+		const { apiKey, prompt, referenceImages = [] } = req.body;
 
 		if (!apiKey) {
 			return res.status(400).json({ error: 'API key is required.' });
@@ -16,10 +16,32 @@ app.post('/generate-image', async (req, res) => {
 
 		const ai = new GoogleGenAI({ apiKey });
 
+		const imageParts = referenceImages
+			.filter(
+				img =>
+					img &&
+					typeof img.mimeType === 'string' &&
+					typeof img.data === 'string',
+			)
+			.flatMap(img => [
+				...(typeof img.label === 'string' ? [{ text: img.label }] : []),
+				{ inlineData: { mimeType: img.mimeType, data: img.data } },
+			]);
+
 		// Use generateContent with an AI Studio supported image model
+		// Reminder is placed after the images since trailing instructions carry more weight than leading ones.
+		const poseReminder =
+			imageParts.length > 0
+				? [
+						{
+							text: "Reminder: the reference photos above are for each character's appearance only (face, coloring, features, physique). Disregard their poses, facial expressions, gaze directions, and camera angles entirely — pose, express, and orient every character strictly according to the Action/Scene description given earlier.",
+						},
+					]
+				: [];
+
 		const response = await ai.models.generateContent({
 			model: 'gemini-2.5-flash-image',
-			contents: prompt,
+			contents: [{ text: prompt }, ...imageParts, ...poseReminder],
 		});
 
 		// Extract base64 image data from the response structure

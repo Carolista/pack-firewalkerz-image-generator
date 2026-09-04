@@ -2,6 +2,7 @@ import { buildPrompt } from './src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
 	isNetworkError,
+	loadReferenceImages,
 } from './src/services/api.js';
 import { shareFile } from './src/services/share.js';
 import { getApiKey } from './src/services/storage.js';
@@ -103,6 +104,7 @@ async function generateSceneImage() {
 		const characters = getCharacterSelections();
 		const scene = sceneText.value;
 		const fullPrompt = buildPrompt({ characters, locationDesc, scene });
+		const referenceImages = await loadReferenceImages(characters);
 
 		showGenerating();
 
@@ -110,6 +112,7 @@ async function generateSceneImage() {
 			const result = await generateImageWithNetworkRetry({
 				apiKey,
 				prompt: fullPrompt,
+				referenceImages,
 				onRetry: () =>
 					(statusText.innerText = 'Connection issue, retrying...'),
 			});
@@ -131,6 +134,7 @@ async function generateSceneImage() {
 				const retryResult = await generateImageWithNetworkRetry({
 					apiKey: newApiKey,
 					prompt: fullPrompt,
+					referenceImages,
 				});
 				if (retryResult.imageUrl)
 					generatedBlob = showSuccess(retryResult);

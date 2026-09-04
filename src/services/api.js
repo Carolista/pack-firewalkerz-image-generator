@@ -1,6 +1,9 @@
 import { SERVER_URL } from '../constants.js';
 
 const NETWORK_RETRY_DELAY_MS = 1500;
+const REFERENCE_IMAGE_BASE_PATH = 'assets/characters/';
+const MAX_REFERENCE_DIMENSION = 1024;
+const REFERENCE_JPEG_QUALITY = 0.85;
 
 export function isNetworkError(error) {
 	return error instanceof TypeError;
@@ -10,28 +13,89 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Scales the longer edge down to MAX_REFERENCE_DIMENSION; never upscales.
+async function downscaleImage(blob) {
+	const bitmap = await createImageBitmap(blob);
+	const scale = Math.min(
+		1,
+		MAX_REFERENCE_DIMENSION / Math.max(bitmap.width, bitmap.height),
+	);
+	const width = Math.round(bitmap.width * scale);
+	const height = Math.round(bitmap.height * scale);
+
+	const canvas = document.createElement('canvas');
+	canvas.width = width;
+	canvas.height = height;
+	canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+
+	return new Promise(resolve =>
+		canvas.toBlob(resolve, 'image/jpeg', REFERENCE_JPEG_QUALITY),
+	);
+}
+
+function blobToBase64(blob) {
+	return new Promise((resolve, reject) => {
+		const reader = new FileReader();
+		reader.onloadend = () => {
+			const dataUrl = reader.result;
+			resolve(dataUrl.substring(dataUrl.indexOf(',') + 1));
+		};
+		reader.onerror = () => reject(reader.error);
+		reader.readAsDataURL(blob);
+	});
+}
+
+// Skips and warns on load failure rather than failing the whole generation.
+async function loadReferenceImage({ name, formName, imageFile }) {
+	try {
+		const response = await fetch(
+			`${REFERENCE_IMAGE_BASE_PATH}${imageFile}`,
+		);
+		if (!response.ok) throw new Error(`HTTP ${response.status}`);
+		const originalBlob = await response.blob();
+		const resizedBlob = await downscaleImage(originalBlob);
+		const data = await blobToBase64(resizedBlob);
+		const label = `This photo shows ${name}'s appearance ONLY in ${formName} form — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`;
+		return { mimeType: resizedBlob.type || 'image/jpeg', data, label };
+	} catch (error) {
+		console.warn(`Skipping reference image "${imageFile}":`, error);
+		return null;
+	}
+}
+
+// Loads/downscales the reference image for each character that has one, in parallel.
+export async function loadReferenceImages(characters) {
+	const loaded = await Promise.all(
+		characters
+			.filter(({ imageFile }) => imageFile)
+			.map(character => loadReferenceImage(character)),
+	);
+	return loaded.filter(Boolean);
+}
+
 // Retries once when the local server is unreachable.
 export async function generateImageWithNetworkRetry({
 	apiKey,
 	prompt,
+	referenceImages,
 	onRetry,
 }) {
 	try {
-		return await generateImage({ apiKey, prompt });
+		return await generateImage({ apiKey, prompt, referenceImages });
 	} catch (error) {
 		if (!isNetworkError(error)) throw error;
 		onRetry?.();
 		await delay(NETWORK_RETRY_DELAY_MS);
-		return generateImage({ apiKey, prompt });
+		return generateImage({ apiKey, prompt, referenceImages });
 	}
 }
 
 // Returns { imageUrl: null, blob: null, raw } when the server responds without inline image data.
-export async function generateImage({ apiKey, prompt }) {
+export async function generateImage({ apiKey, prompt, referenceImages }) {
 	const response = await fetch(SERVER_URL, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ apiKey, prompt }),
+		body: JSON.stringify({ apiKey, prompt, referenceImages }),
 	});
 
 	const data = await response.json();
