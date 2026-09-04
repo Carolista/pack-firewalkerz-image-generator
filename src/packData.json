@@ -19,7 +19,7 @@
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
-					"description": "",
+					"description": "Dmitri is silver white, with tufts of silver coming through parts of his coat, indicative of his immunity to the Wyrm. He has what appear to be tooth marks on one shoulder from a previous encounter. He is about 8 feet tall and has pale blue eyes.",
 					"imageFile": ""
 				},
 				"hispo": {
@@ -53,7 +53,7 @@
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
-					"description": "",
+					"description": "Lorica has pure black fur and ice blue eyes and towers at 9' tall. She has no adornments.",
 					"imageFile": ""
 				},
 				"hispo": {
@@ -87,7 +87,7 @@
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
-					"description": "",
+					"description": "A bit like the Egyptian god Anubis, ears standing tall, fur black as night, with a gold necklace and a gold band on each upper arm. His eyes are a vibrant emerald green.",
 					"imageFile": ""
 				},
 				"hispo": {
@@ -111,28 +111,28 @@
 			"forms": {
 				"homid": {
 					"name": "Homid (Human)",
-					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
-					"imageFile": "river-homid.JPG"
+					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. Light brown eyes. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
+					"imageFile": "river-homid.png"
 				},
 				"glabro": {
 					"name": "Glabro (Hulked-Out Human)",
-					"description": "River still looks small by human standards—perhaps reaching a dense, formidable 5'3\". However, she now appears to be forged of compact muscle and bone. Her dusty rose cropped sweater fits much more tightly across her shoulders, which have broadened considerably. Her hair is still honey-colored, but it grows darker, coarse, and thick, spilling down her back like wild grass; her curtain bangs are heavier, partially obscuring eyes that have turned a dark, guarded gold. Her facial structure becomes sharper, more wolf-like, with a strong, pronounced jawline and heavy brow. Her nails don't quite become claws, but they grow thick and dark like hardened flint. She smells intensely of river clay and dry pine needles, and when she moves, she has a heavy, compact gait, no longer petite but powerfully dangerous.",
-					"imageFile": "river-glabro.JPG"
+					"description": "River still looks small by human standards—perhaps reaching a dense, formidable 5'3\". However, she now appears to be forged of compact muscle and bone. Her dusty rose cropped sweater fits much more tightly across her shoulders, which have broadened considerably, her jeans are tight, and she wears heavy boots. Her hair is still honey-colored, but it grows darker, coarse, and thick, spilling down her back like wild grass; her curtain bangs are heavier, partially obscuring eyes that have turned a dark, guarded gold. Her facial structure becomes sharper, more wolf-like, with a strong, pronounced jawline and heavy brow. Her nails don't quite become claws, but they grow thick and dark like hardened flint. When she moves, she has a heavy, compact gait, no longer petite but powerfully dangerous.",
+					"imageFile": "river-glabro.png"
 				},
 				"crinos": {
 					"name": "Crinos (Werewolf)",
-					"description": "Standing 8.5 feet tall, River's war form is a terrifying synthesis of ancient hunter and nightmare. The massive humanoid body is corded with heavy, compact muscle, wrapped in jet-black fur that is no longer sleek, but shaggy and rugged like a rain-beaten forest. This coarse, dark mane flows down her massive bipedal spine, and woven inextricably into the deep fur are tiny protective talismans—polished river stones, old clay beads, and delicate bits of bone—which click softly against each other when she is still. Her head is massive and distinctly wolf-like, with long ears capable of picking up spirit-sounds. Her eyes retain the striking amber fire of a sunset, burning with intelligent, prehistoric rage. In this form, she loses all human naivete; she stands with a heavy, deliberate, and broad posture, each paw-hand ending in flint-hard, five-inch claws. Her grace in Crinos is not the silent flow of a river, but the brutal, inexorable power of a rushing flood that will smash down anyone who stands in its path.",
-					"imageFile": "river-crinos.JPG"
+					"description": "Standing 8.5 feet tall, River's war form is a terrifying synthesis of ancient hunter and nightmare. The massive humanoid body is corded with heavy, compact muscle, wrapped in charcoal gray fur that is no longer sleek, but shaggy and rugged like a rain-beaten forest. A coarse shock of slate (blue-gray) fur flows down her massive bipedal spine. Woven inextricably into the deep fur are hundreds of tiny polished river stones in hues of slate blue-gray, silvery white, and soft brown. (IMPORTANT: These pieces are VERY small, not draped across the fur on strings, but individually embedded deeply in the fur with no obvious sign of how they are attached. It is almost like seeing the twinkling glint of stars in a starry sky.) Her head is massive and distinctly wolf-like, with long ears capable of picking up spirit-sounds. Her eyes retain the striking amber fire of a sunset, burning with intelligent, prehistoric rage. In this form, she loses all human naivete; she stands with a heavy, deliberate, and broad posture, each paw-hand ending in flint-hard, five-inch claws. Her grace in Crinos is not the silent flow of a river, but the brutal, inexorable power of a rushing flood that will smash down anyone who stands in its path.",
+					"imageFile": "river-crinos.png"
 				},
 				"hispo": {
 					"name": "Hispo (Near-Wolf Beast)",
-					"description": "In Hispo form, River is a massive, primal beast. Standing nearly 5 feet tall at the shoulder, she is a colossal, sleek-coated wolf that looks less like a mammal and more like an elemental force of nature. Her fur is jet-black and incredibly dense, sharing the texture of wet stones in a river. Down her massive spine, the fur lies smooth, looking exactly like the rush of deep, fast-flowing water. The amber fire in her eyes burns brightly, appearing as intelligent as any human's. When she drops her powerful head, faint, ghostly blue tracery of Uktena spirit-tattoos seems to momentarily glow just beneath the surface of her black pelt. In this form, she is perfectly silent; she doesn't pad along—she glides, flowing over terrain like water, her long snout tested for spirits, ready to hunt, kill, and guard the Wyrm-secrets she protects.",
-					"imageFile": "river-hispo.JPG"
+					"description": "In Hispo form, River is a massive, primal beast. Standing nearly 5 feet tall at the shoulder, she is a colossal, sleek-coated wolf that looks less like a mammal and more like an elemental force of nature. Her fur is charcoal gray and incredibly dense, sharing the texture of wet stones in a river. Down her massive spine, lighter slate (blue-gray) fur lies smooth, looking exactly like the rush of deep, fast-flowing water. The amber fire in her eyes burns brightly, appearing as intelligent as any human's. When she drops her powerful head, faint, ghostly blue tracery of Uktena spirit-tattoos seems to momentarily glow just beneath the surface of her black pelt. In this form, she is perfectly silent; she doesn't pad along—she glides, flowing over terrain like water, her long snout tested for spirits, ready to hunt, kill, and guard the Wyrm-secrets she protects.",
+					"imageFile": "river-hispo.png"
 				},
 				"lupus": {
 					"name": "Lupus (Wolf)",
-					"description": "In her natural form, River is a young, slender wolf of ancient Uktena lineage. Her pelt is a profound, uniform black—not the deep dark of a forest night, but the shimmering, fluid darkness of the deep Hiwassee River where the shadows are smoothest. Her fur is unusually sleek and close-cropped, offering zero resistance to the brush, appearing to have been polished by the passage of current over millennia. She possesses the sharp, observant features and sensitive, upright ears of a predator designed to navigate both the dense Southern forests and the tricky Umbral pathways. The defining element of this form, however, is her eyes: bright, piercing amber that flashes with the intelligent fire of a sunset hitting the water. She moves with a beautiful, liquid economy, always quiet, always watchful, perfectly adapted for the silent hunt. In this form, separated from the loud, confused clatter of the human world, River-that-Remembers finds her true peace.",
-					"imageFile": "river-lupus.JPG"
+					"description": "In her natural form, River is a young, slender wolf of ancient Uktena lineage. Her pelt is a profound, charcoal gray— not the deep dark of a forest night, but the shimmering, fluid darkness of the deep Hiwassee River where the shadows are smoothest. A swath of slate (blue-gray) fur runs down her spine. Her fur is unusually sleek and close-cropped, offering zero resistance to the brush, appearing to have been polished by the passage of current over millennia. She possesses the sharp, observant features and sensitive, upright ears of a predator designed to navigate both the dense Southern forests and the tricky Umbral pathways. The defining element of this form, however, is her eyes: bright, piercing amber that flashes with the intelligent fire of a sunset hitting the water. She moves with a beautiful, liquid economy, always quiet, always watchful, perfectly adapted for the silent hunt. In this form, separated from the loud, confused clatter of the human world, River-that-Remembers finds her true peace.",
+					"imageFile": "river-lupus.png"
 				}
 			}
 		},
