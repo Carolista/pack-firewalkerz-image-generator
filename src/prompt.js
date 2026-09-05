@@ -15,8 +15,10 @@ export function buildPrompt({
 				? `NPC: ${name} in ${variantName} variant (${description}).`
 				: `NPC: ${name} (${description}).`,
 		),
-		...enemies.map(
-			({ name, description }) => `Enemy: ${name} (${description}).`,
+		...enemies.map(({ name, variantName, description }) =>
+			variantName
+				? `Enemy: ${name} in ${variantName} variant (${description}).`
+				: `Enemy: ${name} (${description}).`,
 		),
 	].join('\n');
 

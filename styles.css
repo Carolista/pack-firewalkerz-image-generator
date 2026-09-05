@@ -203,7 +203,8 @@ button {
 }
 
 .character-row,
-.npc-row {
+.npc-row,
+.enemy-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	column-gap: 0.5rem;
@@ -211,7 +212,8 @@ button {
 }
 
 .character-row + .character-row,
-.npc-row + .npc-row {
+.npc-row + .npc-row,
+.enemy-row + .enemy-row {
 	border-top: 2px solid var(--dark-gray);
 	padding-top: 0.5rem;
 }
@@ -219,37 +221,44 @@ button {
 .character-row .field:first-child,
 .character-row .field:nth-child(2),
 .npc-row .field:first-child,
-.npc-row .field:nth-child(2) {
+.npc-row .field:nth-child(2),
+.enemy-row .field:first-child,
+.enemy-row .field:nth-child(2) {
 	display: contents;
 }
 
 .character-row .field:first-child label,
-.npc-row .field:first-child label {
+.npc-row .field:first-child label,
+.enemy-row .field:first-child label {
 	grid-column: 1 / -1;
 	grid-row: 1;
 }
 
 .character-row .field:first-child select,
-.npc-row .field:first-child select {
+.npc-row .field:first-child select,
+.enemy-row .field:first-child select {
 	grid-column: 1;
 	grid-row: 2;
 }
 
 .character-row .field:nth-child(2) label,
-.npc-row .field:nth-child(2) label {
+.npc-row .field:nth-child(2) label,
+.enemy-row .field:nth-child(2) label {
 	grid-column: 1 / -1;
 	grid-row: 3;
 	margin-top: 0.5rem;
 }
 
 .character-row .field:nth-child(2) select,
-.npc-row .field:nth-child(2) select {
+.npc-row .field:nth-child(2) select,
+.enemy-row .field:nth-child(2) select {
 	grid-column: 1 / -1;
 	grid-row: 4;
 }
 
 .character-row .removeRowBtn,
-.npc-row .removeRowBtn {
+.npc-row .removeRowBtn,
+.enemy-row .removeRowBtn {
 	grid-column: 2;
 	grid-row: 2;
 	align-self: stretch;
@@ -259,49 +268,35 @@ button {
 
 @media (min-width: 700px) {
 	.character-row,
-	.npc-row {
+	.npc-row,
+	.enemy-row {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
 	}
 
 	.character-row .field:nth-child(2) label,
-	.npc-row .field:nth-child(2) label {
+	.npc-row .field:nth-child(2) label,
+	.enemy-row .field:nth-child(2) label {
 		grid-column: 2 / -1;
 		grid-row: 1;
 		margin-top: 0;
 	}
 
 	.character-row .field:nth-child(2) select,
-	.npc-row .field:nth-child(2) select {
+	.npc-row .field:nth-child(2) select,
+	.enemy-row .field:nth-child(2) select {
 		grid-column: 2;
 		grid-row: 2;
 	}
 
 	.character-row .removeRowBtn,
-	.npc-row .removeRowBtn {
+	.npc-row .removeRowBtn,
+	.enemy-row .removeRowBtn {
 		grid-column: 3;
 	}
 }
 
 #addCharacterBtn[hidden] {
 	display: none;
-}
-
-.enemy-row {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
-	column-gap: 0.5rem;
-	margin-bottom: 1rem;
-}
-
-.enemy-row + .enemy-row {
-	border-top: 2px solid var(--dark-gray);
-	padding-top: 0.5rem;
-}
-
-.enemy-row .removeRowBtn {
-	align-self: stretch;
-	padding: 0;
-	aspect-ratio: 1;
 }
 
 #addNPCBtn[hidden],
