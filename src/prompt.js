@@ -10,8 +10,10 @@ export function buildPrompt({
 			({ name, formName, formDesc }) =>
 				`Character: ${name} in ${formName} form (${formDesc}).`,
 		),
-		...npcs.map(
-			({ name, description }) => `NPC: ${name} (${description}).`,
+		...npcs.map(({ name, formName, description }) =>
+			formName
+				? `NPC: ${name} in ${formName} form (${description}).`
+				: `NPC: ${name} (${description}).`,
 		),
 		...enemies.map(
 			({ name, description }) => `Enemy: ${name} (${description}).`,

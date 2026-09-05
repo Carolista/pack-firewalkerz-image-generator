@@ -108,8 +108,9 @@ export function initSimpleSelectRows({
 		getSelections() {
 			return [...container.querySelectorAll(`.${selectClassName}`)].map(
 				select => {
-					const { name, description } = dataMap[select.value];
-					return { name, description };
+					const { name, description, imageFile } =
+						dataMap[select.value];
+					return { name, description, imageFile };
 				},
 			);
 		},

@@ -138,7 +138,11 @@ async function generateSceneImage() {
 			locationDesc,
 			scene,
 		});
-		const referenceImages = await loadReferenceImages(characters);
+		const referenceImages = await loadReferenceImages([
+			...characters,
+			...npcs,
+			...enemies,
+		]);
 
 		showGenerating();
 
