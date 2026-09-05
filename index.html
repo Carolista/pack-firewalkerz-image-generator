@@ -34,19 +34,19 @@
 			<button id="addNPCBtn" type="button">Add another NPC</button>
 		</div>
 
-		<!-- Monster Selector -->
+		<!-- Enemy Selector -->
 		<div class="card">
-			<h3>Monsters & Other Enemies</h3>
-			<div id="monsterRows"></div>
-			<button id="addMonsterBtn" type="button">
-				Add another monster
-			</button>
+			<h3>Enemies</h3>
+			<p class="field-hint">
+				Note: The same type of enemy can be added more than once.
+			</p>
+			<div id="enemyRows"></div>
+			<button id="addEnemyBtn" type="button">Add another enemy</button>
 		</div>
 
 		<div class="card">
 			<h3>Setting</h3>
 			<div class="field">
-				<label for="locationSelect">Scene Location</label>
 				<select id="locationSelect"></select>
 			</div>
 			<div class="field">
@@ -62,11 +62,11 @@
 		<!-- Scene Action -->
 		<div class="card">
 			<h3>SCENE DESCRIPTION</h3>
+			<p class="field-hint">
+				Describe actions, facial expressions, placement of characters
+				within the setting, any items or props present, etc.
+			</p>
 			<div class="field">
-				<label for="sceneText"
-					>Actions, facial expressions, placement of characters
-					within setting, props/items, etc.
-				</label>
 				<textarea
 					id="sceneText"
 					placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."

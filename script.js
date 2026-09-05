@@ -13,6 +13,11 @@ import {
 	initCharacterRows,
 } from './src/ui/characterRows.js';
 import {
+	getEnemySelections,
+	hasAtLeastOneRow as hasAtLeastOneEnemyRow,
+	initEnemyRows,
+} from './src/ui/enemyRows.js';
+import {
 	initGenerationOutput,
 	resetOutput,
 	showEmptyResponse,
@@ -20,11 +25,6 @@ import {
 	showGenerating,
 	showSuccess,
 } from './src/ui/generationOutput.js';
-import {
-	getMonsterSelections,
-	hasAtLeastOneRow as hasAtLeastOneMonsterRow,
-	initMonsterRows,
-} from './src/ui/monsterRows.js';
 import {
 	getNPCSelections,
 	hasAtLeastOneRow as hasAtLeastOneNPCRow,
@@ -57,9 +57,9 @@ initNPCRows({
 	addBtn: document.getElementById('addNPCBtn'),
 });
 
-initMonsterRows({
-	container: document.getElementById('monsterRows'),
-	addBtn: document.getElementById('addMonsterBtn'),
+initEnemyRows({
+	container: document.getElementById('enemyRows'),
+	addBtn: document.getElementById('addEnemyBtn'),
 });
 
 initSettingField({
@@ -103,10 +103,10 @@ async function generateSceneImage() {
 		if (
 			!hasAtLeastOneCharacterRow() &&
 			!hasAtLeastOneNPCRow() &&
-			!hasAtLeastOneMonsterRow()
+			!hasAtLeastOneEnemyRow()
 		) {
 			await showAlert(
-				'Please add at least one character, NPC, or monster.',
+				'Please add at least one character, NPC, or enemy.',
 			);
 			return;
 		}
@@ -125,11 +125,11 @@ async function generateSceneImage() {
 
 		const characters = getCharacterSelections();
 		const npcs = getNPCSelections();
-		const monsters = getMonsterSelections();
+		const enemys = getEnemySelections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
-			monsters,
+			enemys,
 			locationDesc,
 			scene,
 		});

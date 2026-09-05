@@ -2,12 +2,12 @@ export const OTHER_LOCATION_KEY = 'other';
 
 export const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
 export const NPC_ROWS_STORAGE_KEY = 'ww20NPCRows';
-export const MONSTER_ROWS_STORAGE_KEY = 'ww20MonsterRows';
+export const ENEMY_ROWS_STORAGE_KEY = 'ww20EnemyRows';
 export const OTHER_LOCATION_TEXT_STORAGE_KEY = 'ww20OtherLocationText';
 export const LOCATION_STORAGE_KEY = 'ww20LocationSelect';
 
 export const MAX_NPC_ROWS = 10;
-export const MAX_MONSTER_ROWS = 10;
+export const MAX_ENEMY_ROWS = 10;
 
 export const SERVER_URL =
 	window.location.hostname === 'localhost' ||

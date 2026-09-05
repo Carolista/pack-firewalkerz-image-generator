@@ -185,7 +185,7 @@
 			"description": "Ancient Bastet feline-shifter hybrid form, elegant humanoid panther with sleek midnight-black fur, sharp retractable claws, and radiant golden amber eyes full of defiance. Dark leather wraps around her waist and forearms. Crackling blue and violet lightning arcs dramatically from her bare hands, illuminating her dark fur in a thunderstorm, dark fantasy World of Darkness style."
 		}
 	},
-	"monsters": {
+	"enemys": {
 		"securityDummyBot": {
 			"name": "Security Dummy Bot",
 			"description": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored red blazer over a black button-up shirt and black slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, dark cinematic lighting."
@@ -196,7 +196,7 @@
 		},
 		"driderGlaiveMaster": {
 			"name": "Drider Glaive-Master",
-			"description": "Terrifying drow hybrid monster, upper body of a dark-skinned drow elf with silver hair, seamlessly fused at the waist to the massive, armored body of a giant black arachnid. Fused dark chitin armor, eight hairy spider legs. Wields a long, ornate steel glaive polearm with a curved blade glowing with faint violet runes. Dark fantasy style, shadowy cavern lighting."
+			"description": "Terrifying drow hybrid enemy, upper body of a dark-skinned drow elf with silver hair, seamlessly fused at the waist to the massive, armored body of a giant black arachnid. Fused dark chitin armor, eight hairy spider legs. Wields a long, ornate steel glaive polearm with a curved blade glowing with faint violet runes. Dark fantasy style, shadowy cavern lighting."
 		},
 		"facelessFomori": {
 			"name": "Faceless Fomori",

@@ -1,7 +1,7 @@
 import {
 	CHARACTER_ROWS_STORAGE_KEY,
+	ENEMY_ROWS_STORAGE_KEY,
 	LOCATION_STORAGE_KEY,
-	MONSTER_ROWS_STORAGE_KEY,
 	NPC_ROWS_STORAGE_KEY,
 	OTHER_LOCATION_TEXT_STORAGE_KEY,
 } from '../constants.js';
@@ -32,16 +32,16 @@ export function setNPCRows(rows) {
 	localStorage.setItem(NPC_ROWS_STORAGE_KEY, JSON.stringify(rows));
 }
 
-export function getMonsterRows() {
+export function getEnemyRows() {
 	try {
-		return JSON.parse(localStorage.getItem(MONSTER_ROWS_STORAGE_KEY)) || [];
+		return JSON.parse(localStorage.getItem(ENEMY_ROWS_STORAGE_KEY)) || [];
 	} catch {
 		return [];
 	}
 }
 
-export function setMonsterRows(rows) {
-	localStorage.setItem(MONSTER_ROWS_STORAGE_KEY, JSON.stringify(rows));
+export function setEnemyRows(rows) {
+	localStorage.setItem(ENEMY_ROWS_STORAGE_KEY, JSON.stringify(rows));
 }
 
 export function getOtherLocationText() {

@@ -112,6 +112,15 @@ label {
 	margin-bottom: 0.3rem;
 }
 
+.field-hint {
+	display: block;
+	font-family: var(--font-label);
+	font-size: 1.2rem;
+	font-style: italic;
+	font-weight: 600;
+	margin: -0.5rem 0 1rem;
+}
+
 textarea,
 select,
 input {
@@ -265,7 +274,7 @@ button {
 }
 
 .npc-row,
-.monster-row {
+.enemy-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto;
 	column-gap: 0.5rem;
@@ -273,20 +282,20 @@ button {
 }
 
 .npc-row + .npc-row,
-.monster-row + .monster-row {
+.enemy-row + .enemy-row {
 	border-top: 2px solid var(--dark-gray);
 	padding-top: 0.5rem;
 }
 
 .npc-row .removeRowBtn,
-.monster-row .removeRowBtn {
+.enemy-row .removeRowBtn {
 	align-self: stretch;
 	padding: 0;
 	aspect-ratio: 1;
 }
 
 #addNPCBtn[hidden],
-#addMonsterBtn[hidden] {
+#addEnemyBtn[hidden] {
 	display: none;
 }
 
