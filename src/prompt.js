@@ -7,12 +7,12 @@ export function buildPrompt({
 }) {
 	const entityBlocks = [
 		...characters.map(
-			({ name, formName, formDesc }) =>
-				`Character: ${name} in ${formName} form (${formDesc}).`,
+			({ name, variantName, variantDesc }) =>
+				`Character: ${name} in ${variantName} variant (${variantDesc}).`,
 		),
-		...npcs.map(({ name, formName, description }) =>
-			formName
-				? `NPC: ${name} in ${formName} form (${description}).`
+		...npcs.map(({ name, variantName, description }) =>
+			variantName
+				? `NPC: ${name} in ${variantName} variant (${description}).`
 				: `NPC: ${name} (${description}).`,
 		),
 		...enemies.map(

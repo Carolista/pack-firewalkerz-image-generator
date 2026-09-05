@@ -1,4 +1,4 @@
-import { WEREWOLF_FORMS } from '../constants.js';
+import { WEREWOLF_VARIANTS } from '../constants.js';
 import DATA from '../data.json' with { type: 'json' };
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
@@ -22,15 +22,15 @@ export function initCharacterRows({ container, addBtn }) {
 export function getCharacterSelections() {
 	return [...containerEl.querySelectorAll('.character-row')].map(row => {
 		const charKey = row.querySelector('.charRowSelect').value;
-		const formKey = row.querySelector('.formRowSelect').value;
+		const variantKey = row.querySelector('.variantRowSelect').value;
 		const character = DATA.characters[charKey];
-		const form = character.forms[formKey];
+		const variant = character.variants[variantKey];
 		return {
 			name: character.name,
-			formKey,
-			formName: WEREWOLF_FORMS[formKey],
-			formDesc: form.description,
-			imageFile: form.imageFile,
+			variantKey,
+			variantName: WEREWOLF_VARIANTS[variantKey],
+			variantDesc: variant.description,
+			imageFile: variant.imageFile,
 		};
 	});
 }
@@ -68,26 +68,28 @@ function updateAddButtonState() {
 		rowCount === 0 ? 'Select a character' : 'Add another character';
 }
 
-// Rebuilds the Active Form select to match whichever character is currently chosen in this row.
-function populateFormOptions(charSelect, formSelect, presetFormKey) {
+// Rebuilds the Variant select to match whichever character is currently chosen in this row.
+function populateVariantOptions(charSelect, variantSelect, presetVariantKey) {
 	const character = DATA.characters[charSelect.value];
-	formSelect.innerHTML = '';
-	for (const formKey of Object.keys(character.forms)) {
-		formSelect.add(new Option(WEREWOLF_FORMS[formKey], formKey));
+	variantSelect.innerHTML = '';
+	for (const variantKey of Object.keys(character.variants)) {
+		variantSelect.add(
+			new Option(WEREWOLF_VARIANTS[variantKey], variantKey),
+		);
 	}
-	if (presetFormKey && character.forms[presetFormKey]) {
-		formSelect.value = presetFormKey;
+	if (presetVariantKey && character.variants[presetVariantKey]) {
+		variantSelect.value = presetVariantKey;
 	}
 }
 
-function createCharacterRow(presetCharKey, presetFormKey) {
+function createCharacterRow(presetCharKey, presetVariantKey) {
 	const row = document.createElement('div');
 	row.className = 'character-row';
 
 	const charField = document.createElement('div');
 	charField.className = 'field';
 	const charLabel = document.createElement('label');
-	charLabel.textContent = 'Character';
+	charLabel.textContent = 'PC';
 	const charSelect = document.createElement('select');
 	charSelect.className = 'charRowSelect';
 	for (const key of getAvailableCharacterKeys(charSelect)) {
@@ -96,23 +98,23 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 	if (presetCharKey) charSelect.value = presetCharKey;
 	charField.append(charLabel, charSelect);
 
-	const formField = document.createElement('div');
-	formField.className = 'field';
-	const formLabel = document.createElement('label');
-	formLabel.textContent = 'Active Form';
-	const formSelect = document.createElement('select');
-	formSelect.className = 'formRowSelect';
-	formField.append(formLabel, formSelect);
-	populateFormOptions(charSelect, formSelect, presetFormKey);
+	const variantField = document.createElement('div');
+	variantField.className = 'field';
+	const variantLabel = document.createElement('label');
+	variantLabel.textContent = 'Variant';
+	const variantSelect = document.createElement('select');
+	variantSelect.className = 'variantRowSelect';
+	variantField.append(variantLabel, variantSelect);
+	populateVariantOptions(charSelect, variantSelect, presetVariantKey);
 
-	row.append(charField, formField);
+	row.append(charField, variantField);
 
 	charSelect.addEventListener('change', () => {
-		populateFormOptions(charSelect, formSelect);
+		populateVariantOptions(charSelect, variantSelect);
 		refreshCharacterOptions();
 		persistCharacterRows();
 	});
-	formSelect.addEventListener('change', persistCharacterRows);
+	variantSelect.addEventListener('change', persistCharacterRows);
 
 	const removeBtn = document.createElement('button');
 	removeBtn.type = 'button';
@@ -133,7 +135,7 @@ function persistCharacterRows() {
 	const rows = [...containerEl.querySelectorAll('.character-row')].map(
 		row => ({
 			char: row.querySelector('.charRowSelect').value,
-			form: row.querySelector('.formRowSelect').value,
+			variant: row.querySelector('.variantRowSelect').value,
 		}),
 	);
 	setCharacterRows(rows);
@@ -144,10 +146,11 @@ function restoreCharacterRows() {
 
 	const validRows = stored.filter(entry => {
 		const character = DATA.characters[entry.char];
-		return character && character.forms[entry.form];
+		return character && character.variants[entry.variant];
 	});
 
-	for (const { char, form } of validRows) createCharacterRow(char, form);
+	for (const { char, variant } of validRows)
+		createCharacterRow(char, variant);
 	refreshCharacterOptions();
 	updateAddButtonState();
 }

@@ -1,4 +1,4 @@
-import { WEREWOLF_FORMS } from '../constants.js';
+import { WEREWOLF_VARIANTS } from '../constants.js';
 import DATA from '../data.json' with { type: 'json' };
 import { getNPCRows, setNPCRows } from '../services/storage.js';
 
@@ -23,20 +23,20 @@ export function getNPCSelections() {
 	return [...containerEl.querySelectorAll('.npc-row')].map(row => {
 		const npcKey = row.querySelector('.npcRowSelect').value;
 		const npc = DATA.npcs[npcKey];
-		const formSelect = row.querySelector('.npcFormRowSelect');
+		const variantSelect = row.querySelector('.npcVariantRowSelect');
 
-		if (!formSelect) {
+		if (!variantSelect) {
 			return { name: npc.name, description: npc.description };
 		}
 
-		const formKey = formSelect.value;
-		const form = npc.forms[formKey];
+		const variantKey = variantSelect.value;
+		const variant = npc.variants[variantKey];
 		return {
 			name: npc.name,
-			formKey,
-			formName: WEREWOLF_FORMS[formKey],
-			description: form.description,
-			imageFile: form.imageFile,
+			variantKey,
+			variantName: WEREWOLF_VARIANTS[variantKey],
+			description: variant.description,
+			imageFile: variant.imageFile,
 		};
 	});
 }
@@ -71,43 +71,45 @@ function updateAddButtonState() {
 	addBtnEl.textContent = rowCount === 0 ? 'Select an NPC' : 'Add another NPC';
 }
 
-// Rebuilds the Active Form field to match whichever NPC is chosen in this row,
-// removing it entirely for NPCs that have no forms.
-function populateFormField(npcSelect, row, presetFormKey) {
-	const existingFormField = row.querySelector('.npcFormField');
+// Rebuilds the Variant field to match whichever NPC is chosen in this row,
+// removing it entirely for NPCs that have no variants.
+function populateVariantField(npcSelect, row, presetVariantKey) {
+	const existingVariantField = row.querySelector('.npcVariantField');
 	const npc = DATA.npcs[npcSelect.value];
 
-	if (!npc.forms) {
-		existingFormField?.remove();
+	if (!npc.variants) {
+		existingVariantField?.remove();
 		return;
 	}
 
-	const formField = existingFormField ?? document.createElement('div');
-	formField.className = 'field npcFormField';
-	const formLabel = document.createElement('label');
-	formLabel.textContent = 'Active Form';
-	const formSelect = document.createElement('select');
-	formSelect.className = 'npcFormRowSelect';
-	formSelect.addEventListener('change', persistNPCRows);
-	formField.replaceChildren(formLabel, formSelect);
+	const variantField = existingVariantField ?? document.createElement('div');
+	variantField.className = 'field npcVariantField';
+	const variantLabel = document.createElement('label');
+	variantLabel.textContent = 'Variant';
+	const variantSelect = document.createElement('select');
+	variantSelect.className = 'npcVariantRowSelect';
+	variantSelect.addEventListener('change', persistNPCRows);
+	variantField.replaceChildren(variantLabel, variantSelect);
 
-	for (const formKey of Object.keys(npc.forms)) {
-		formSelect.add(new Option(WEREWOLF_FORMS[formKey], formKey));
+	for (const variantKey of Object.keys(npc.variants)) {
+		variantSelect.add(
+			new Option(WEREWOLF_VARIANTS[variantKey], variantKey),
+		);
 	}
-	if (presetFormKey && npc.forms[presetFormKey]) {
-		formSelect.value = presetFormKey;
+	if (presetVariantKey && npc.variants[presetVariantKey]) {
+		variantSelect.value = presetVariantKey;
 	}
 
 	// Insert before the remove button (if it exists yet) so it stays the row's
 	// 2nd child for CSS grid targeting, rather than landing after it.
-	if (!existingFormField) {
+	if (!existingVariantField) {
 		const removeBtn = row.querySelector('.removeRowBtn');
-		if (removeBtn) row.insertBefore(formField, removeBtn);
-		else row.append(formField);
+		if (removeBtn) row.insertBefore(variantField, removeBtn);
+		else row.append(variantField);
 	}
 }
 
-function createNPCRow(presetNPCKey, presetFormKey) {
+function createNPCRow(presetNPCKey, presetVariantKey) {
 	const row = document.createElement('div');
 	row.className = 'npc-row';
 
@@ -124,10 +126,10 @@ function createNPCRow(presetNPCKey, presetFormKey) {
 	npcField.append(npcLabel, npcSelect);
 
 	row.append(npcField);
-	populateFormField(npcSelect, row, presetFormKey);
+	populateVariantField(npcSelect, row, presetVariantKey);
 
 	npcSelect.addEventListener('change', () => {
-		populateFormField(npcSelect, row);
+		populateVariantField(npcSelect, row);
 		refreshNPCOptions();
 		persistNPCRows();
 	});
@@ -150,7 +152,7 @@ function createNPCRow(presetNPCKey, presetFormKey) {
 function persistNPCRows() {
 	const rows = [...containerEl.querySelectorAll('.npc-row')].map(row => ({
 		npc: row.querySelector('.npcRowSelect').value,
-		form: row.querySelector('.npcFormRowSelect')?.value ?? '',
+		variant: row.querySelector('.npcVariantRowSelect')?.value ?? '',
 	}));
 	setNPCRows(rows);
 }
@@ -161,10 +163,10 @@ function restoreNPCRows() {
 	const validRows = stored.filter(entry => {
 		const npc = DATA.npcs[entry.npc];
 		if (!npc) return false;
-		return !npc.forms || npc.forms[entry.form];
+		return !npc.variants || npc.variants[entry.variant];
 	});
 
-	for (const { npc, form } of validRows) createNPCRow(npc, form);
+	for (const { npc, variant } of validRows) createNPCRow(npc, variant);
 	refreshNPCOptions();
 	updateAddButtonState();
 }

@@ -46,7 +46,7 @@ function blobToBase64(blob) {
 }
 
 // Skips and warns on load failure rather than failing the whole generation.
-async function loadReferenceImage({ name, formName, imageFile }) {
+async function loadReferenceImage({ name, variantName, imageFile }) {
 	try {
 		const response = await fetch(
 			`${REFERENCE_IMAGE_BASE_PATH}${imageFile}`,
@@ -55,8 +55,8 @@ async function loadReferenceImage({ name, formName, imageFile }) {
 		const originalBlob = await response.blob();
 		const resizedBlob = await downscaleImage(originalBlob);
 		const data = await blobToBase64(resizedBlob);
-		const label = formName
-			? `This photo shows ${name}'s appearance ONLY in ${formName} form — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`
+		const label = variantName
+			? `This photo shows ${name}'s appearance ONLY in ${variantName} form — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`
 			: `This photo shows ${name}'s appearance ONLY — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`;
 		return { mimeType: resizedBlob.type || 'image/jpeg', data, label };
 	} catch (error) {

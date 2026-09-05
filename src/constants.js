@@ -15,7 +15,7 @@ export const SERVER_URL =
 		? 'http://localhost:3000/generate-image'
 		: 'https://rpg-image-generator.onrender.com/generate-image';
 
-export const WEREWOLF_FORMS = {
+export const WEREWOLF_VARIANTS = {
 	homid: 'Homid (Human)',
 	glabro: 'Glabro (Hulked-Out Near-Human)',
 	crinos: 'Crinos (Werewolf)',

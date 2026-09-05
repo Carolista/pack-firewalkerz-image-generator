@@ -6,7 +6,7 @@
 			"breed": "lupus",
 			"tribe": "Shadow Lords",
 			"auspice": "Ahroun",
-			"forms": {
+			"variants": {
 				"homid": {
 					"description": "Lorica is 5'11\" fairly muscular, fair skinned young woman, about 21 years old. She has ice blue eyes. Black colored, slightly curly mid-back length hair that she keeps in a half-up, half-down braided hairstyle (also known as viking-style braid or braided faux hawk). She wears fitted black jeans, a dark blue halter top with a black leather biker jacket and black combat boots. She projects an aura of superiority and of a danger hidden beneath beauty, something that tickles the mind of the meek into fear. She learned long ago to hide her emotions behind a mask of impassivity.",
 					"imageFile": ""
@@ -35,7 +35,7 @@
 			"breed": "Lupus",
 			"tribe": "Uktena",
 			"auspice": "Theurge",
-			"forms": {
+			"variants": {
 				"homid": {
 					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. Light brown eyes. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
 					"imageFile": "river-homid.png"
@@ -64,7 +64,7 @@
 			"breed": "Lupus",
 			"tribe": "Black Fury",
 			"auspice": "Philodox",
-			"forms": {
+			"variants": {
 				"homid": {
 					"description": "Monkshood is an exceptionally tall young woman, standing 6'3\" and weighing roughly 185 pounds. She has a powerful, athletic build, with broad shoulders, muscular arms, a strong back, and thick legs. Her strength is immediately apparent without giving her the exaggerated definition of a bodybuilder; she looks naturally built for physical exertion and fighting. Her face is attractive but somewhat severe at rest, with a strong jaw, prominent cheekbones, and heavy brows. Long, unruly brown hair frames her face, broken by a prominent streak of white running through the front of it. Her most unusual feature is her eyes, which are a striking silver rather than an ordinary gray. She tends to watch people directly and quietly, giving her an unintentionally predatory intensity. Her clothing is generally simple, durable, comfortable, and chosen primarily for freedom of movement rather than fashion. Even when freshly washed, she carries a faint but unmistakable animal scent.",
 					"imageFile": "monkshood-homid.JPG"
@@ -107,7 +107,7 @@
 			"breed": "Homid",
 			"tribe": "Bone Gnawers",
 			"auspice": "Philodox",
-			"forms": {
+			"variants": {
 				"homid": {
 					"description": "An older man in his early 50s with a slim, gymnast build standing approximately 6 feet tall. Grey eyes and a 5 o'clock shadow; his face looks craggy and worn. He wears a pair of faded jeans and a battered Army jacket. Scuffed combat boots finish the outfit. On his head he wears an elaborate Native American headdress of white eagle feathers. He looks past his prime yet still competent in a fight."
 				},
