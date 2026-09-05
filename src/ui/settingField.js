@@ -1,5 +1,5 @@
 import { OTHER_LOCATION_KEY } from '../constants.js';
-import PACK_DATA from '../packData.json' with { type: 'json' };
+import DATA from '../data.json' with { type: 'json' };
 import {
 	getLocationSelection,
 	getOtherLocationText,
@@ -36,11 +36,11 @@ export function getLocationDescription() {
 	if (selectEl.value === OTHER_LOCATION_KEY) {
 		return otherTextEl.value.trim() || null;
 	}
-	return PACK_DATA.settings[selectEl.value].description;
+	return DATA.settings[selectEl.value].description;
 }
 
 function populateLocationSelect() {
-	for (const [key, setting] of Object.entries(PACK_DATA.settings)) {
+	for (const [key, setting] of Object.entries(DATA.settings)) {
 		selectEl.add(new Option(setting.name, key));
 	}
 	selectEl.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));
@@ -51,8 +51,7 @@ function updateLocationDescDisplay() {
 	descEl.hidden = isOther;
 	otherTextEl.hidden = !isOther;
 	if (!isOther) {
-		descEl.textContent =
-			PACK_DATA.settings[selectEl.value]?.description ?? '';
+		descEl.textContent = DATA.settings[selectEl.value]?.description ?? '';
 	}
 }
 

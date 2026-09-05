@@ -1,4 +1,4 @@
-import PACK_DATA from '../packData.json' with { type: 'json' };
+import DATA from '../data.json' with { type: 'json' };
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
 let containerEl;
@@ -12,7 +12,6 @@ export function initCharacterRows({ container, addBtn }) {
 		createCharacterRow();
 		refreshCharacterOptions();
 		updateAddButtonState();
-		updateRemoveButtonsVisibility();
 		persistCharacterRows();
 	});
 
@@ -23,7 +22,7 @@ export function getCharacterSelections() {
 	return [...containerEl.querySelectorAll('.character-row')].map(row => {
 		const charKey = row.querySelector('.charRowSelect').value;
 		const formKey = row.querySelector('.formRowSelect').value;
-		const character = PACK_DATA.characters[charKey];
+		const character = DATA.characters[charKey];
 		const form = character.forms[formKey];
 		return {
 			name: character.name,
@@ -43,7 +42,7 @@ function getAvailableCharacterKeys(excludeSelectEl) {
 	const chosenElsewhere = [...containerEl.querySelectorAll('.charRowSelect')]
 		.filter(select => select !== excludeSelectEl)
 		.map(select => select.value);
-	return Object.keys(PACK_DATA.characters).filter(
+	return Object.keys(DATA.characters).filter(
 		key => !chosenElsewhere.includes(key),
 	);
 }
@@ -54,7 +53,7 @@ function refreshCharacterOptions() {
 		const availableKeys = getAvailableCharacterKeys(select);
 		select.innerHTML = '';
 		for (const key of availableKeys) {
-			select.add(new Option(PACK_DATA.characters[key].name, key));
+			select.add(new Option(DATA.characters[key].name, key));
 		}
 		if (availableKeys.includes(currentValue)) select.value = currentValue;
 	}
@@ -62,21 +61,15 @@ function refreshCharacterOptions() {
 
 function updateAddButtonState() {
 	const rowCount = containerEl.querySelectorAll('.character-row').length;
-	const totalCharacters = Object.keys(PACK_DATA.characters).length;
+	const totalCharacters = Object.keys(DATA.characters).length;
 	addBtnEl.hidden = rowCount >= totalCharacters;
-}
-
-function updateRemoveButtonsVisibility() {
-	const rows = containerEl.querySelectorAll('.character-row');
-	for (const row of rows) {
-		const removeBtn = row.querySelector('.removeRowBtn');
-		if (removeBtn) removeBtn.hidden = rows.length <= 1;
-	}
+	addBtnEl.textContent =
+		rowCount === 0 ? 'Select a character' : 'Add another character';
 }
 
 // Rebuilds the Active Form select to match whichever character is currently chosen in this row.
 function populateFormOptions(charSelect, formSelect, presetFormKey) {
-	const character = PACK_DATA.characters[charSelect.value];
+	const character = DATA.characters[charSelect.value];
 	formSelect.innerHTML = '';
 	for (const [formKey, form] of Object.entries(character.forms)) {
 		formSelect.add(new Option(form.name, formKey));
@@ -97,7 +90,7 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 	const charSelect = document.createElement('select');
 	charSelect.className = 'charRowSelect';
 	for (const key of getAvailableCharacterKeys(charSelect)) {
-		charSelect.add(new Option(PACK_DATA.characters[key].name, key));
+		charSelect.add(new Option(DATA.characters[key].name, key));
 	}
 	if (presetCharKey) charSelect.value = presetCharKey;
 	charField.append(charLabel, charSelect);
@@ -128,7 +121,6 @@ function createCharacterRow(presetCharKey, presetFormKey) {
 		row.remove();
 		refreshCharacterOptions();
 		updateAddButtonState();
-		updateRemoveButtonsVisibility();
 		persistCharacterRows();
 	});
 	row.append(removeBtn);
@@ -150,16 +142,11 @@ function restoreCharacterRows() {
 	const stored = getCharacterRows();
 
 	const validRows = stored.filter(entry => {
-		const character = PACK_DATA.characters[entry.char];
+		const character = DATA.characters[entry.char];
 		return character && character.forms[entry.form];
 	});
 
-	if (validRows.length === 0) {
-		createCharacterRow();
-	} else {
-		for (const { char, form } of validRows) createCharacterRow(char, form);
-	}
+	for (const { char, form } of validRows) createCharacterRow(char, form);
 	refreshCharacterOptions();
 	updateAddButtonState();
-	updateRemoveButtonsVisibility();
 }

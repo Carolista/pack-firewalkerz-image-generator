@@ -171,6 +171,38 @@
 			}
 		}
 	},
+	"npcs": {
+		"guideBot": {
+			"name": "Guide Dummy Bot",
+			"description": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored royal blue blazer over a white button-up shirt and khaki slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, institutional lighting."
+		},
+		"jolissaTactical": {
+			"name": "Jolissa Stormbreaker (Tactical Gear)",
+			"description": "Mysterious rogue operative, slender athletic build clad in sleek matte-black tactical gear, leather straps, and utility harness. Face fully concealed by a black balaclava, leaving only intense, piercing amber cat-like eyes visible.  No discernible weapon in hand.Crouched on a rain-slicked urban rooftop under a stormy night sky, dark moody lighting, cinematic dark fantasy RPG illustration."
+		},
+		"jolissaBastet": {
+			"name": "Jolissa Stormbreaker (Bastet)",
+			"description": "Ancient Bastet feline-shifter hybrid form, elegant humanoid panther with sleek midnight-black fur, sharp retractable claws, and radiant golden amber eyes full of defiance. Dark leather wraps around her waist and forearms. Crackling blue and violet lightning arcs dramatically from her bare hands, illuminating her dark fur in a thunderstorm, dark fantasy World of Darkness style."
+		}
+	},
+	"monsters": {
+		"securityDummyBot": {
+			"name": "Security Dummy Bot",
+			"description": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored red blazer over a black button-up shirt and black slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, dark cinematic lighting."
+		},
+		"securityDummyBotHostile": {
+			"name": "Security Dummy Bot (Hostile)",
+			"description": "Uncanny corporate security android, smooth featureless crash test dummy head wearing a tailored red blazer and black slacks. Eyes flared into harsh glowing crimson red electric lights casting a red glare across its pale metal face. It is wielding a taser. Aggressive forward posture, dark moody hallway, red threat lighting, dark fantasy horror style."
+		},
+		"driderGlaiveMaster": {
+			"name": "Drider Glaive-Master",
+			"description": "Terrifying drow hybrid monster, upper body of a dark-skinned drow elf with silver hair, seamlessly fused at the waist to the massive, armored body of a giant black arachnid. Fused dark chitin armor, eight hairy spider legs. Wields a long, ornate steel glaive polearm with a curved blade glowing with faint violet runes. Dark fantasy style, shadowy cavern lighting."
+		},
+		"facelessFomori": {
+			"name": "Faceless Fomori",
+			"description": "World of Darkness horror, Wyrm-tainted mutant fomori. Horrifyingly blank, smooth pale skin across its upper face with no eyes, no ears, and no nose whatsoever. The bottom half of its head splits open into an unnaturally wide, gaping maw filled with jagged, mismatched yellow teeth and dripping black sludge. Clad in tattered industrial rags, hunched aggressive posture, dark gritty lighting."
+		}
+	},
 	"settings": {
 		"appalachianWoods": {
 			"name": "Appalachian Woods of Tennessee",

@@ -8,7 +8,7 @@ import { shareFile } from './src/services/share.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
 import {
 	getCharacterSelections,
-	hasAtLeastOneRow,
+	hasAtLeastOneRow as hasAtLeastOneCharacterRow,
 	initCharacterRows,
 } from './src/ui/characterRows.js';
 import {
@@ -19,6 +19,16 @@ import {
 	showGenerating,
 	showSuccess,
 } from './src/ui/generationOutput.js';
+import {
+	getMonsterSelections,
+	hasAtLeastOneRow as hasAtLeastOneMonsterRow,
+	initMonsterRows,
+} from './src/ui/monsterRows.js';
+import {
+	getNPCSelections,
+	hasAtLeastOneRow as hasAtLeastOneNPCRow,
+	initNPCRows,
+} from './src/ui/npcRows.js';
 import {
 	getLocationDescription,
 	initSettingField,
@@ -39,6 +49,16 @@ const generationControls = { generateBtn, retryBtn };
 initCharacterRows({
 	container: document.getElementById('characterRows'),
 	addBtn: document.getElementById('addCharacterBtn'),
+});
+
+initNPCRows({
+	container: document.getElementById('npcRows'),
+	addBtn: document.getElementById('addNPCBtn'),
+});
+
+initMonsterRows({
+	container: document.getElementById('monsterRows'),
+	addBtn: document.getElementById('addMonsterBtn'),
 });
 
 initSettingField({
@@ -72,8 +92,12 @@ async function generateSceneImage() {
 	setGenerationBusy(generationControls, true);
 
 	try {
-		if (!hasAtLeastOneRow()) {
-			alert('Please add at least one character.');
+		if (
+			!hasAtLeastOneCharacterRow() &&
+			!hasAtLeastOneNPCRow() &&
+			!hasAtLeastOneMonsterRow()
+		) {
+			alert('Please add at least one character, NPC, or monster.');
 			return;
 		}
 
@@ -84,8 +108,16 @@ async function generateSceneImage() {
 		}
 
 		const characters = getCharacterSelections();
+		const npcs = getNPCSelections();
+		const monsters = getMonsterSelections();
 		const scene = sceneText.value;
-		const fullPrompt = buildPrompt({ characters, locationDesc, scene });
+		const fullPrompt = buildPrompt({
+			characters,
+			npcs,
+			monsters,
+			locationDesc,
+			scene,
+		});
 		const referenceImages = await loadReferenceImages(characters);
 
 		showGenerating();

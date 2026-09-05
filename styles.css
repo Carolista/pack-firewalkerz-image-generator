@@ -164,11 +164,6 @@ button {
 	margin-bottom: 1rem;
 }
 
-/* drop the button's track entirely so column-gap doesn't leave a gap when it's hidden */
-.character-row:has(.removeRowBtn[hidden]) {
-	grid-template-columns: minmax(0, 1fr);
-}
-
 .character-row + .character-row {
 	border-top: 2px solid var(--dark-gray);
 	padding-top: 0.5rem;
@@ -213,10 +208,6 @@ button {
 		grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
 	}
 
-	.character-row:has(.removeRowBtn[hidden]) {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-	}
-
 	.character-row .field:nth-child(2) label {
 		grid-column: 2 / -1;
 		grid-row: 1;
@@ -234,6 +225,32 @@ button {
 }
 
 #addCharacterBtn[hidden] {
+	display: none;
+}
+
+.npc-row,
+.monster-row {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	column-gap: 0.5rem;
+	margin-bottom: 1rem;
+}
+
+.npc-row + .npc-row,
+.monster-row + .monster-row {
+	border-top: 2px solid var(--dark-gray);
+	padding-top: 0.5rem;
+}
+
+.npc-row .removeRowBtn,
+.monster-row .removeRowBtn {
+	align-self: stretch;
+	padding: 0;
+	aspect-ratio: 1;
+}
+
+#addNPCBtn[hidden],
+#addMonsterBtn[hidden] {
 	display: none;
 }
 

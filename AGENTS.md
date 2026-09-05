@@ -12,8 +12,8 @@
 
 ## Data Imports
 
-- `src/ui/characterRows.js` and `src/ui/settingField.js` must import `src/packData.json` directly.
-- Use import attributes for JSON imports, for example `import packData from "../packData.json" with { type: "json" };`.
+- `src/ui/characterRows.js` and `src/ui/settingField.js` must import `src/data.json` directly.
+- Use import attributes for JSON imports, for example `import data from "../data.json" with { type: "json" };`.
 - Do not duplicate pack data in UI modules or route it through unrelated global state.
 
 ## API And Workflow
