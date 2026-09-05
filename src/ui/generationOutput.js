@@ -31,6 +31,9 @@ export function showGenerating() {
 	placeholderEl.hidden = false;
 	shareBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'none';
+	placeholderEl
+		.closest('.card')
+		.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 export function showSuccess({ imageUrl, blob }) {
