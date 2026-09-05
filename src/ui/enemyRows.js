@@ -9,7 +9,7 @@ export function initEnemyRows({ container, addBtn }) {
 	controller = initSimpleSelectRows({
 		container,
 		addBtn,
-		dataMap: DATA.enemys,
+		dataMap: DATA.enemies,
 		rowClassName: 'enemy-row',
 		selectClassName: 'enemyRowSelect',
 		maxRows: MAX_ENEMY_ROWS,
@@ -20,7 +20,7 @@ export function initEnemyRows({ container, addBtn }) {
 	});
 }
 
-export function getEnemySelections() {
+export function getenemieselections() {
 	return controller.getSelections();
 }
 

@@ -13,7 +13,7 @@ import {
 	initCharacterRows,
 } from './src/ui/characterRows.js';
 import {
-	getEnemySelections,
+	getenemieselections,
 	hasAtLeastOneRow as hasAtLeastOneEnemyRow,
 	initEnemyRows,
 } from './src/ui/enemyRows.js';
@@ -125,11 +125,11 @@ async function generateSceneImage() {
 
 		const characters = getCharacterSelections();
 		const npcs = getNPCSelections();
-		const enemys = getEnemySelections();
+		const enemies = getenemieselections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
-			enemys,
+			enemies,
 			locationDesc,
 			scene,
 		});

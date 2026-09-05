@@ -1,4 +1,10 @@
-export function buildPrompt({ characters, npcs, enemys, locationDesc, scene }) {
+export function buildPrompt({
+	characters,
+	npcs,
+	enemies,
+	locationDesc,
+	scene,
+}) {
 	const entityBlocks = [
 		...characters.map(
 			({ name, formName, formDesc }) =>
@@ -7,7 +13,7 @@ export function buildPrompt({ characters, npcs, enemys, locationDesc, scene }) {
 		...npcs.map(
 			({ name, description }) => `NPC: ${name} (${description}).`,
 		),
-		...enemys.map(
+		...enemies.map(
 			({ name, description }) => `Enemy: ${name} (${description}).`,
 		),
 	].join('\n');
