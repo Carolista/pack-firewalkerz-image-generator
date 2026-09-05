@@ -5,6 +5,7 @@ import {
 	loadReferenceImages,
 } from './src/services/api.js';
 import { shareFile } from './src/services/share.js';
+import { initAlertModal, showAlert } from './src/ui/alertModal.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
 import {
 	getCharacterSelections,
@@ -67,6 +68,13 @@ initSettingField({
 	otherTextEl: document.getElementById('otherLocationText'),
 });
 
+initAlertModal({
+	overlay: document.getElementById('alertModalOverlay'),
+	closeBtn: document.getElementById('alertModalCloseBtn'),
+	messageEl: document.getElementById('alertModalMessage'),
+	okBtn: document.getElementById('alertModalOkBtn'),
+});
+
 initGenerationOutput({
 	status: statusText,
 	image: document.getElementById('outputImg'),
@@ -97,20 +105,27 @@ async function generateSceneImage() {
 			!hasAtLeastOneNPCRow() &&
 			!hasAtLeastOneMonsterRow()
 		) {
-			alert('Please add at least one character, NPC, or monster.');
+			await showAlert(
+				'Please add at least one character, NPC, or monster.',
+			);
 			return;
 		}
 
 		const locationDesc = getLocationDescription();
 		if (!locationDesc) {
-			alert('Please describe the custom setting.');
+			await showAlert('Please describe the custom setting.');
+			return;
+		}
+
+		const scene = sceneText.value.trim();
+		if (!scene) {
+			await showAlert('Please describe the scene action.');
 			return;
 		}
 
 		const characters = getCharacterSelections();
 		const npcs = getNPCSelections();
 		const monsters = getMonsterSelections();
-		const scene = sceneText.value;
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
