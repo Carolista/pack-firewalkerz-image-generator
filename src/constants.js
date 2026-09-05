@@ -14,3 +14,11 @@ export const SERVER_URL =
 	window.location.hostname === '127.0.0.1'
 		? 'http://localhost:3000/generate-image'
 		: 'https://rpg-image-generator.onrender.com/generate-image';
+
+export const WEREWOLF_FORMS = {
+	homid: 'Homid (Human)',
+	glabro: 'Glabro (Hulked-Out Near-Human)',
+	crinos: 'Crinos (Werewolf)',
+	hispo: 'Hispo (Near-Wolf Beast)',
+	lupus: 'Lupus (Wolf)',
+};

@@ -35,6 +35,11 @@ import {
 	initSettingField,
 } from './src/ui/settingField.js';
 
+const year = document.getElementById('year');
+let currentYear = new Date().getFullYear();
+year.innerText =
+	String(currentYear) === '2026' ? '2026' : `2026-${currentYear}`;
+
 let generatedBlob = null;
 let generationInProgress = false;
 

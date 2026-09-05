@@ -15,99 +15,97 @@
 		<script src="script.js" type="module" defer></script>
 	</head>
 	<body>
-		<h1>Pack Firewalkerz</h1>
-		<h2>Image Generator</h2>
-
-		<!-- Character Selector -->
-		<div class="card">
-			<h3>Characters & Forms</h3>
-			<div id="characterRows"></div>
-			<button id="addCharacterBtn" type="button">
-				Add another character
-			</button>
-		</div>
-
-		<!-- NPC Selector -->
-		<div class="card">
-			<h3>Non-Player Characters</h3>
-			<div id="npcRows"></div>
-			<button id="addNPCBtn" type="button">Add another NPC</button>
-		</div>
-
-		<!-- Enemy Selector -->
-		<div class="card">
-			<h3>Enemies</h3>
-			<p class="field-hint">
-				Note: The same type of enemy can be added more than once.
-			</p>
-			<div id="enemyRows"></div>
-			<button id="addEnemyBtn" type="button">Add another enemy</button>
-		</div>
-
-		<div class="card">
-			<h3>Setting</h3>
-			<div class="field">
-				<select id="locationSelect"></select>
-			</div>
-			<div class="field">
-				<p id="locationDescText"></p>
-				<textarea
-					id="otherLocationText"
-					placeholder="Describe the custom location/setting"
-					hidden
-				></textarea>
-			</div>
-		</div>
-
-		<!-- Scene Action -->
-		<div class="card">
-			<h3>SCENE DESCRIPTION</h3>
-			<p class="field-hint">
-				Describe actions, facial expressions, placement of characters
-				within the setting, any items or props present, etc.
-			</p>
-			<div class="field">
-				<textarea
-					id="sceneText"
-					placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."
-				></textarea>
-			</div>
-			<button id="generateBtn">Generate Image</button>
-			<button id="resetBtn" type="button">Reset Scene</button>
-		</div>
-
-		<!-- Output Area -->
-		<div class="card">
-			<h3>IMAGE</h3>
-			<div id="statusText">Waiting for prompt...</div>
-			<button id="retryBtn" type="button" style="display: none">
-				Retry
-			</button>
-			<div id="imagePlaceholder" class="image-placeholder" hidden>
-				<span class="image-spinner" aria-hidden="true"></span>
-			</div>
-			<img id="outputImg" alt="Generated Scene" />
-			<div style="margin-top: 0.5rem">
-				<button id="shareBtn" style="display: none">
-					Share to Device
+		<header>
+			<h1>Pack Firewalkerz</h1>
+			<h2>Image Generator</h2>
+		</header>
+		<main>
+			<div class="card">
+				<h3>Characters & Forms</h3>
+				<div id="characterRows"></div>
+				<button id="addCharacterBtn" type="button">
+					Add another character
 				</button>
 			</div>
-		</div>
-
-		<!-- Alert Modal (shown on demand, not always visible) -->
-		<div id="alertModalOverlay" class="modal-overlay" hidden>
-			<div class="modal">
-				<button
-					id="alertModalCloseBtn"
-					class="modal-close"
-					type="button"
-					aria-label="Close"
-				>
-					✕
-				</button>
-				<p id="alertModalMessage"></p>
-				<button id="alertModalOkBtn" type="button">OK</button>
+			<div class="card">
+				<h3>Non-Player Characters</h3>
+				<div id="npcRows"></div>
+				<button id="addNPCBtn" type="button">Add another NPC</button>
 			</div>
-		</div>
+			<div class="card">
+				<h3>Enemies</h3>
+				<p class="field-hint">
+					Note: The same type of enemy can be added more than once.
+				</p>
+				<div id="enemyRows"></div>
+				<button id="addEnemyBtn" type="button">
+					Add another enemy
+				</button>
+			</div>
+			<div class="card">
+				<h3>Setting</h3>
+				<div class="field">
+					<select id="locationSelect"></select>
+				</div>
+				<div class="field">
+					<p id="locationDescText"></p>
+					<textarea
+						id="otherLocationText"
+						placeholder="Describe the custom location/setting"
+						hidden
+					></textarea>
+				</div>
+			</div>
+			<div class="card">
+				<h3>SCENE DESCRIPTION</h3>
+				<p class="field-hint">
+					Describe actions, facial expressions, placement of
+					characters within the setting, any items or props present,
+					etc.
+				</p>
+				<div class="field">
+					<textarea
+						id="sceneText"
+						placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."
+					></textarea>
+				</div>
+				<button id="generateBtn">Generate Image</button>
+				<button id="resetBtn" type="button">Reset Scene</button>
+			</div>
+
+			<div class="card">
+				<h3>IMAGE</h3>
+				<div id="statusText">Waiting for prompt...</div>
+				<button id="retryBtn" type="button" style="display: none">
+					Retry
+				</button>
+				<div id="imagePlaceholder" class="image-placeholder" hidden>
+					<span class="image-spinner" aria-hidden="true"></span>
+				</div>
+				<img id="outputImg" alt="Generated Scene" />
+				<div style="margin-top: 0.5rem">
+					<button id="shareBtn" style="display: none">
+						Share to Device
+					</button>
+				</div>
+			</div>
+
+			<div id="alertModalOverlay" class="modal-overlay" hidden>
+				<div class="modal">
+					<button
+						id="alertModalCloseBtn"
+						class="modal-close"
+						type="button"
+						aria-label="Close"
+					>
+						✕
+					</button>
+					<p id="alertModalMessage"></p>
+					<button id="alertModalOkBtn" type="button">OK</button>
+				</div>
+			</div>
+		</main>
+
+		<footer>&copy;<span id="year"></span> Caroline R. Jones</footer>
 	</body>
 </html>

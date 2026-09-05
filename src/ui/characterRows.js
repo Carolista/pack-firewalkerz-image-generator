@@ -1,3 +1,4 @@
+import { WEREWOLF_FORMS } from '../constants.js';
 import DATA from '../data.json' with { type: 'json' };
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
@@ -27,7 +28,7 @@ export function getCharacterSelections() {
 		return {
 			name: character.name,
 			formKey,
-			formName: form.name,
+			formName: WEREWOLF_FORMS[formKey],
 			formDesc: form.description,
 			imageFile: form.imageFile,
 		};
@@ -71,8 +72,8 @@ function updateAddButtonState() {
 function populateFormOptions(charSelect, formSelect, presetFormKey) {
 	const character = DATA.characters[charSelect.value];
 	formSelect.innerHTML = '';
-	for (const [formKey, form] of Object.entries(character.forms)) {
-		formSelect.add(new Option(form.name, formKey));
+	for (const formKey of Object.keys(character.forms)) {
+		formSelect.add(new Option(WEREWOLF_FORMS[formKey], formKey));
 	}
 	if (presetFormKey && character.forms[presetFormKey]) {
 		formSelect.value = presetFormKey;
