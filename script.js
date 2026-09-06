@@ -179,9 +179,9 @@ function formatError(error) {
 async function shareImage() {
 	if (!generatedBlob) return;
 	await shareFile(generatedBlob, {
-		filename: 'ww20-scene.jpg',
+		filename: 'pack-firewalkerz-scene.jpg',
 		mimeType: 'image/jpeg',
-		title: 'WW20 Session Moment',
+		title: 'Pack Firewalkerz Scene',
 		text: "Look at what happened in tonight's session!",
 	});
 }

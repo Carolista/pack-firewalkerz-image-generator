@@ -266,6 +266,22 @@ button {
 	aspect-ratio: 1;
 }
 
+#addCharacterBtn[hidden] {
+	display: none;
+}
+
+#addNPCBtn[hidden],
+#addEnemyBtn[hidden] {
+	display: none;
+}
+
+footer {
+	color: var(--cream);
+	font-weight: 100;
+	text-align: center;
+	font-size: 1rem;
+}
+
 @media (min-width: 700px) {
 	.character-row,
 	.npc-row,
@@ -295,15 +311,6 @@ button {
 	}
 }
 
-#addCharacterBtn[hidden] {
-	display: none;
-}
-
-#addNPCBtn[hidden],
-#addEnemyBtn[hidden] {
-	display: none;
-}
-
 @media (max-width: 600px) {
 	body {
 		background-attachment: scroll;
@@ -319,11 +326,4 @@ button {
 	#generateBtn {
 		margin-bottom: 0.75rem;
 	}
-}
-
-footer {
-	color: var(--cream);
-	font-weight: 100;
-	text-align: center;
-	font-size: 1rem;
 }

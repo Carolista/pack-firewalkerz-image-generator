@@ -17,7 +17,7 @@ export function initEnemyRows({ container, addBtn }) {
 		allowDuplicates: true,
 		getStoredRows: getEnemyRows,
 		setStoredRows: setEnemyRows,
-		entityLabel: 'enemy',
+		entityLabel: 'Enemy',
 		entityArticle: 'an',
 	});
 }
