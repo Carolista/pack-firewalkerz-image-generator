@@ -27,9 +27,25 @@ test('looks up a variant by stable ID', () => {
 	const enemy = getElements('enemy').find(
 		({ slug }) => slug === 'securityBot',
 	);
-	const variant = getVariantById(enemy, enemy.variants[0].variantId);
+	const expectedVariant = enemy.variants.find(
+		({ variantName }) => variantName === 'On Patrol',
+	);
+	const variant = getVariantById(enemy, expectedVariant.variantId);
 
 	assert.equal(variant.variantName, 'On Patrol');
+});
+
+test('returns undefined for an unknown variant ID', () => {
+	const character = getElements('character')[0];
+
+	assert.equal(getVariantById(character, 'missing-variant-id'), undefined);
+});
+
+test('rejects an unknown catalog element type', () => {
+	assert.throws(
+		() => getElements('vehicle'),
+		/Unknown catalog element type: vehicle/,
+	);
 });
 
 test('preserves werewolf variant sort order', () => {
@@ -41,6 +57,178 @@ test('preserves werewolf variant sort order', () => {
 		character.variants.map(variant => variant.sortOrder),
 		[1, 2, 3, 4, 5],
 	);
+});
+
+test('sorts elements alphabetically by name', () => {
+	assert.deepEqual(
+		getElements('character').map(element => element.name),
+		['Lorica Albrecht', 'Monkshood', 'River-That-Remembers'],
+	);
+});
+
+test('sorts unordered variants alphabetically', () => {
+	const catalog = normalizeCatalog({
+		characters: [
+			{
+				id: 'character-id',
+				name: 'Test Character',
+				slug: 'test-character',
+				variants: [
+					{
+						variantId: 'z',
+						variantName: 'Zulu',
+						variantDesc: '',
+						image: '',
+					},
+					{
+						variantId: 'a',
+						variantName: 'Alpha',
+						variantDesc: '',
+						image: '',
+					},
+				],
+			},
+		],
+		npcs: [],
+		enemies: [],
+		locations: [],
+	});
+
+	assert.deepEqual(
+		catalog.characters[0].variants.map(variant => variant.variantName),
+		['Alpha', 'Zulu'],
+	);
+});
+
+test('sorts explicit variants numerically before unordered variants', () => {
+	const catalog = normalizeCatalog({
+		characters: [
+			{
+				id: 'character-id',
+				name: 'Test Character',
+				slug: 'test-character',
+				variants: [
+					{
+						variantId: 'late',
+						variantName: 'Late',
+						variantDesc: '',
+						image: '',
+						sortOrder: 2,
+					},
+					{
+						variantId: 'early',
+						variantName: 'Early',
+						variantDesc: '',
+						image: '',
+						sortOrder: 1,
+					},
+					{
+						variantId: 'default',
+						variantName: 'Default',
+						variantDesc: '',
+						image: '',
+					},
+				],
+			},
+		],
+		npcs: [],
+		enemies: [],
+		locations: [],
+	});
+
+	assert.deepEqual(
+		catalog.characters[0].variants.map(variant => variant.variantName),
+		['Early', 'Late', 'Default'],
+	);
+});
+
+test('rejects an element without an id', () => {
+	assert.throws(
+		() =>
+			assertCatalog({
+				characters: [
+					{
+						name: 'Missing ID',
+						variants: [],
+					},
+				],
+				npcs: [],
+				enemies: [],
+				locations: [],
+			}),
+		/Invalid game element/,
+	);
+});
+
+test('rejects an element without variants', () => {
+	assert.throws(
+		() =>
+			assertCatalog({
+				characters: [
+					{
+						id: 'character-id',
+						name: 'Missing variants',
+						variants: [],
+					},
+				],
+				npcs: [],
+				enemies: [],
+				locations: [],
+			}),
+		/Invalid game element/,
+	);
+});
+
+test('rejects invalid variant fields', () => {
+	const invalidVariants = [
+		{ variantName: 'Missing ID', variantDesc: '', image: '' },
+		{ variantId: 'missing-name', variantDesc: '', image: '' },
+		{
+			variantId: 'bad-desc',
+			variantName: 'Bad',
+			variantDesc: null,
+			image: '',
+		},
+		{
+			variantId: 'bad-image',
+			variantName: 'Bad',
+			variantDesc: '',
+			image: null,
+		},
+		{
+			variantId: 'bad-sort',
+			variantName: 'Bad',
+			variantDesc: '',
+			image: '',
+			sortOrder: 1.5,
+		},
+		{
+			variantId: 'negative-sort',
+			variantName: 'Bad',
+			variantDesc: '',
+			image: '',
+			sortOrder: -1,
+		},
+	];
+
+	for (const variant of invalidVariants) {
+		assert.throws(
+			() =>
+				assertCatalog({
+					characters: [
+						{
+							id: 'character-id',
+							name: 'Invalid variant',
+							variants: [variant],
+						},
+					],
+					npcs: [],
+					enemies: [],
+					locations: [],
+				}),
+			/Invalid variant/,
+		);
+	}
 });
 
 test('renders normalized variant selections in the prompt', () => {
