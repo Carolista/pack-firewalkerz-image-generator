@@ -4,6 +4,7 @@ import {
 	isNetworkError,
 	loadReferenceImages,
 } from './src/services/api.js';
+import { loadCatalog } from './src/services/catalog.js';
 import { shareFile } from './src/services/share.js';
 import { initAlertModal, showAlert } from './src/ui/alertModal.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
@@ -34,6 +35,8 @@ import {
 	getLocationSelectionDetails,
 	initSettingField,
 } from './src/ui/settingField.js';
+
+await loadCatalog();
 
 const year = document.getElementById('year');
 let currentYear = new Date().getFullYear();

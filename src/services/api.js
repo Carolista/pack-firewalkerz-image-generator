@@ -1,7 +1,8 @@
 import { SERVER_URL } from '../constants.js';
+import { SUPABASE_URL } from './supabaseConfig.js';
 
 const NETWORK_RETRY_DELAY_MS = 1500;
-const REFERENCE_IMAGE_BASE_PATH = 'assets/characters/';
+const SUPABASE_IMAGE_BASE_PATH = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/`;
 const MAX_REFERENCE_DIMENSION = 1024;
 const REFERENCE_JPEG_QUALITY = 0.85;
 
@@ -11,6 +12,19 @@ export function isNetworkError(error) {
 
 function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function resolveReferenceImageUrl(image) {
+	if (image.startsWith('http://') || image.startsWith('https://')) {
+		return image;
+	}
+	if (image.startsWith('assets/')) return image;
+	const storagePath = image.includes('/') ? image : `characters/${image}`;
+	const encodedPath = storagePath
+		.split('/')
+		.map(segment => encodeURIComponent(segment))
+		.join('/');
+	return `${SUPABASE_IMAGE_BASE_PATH}${encodedPath}`;
 }
 
 // Scales the longer edge down to MAX_REFERENCE_DIMENSION; never upscales.
@@ -53,7 +67,7 @@ async function loadReferenceImage({
 	image,
 }) {
 	try {
-		const response = await fetch(`${REFERENCE_IMAGE_BASE_PATH}${image}`);
+		const response = await fetch(resolveReferenceImageUrl(image));
 		if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		const originalBlob = await response.blob();
 		const resizedBlob = await downscaleImage(originalBlob);
