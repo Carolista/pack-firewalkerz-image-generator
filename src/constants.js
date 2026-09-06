@@ -8,6 +8,7 @@ export const LOCATION_STORAGE_KEY = 'ww20LocationSelect';
 
 export const MAX_NPC_ROWS = 10;
 export const MAX_ENEMY_ROWS = 10;
+export const STORAGE_SCHEMA_VERSION = 2;
 
 const hostname = globalThis.window?.location?.hostname;
 

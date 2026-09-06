@@ -92,16 +92,8 @@ function updateLocationDisplay() {
 
 function restoreLocationSelection() {
 	const stored = getLocationSelection();
-	let storedValue = stored;
-	if (stored) {
-		try {
-			const parsed = JSON.parse(stored);
-			storedValue = parsed.elementId ?? stored;
-			restoredVariantId = parsed.variantId;
-		} catch {
-			storedValue = stored;
-		}
-	}
+	const storedValue = stored?.elementId;
+	restoredVariantId = stored?.variantId;
 	if (
 		storedValue &&
 		[...selectEl.options].some(o => o.value === storedValue)

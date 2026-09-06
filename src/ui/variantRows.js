@@ -117,13 +117,18 @@ export function initVariantRows({
 
 	function persistRows() {
 		setStoredRows(
-			[...container.querySelectorAll(`.${rowClassName}`)].map(row => ({
-				elementId: row.querySelector(`.${elementSelectClassName}`)
-					.value,
-				variantId:
-					row.querySelector(`.${variantSelectClassName}`)?.value ??
-					row.querySelector(`.${elementSelectClassName}`).value,
-			})),
+			[...container.querySelectorAll(`.${rowClassName}`)].map(row => {
+				const elementId = row.querySelector(
+					`.${elementSelectClassName}`,
+				).value;
+				const element = getElement(elementId);
+				return {
+					elementId,
+					variantId:
+						row.querySelector(`.${variantSelectClassName}`)
+							?.value ?? element.variants[0].variantId,
+				};
+			}),
 		);
 	}
 

@@ -1,3 +1,4 @@
+import { MAX_NPC_ROWS } from '../constants.js';
 import { getElements } from '../services/catalog.js';
 import { getNPCRows, setNPCRows } from '../services/storage.js';
 import { initVariantRows } from './variantRows.js';
@@ -12,7 +13,7 @@ export function initNPCRows({ container, addBtn }) {
 		rowClassName: 'npc-row',
 		elementSelectClassName: 'npcRowSelect',
 		variantSelectClassName: 'npcVariantRowSelect',
-		maxRows: 10,
+		maxRows: MAX_NPC_ROWS,
 		allowDuplicates: false,
 		getStoredRows: getNPCRows,
 		setStoredRows: setNPCRows,

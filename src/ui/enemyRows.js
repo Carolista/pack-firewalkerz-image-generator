@@ -1,3 +1,4 @@
+import { MAX_ENEMY_ROWS } from '../constants.js';
 import { getElements } from '../services/catalog.js';
 import { getEnemyRows, setEnemyRows } from '../services/storage.js';
 import { initVariantRows } from './variantRows.js';
@@ -12,7 +13,7 @@ export function initEnemyRows({ container, addBtn }) {
 		rowClassName: 'enemy-row',
 		elementSelectClassName: 'enemyRowSelect',
 		variantSelectClassName: 'enemyVariantRowSelect',
-		maxRows: 10,
+		maxRows: MAX_ENEMY_ROWS,
 		allowDuplicates: true,
 		getStoredRows: getEnemyRows,
 		setStoredRows: setEnemyRows,

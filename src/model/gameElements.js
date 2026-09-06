@@ -7,11 +7,11 @@ export function normalizeCatalog(data) {
 	};
 }
 
-export function normalizeCollection(collection, elementType) {
+function normalizeCollection(collection, elementType) {
 	return collection.map(element => normalizeElement(element, elementType));
 }
 
-export function normalizeElement(element, elementType) {
+function normalizeElement(element, elementType) {
 	return {
 		id: element.id,
 		elementType: element.elementType ?? elementType,

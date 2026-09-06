@@ -10,11 +10,10 @@ export function getElements(elementType) {
 		enemy: 'enemies',
 		location: 'locations',
 	}[elementType];
+	if (!collectionKey) {
+		throw new Error(`Unknown catalog element type: ${elementType}`);
+	}
 	return CATALOG[collectionKey];
-}
-
-export function getElementById(elementType, elementId) {
-	return getElements(elementType).find(element => element.id === elementId);
 }
 
 export function getVariantById(element, variantId) {
