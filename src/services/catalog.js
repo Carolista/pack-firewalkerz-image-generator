@@ -48,6 +48,7 @@ function normalizeSupabaseCatalog(elements, variants) {
 			variantName: variant.variant_name,
 			variantDesc: variant.variant_desc,
 			image: variant.image ?? '',
+			sortOrder: variant.sort_order ?? null,
 		});
 		variantsByElement.set(variant.element_id, elementVariants);
 	}
@@ -71,10 +72,18 @@ function normalizeSupabaseCatalog(elements, variants) {
 			elementType: element.element_type,
 			name: element.name,
 			slug: element.slug,
-			variants: variantsByElement.get(element.id) ?? [],
+			variants: sortVariants(variantsByElement.get(element.id) ?? []),
 		});
 	}
 	return normalized;
+}
+
+function sortVariants(variants) {
+	return [...variants].sort((left, right) => {
+		if (left.sortOrder === null) return 1;
+		if (right.sortOrder === null) return -1;
+		return left.sortOrder - right.sortOrder;
+	});
 }
 
 export function getElements(elementType) {

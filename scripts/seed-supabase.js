@@ -26,6 +26,7 @@ const variantRows = elements.flatMap(element =>
 		variant_name: variant.variantName,
 		variant_desc: variant.variantDesc,
 		image: variant.image,
+		sort_order: variant.sortOrder,
 	})),
 );
 

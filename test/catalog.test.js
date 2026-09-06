@@ -32,6 +32,17 @@ test('looks up a variant by stable ID', () => {
 	assert.equal(variant.variantName, 'On Patrol');
 });
 
+test('preserves werewolf variant sort order', () => {
+	const character = getElements('character').find(
+		({ slug }) => slug === 'river',
+	);
+
+	assert.deepEqual(
+		character.variants.map(variant => variant.sortOrder),
+		[1, 2, 3, 4, 5],
+	);
+});
+
 test('renders normalized variant selections in the prompt', () => {
 	const prompt = buildPrompt({
 		characters: [],

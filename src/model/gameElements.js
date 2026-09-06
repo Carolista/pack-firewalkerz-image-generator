@@ -27,6 +27,7 @@ function normalizeVariants(variants) {
 		variantName: variant.variantName,
 		variantDesc: variant.variantDesc,
 		image: variant.image,
+		sortOrder: variant.sortOrder ?? null,
 	}));
 }
 
@@ -43,7 +44,10 @@ export function assertCatalog(catalog) {
 					!variant.variantId ||
 					!variant.variantName ||
 					typeof variant.variantDesc !== 'string' ||
-					typeof variant.image !== 'string'
+					typeof variant.image !== 'string' ||
+					(variant.sortOrder !== null &&
+						(!Number.isInteger(variant.sortOrder) ||
+							variant.sortOrder < 0))
 				) {
 					throw new Error(
 						`Invalid variant on game element: ${element.id}`,
