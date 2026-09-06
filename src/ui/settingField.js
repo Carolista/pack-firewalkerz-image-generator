@@ -7,7 +7,7 @@ import {
 	setOtherLocationText,
 } from '../services/storage.js';
 
-const LOCATIONS = getElements('location');
+let locations;
 
 let selectEl;
 let variantFieldEl;
@@ -28,6 +28,7 @@ export function initSettingField({
 	variantSelectEl = variantSelect;
 	descEl = desc;
 	otherTextEl = otherText;
+	locations = getElements('location');
 
 	populateLocationSelect();
 	restoreLocationSelection();
@@ -80,11 +81,11 @@ export function getLocationSelectionDetails() {
 }
 
 function getLocation(elementId) {
-	return LOCATIONS.find(location => location.id === elementId);
+	return locations.find(location => location.id === elementId);
 }
 
 function populateLocationSelect() {
-	for (const location of LOCATIONS) {
+	for (const location of locations) {
 		selectEl.add(new Option(location.name, location.id));
 	}
 	selectEl.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));

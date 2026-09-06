@@ -1,7 +1,7 @@
 import { getElements, getVariantById } from '../services/catalog.js';
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
 
-const CHARACTERS = getElements('character');
+let characters;
 
 let containerEl;
 let addBtnEl;
@@ -9,6 +9,7 @@ let addBtnEl;
 export function initCharacterRows({ container, addBtn }) {
 	containerEl = container;
 	addBtnEl = addBtn;
+	characters = getElements('character');
 
 	addBtnEl.addEventListener('click', () => {
 		createCharacterRow();
@@ -43,16 +44,16 @@ export function hasAtLeastOneRow() {
 }
 
 function getCharacter(elementId) {
-	return CHARACTERS.find(character => character.id === elementId);
+	return characters.find(character => character.id === elementId);
 }
 
 function getAvailableCharacterIds(excludeSelectEl) {
 	const chosenElsewhere = [...containerEl.querySelectorAll('.charRowSelect')]
 		.filter(select => select !== excludeSelectEl)
 		.map(select => select.value);
-	return CHARACTERS.filter(
-		character => !chosenElsewhere.includes(character.id),
-	).map(character => character.id);
+	return characters
+		.filter(character => !chosenElsewhere.includes(character.id))
+		.map(character => character.id);
 }
 
 function refreshCharacterOptions() {
@@ -69,7 +70,7 @@ function refreshCharacterOptions() {
 
 function updateAddButtonState() {
 	const rowCount = containerEl.querySelectorAll('.character-row').length;
-	addBtnEl.hidden = rowCount >= CHARACTERS.length;
+	addBtnEl.hidden = rowCount >= characters.length;
 	addBtnEl.textContent =
 		rowCount === 0 ? 'Select a character' : 'Add another character';
 }

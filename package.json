@@ -6,6 +6,7 @@
 	"scripts": {
 		"test": "node --test",
 		"test:coverage": "node --test --experimental-test-coverage",
+		"seed:supabase": "node scripts/seed-supabase.js",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"format": "prettier --write .",
