@@ -1,9 +1,6 @@
-import {
-	SUPABASE_PUBLISHABLE_KEY,
-	SUPABASE_URL,
-} from '../../supabaseConfig.js';
 import DATA from '../data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../model/gameElements.js';
+import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from './supabaseConfig.js';
 
 let catalog = assertCatalog(normalizeCatalog(DATA));
 
