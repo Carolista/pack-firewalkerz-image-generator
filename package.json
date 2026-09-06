@@ -20,6 +20,9 @@
 	"author": "",
 	"license": "ISC",
 	"type": "module",
+	"engines": {
+		"node": ">=24"
+	},
 	"bugs": {
 		"url": "https://github.com/Carolista/pack-firewalkerz-image-generator/issues"
 	},

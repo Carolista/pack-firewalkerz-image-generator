@@ -1,0 +1,11 @@
+services:
+    - type: web
+      name: rpg-image-generator
+      runtime: node
+      buildCommand: npm ci
+      startCommand: node server.js
+      envVars:
+          - key: NODE_VERSION
+            value: '24'
+          - key: GEMINI_API_KEY
+            sync: false
