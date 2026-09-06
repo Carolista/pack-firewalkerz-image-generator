@@ -16,7 +16,7 @@ function getJsonValue(key, fallback) {
 			localStorage.removeItem(key);
 			return fallback;
 		}
-		return parsed.data;
+		return parsed.data ?? fallback;
 	} catch {
 		localStorage.removeItem(key);
 		return fallback;
@@ -55,11 +55,11 @@ export function setEnemyRows(rows) {
 }
 
 export function getOtherLocationText() {
-	return localStorage.getItem(OTHER_LOCATION_TEXT_STORAGE_KEY);
+	return getJsonValue(OTHER_LOCATION_TEXT_STORAGE_KEY, null);
 }
 
 export function setOtherLocationText(value) {
-	localStorage.setItem(OTHER_LOCATION_TEXT_STORAGE_KEY, value);
+	setJsonValue(OTHER_LOCATION_TEXT_STORAGE_KEY, value);
 }
 
 export function getLocationSelection() {

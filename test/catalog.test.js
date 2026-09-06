@@ -50,3 +50,22 @@ test('renders normalized variant selections in the prompt', () => {
 	assert.match(prompt, /Enemy: Security Bot in On Patrol variant/);
 	assert.match(prompt, /The bot searches the alley/);
 });
+
+test('renders the selected location variant in the prompt', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Appalachian Woods',
+			variantName: 'Nighttime',
+			variantDesc: 'A dark forest under the moon.',
+		},
+		scene: 'The pack watches the tree line.',
+	});
+
+	assert.match(
+		prompt,
+		/Environment\/Setting: Appalachian Woods \(Nighttime\): A dark forest/,
+	);
+});

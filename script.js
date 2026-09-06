@@ -31,7 +31,7 @@ import {
 	initNPCRows,
 } from './src/ui/npcRows.js';
 import {
-	getLocationDescription,
+	getLocationSelectionDetails,
 	initSettingField,
 } from './src/ui/settingField.js';
 
@@ -118,8 +118,8 @@ async function generateSceneImage() {
 			return;
 		}
 
-		const locationDesc = getLocationDescription();
-		if (!locationDesc) {
+		const location = getLocationSelectionDetails();
+		if (!location) {
 			await showAlert('Please describe the custom setting.');
 			return;
 		}
@@ -137,13 +137,14 @@ async function generateSceneImage() {
 			characters,
 			npcs,
 			enemies,
-			locationDesc,
+			location,
 			scene,
 		});
 		const referenceImages = await loadReferenceImages([
 			...characters,
 			...npcs,
 			...enemies,
+			location,
 		]);
 
 		showGenerating();

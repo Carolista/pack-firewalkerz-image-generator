@@ -46,12 +46,37 @@ export function initSettingField({
 }
 
 export function getLocationDescription() {
+	return getLocationSelectionDetails()?.variantDesc ?? null;
+}
+
+export function getLocationSelectionDetails() {
 	if (selectEl.value === OTHER_LOCATION_KEY) {
-		return otherTextEl.value.trim() || null;
+		const variantDesc = otherTextEl.value.trim();
+		return variantDesc
+			? {
+					elementId: OTHER_LOCATION_KEY,
+					elementType: 'location',
+					elementName: 'Custom location',
+					variantId: OTHER_LOCATION_KEY,
+					variantName: 'default',
+					variantDesc,
+					image: '',
+				}
+			: null;
 	}
 	const location = getLocation(selectEl.value);
 	const variant = getVariantById(location, variantSelectEl.value);
-	return variant?.variantDesc || null;
+	return variant
+		? {
+				elementId: location.id,
+				elementType: location.elementType,
+				elementName: location.name,
+				variantId: variant.variantId,
+				variantName: variant.variantName,
+				variantDesc: variant.variantDesc,
+				image: variant.image,
+			}
+		: null;
 }
 
 function getLocation(elementId) {
@@ -107,12 +132,10 @@ function persistLocationSelection() {
 		setLocationSelection(OTHER_LOCATION_KEY);
 		return;
 	}
-	setLocationSelection(
-		JSON.stringify({
-			elementId: selectEl.value,
-			variantId: variantSelectEl.value,
-		}),
-	);
+	setLocationSelection({
+		elementId: selectEl.value,
+		variantId: variantSelectEl.value,
+	});
 }
 
 function restoreOtherLocationText() {

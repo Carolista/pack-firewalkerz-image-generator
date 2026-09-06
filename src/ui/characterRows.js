@@ -28,6 +28,7 @@ export function getCharacterSelections() {
 		const variant = getVariantById(character, variantId);
 		return {
 			elementId,
+			elementType: character.elementType,
 			elementName: character.name,
 			variantId,
 			variantName: variant.variantName,

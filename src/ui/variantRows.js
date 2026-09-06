@@ -168,6 +168,7 @@ export function initVariantRows({
 					);
 					return {
 						elementId: element.id,
+						elementType: element.elementType,
 						elementName: element.name,
 						variantId: variant.variantId,
 						variantName: variant.variantName,
