@@ -1,6 +1,7 @@
-import { WEREWOLF_VARIANTS } from '../constants.js';
-import DATA from '../data.json' with { type: 'json' };
+import { getElements, getVariantById } from '../services/catalog.js';
 import { getCharacterRows, setCharacterRows } from '../services/storage.js';
+
+const CHARACTERS = getElements('character');
 
 let containerEl;
 let addBtnEl;
@@ -21,16 +22,17 @@ export function initCharacterRows({ container, addBtn }) {
 
 export function getCharacterSelections() {
 	return [...containerEl.querySelectorAll('.character-row')].map(row => {
-		const charKey = row.querySelector('.charRowSelect').value;
-		const variantKey = row.querySelector('.variantRowSelect').value;
-		const character = DATA.characters[charKey];
-		const variant = character.variants[variantKey];
+		const elementId = row.querySelector('.charRowSelect').value;
+		const variantId = row.querySelector('.variantRowSelect').value;
+		const character = getCharacter(elementId);
+		const variant = getVariantById(character, variantId);
 		return {
-			name: character.name,
-			variantKey,
-			variantName: WEREWOLF_VARIANTS[variantKey],
-			variantDesc: variant.description,
-			imageFile: variant.imageFile,
+			elementId,
+			elementName: character.name,
+			variantId,
+			variantName: variant.variantName,
+			variantDesc: variant.variantDesc,
+			image: variant.image,
 		};
 	});
 }
@@ -39,63 +41,63 @@ export function hasAtLeastOneRow() {
 	return containerEl.querySelectorAll('.character-row').length > 0;
 }
 
-function getAvailableCharacterKeys(excludeSelectEl) {
+function getCharacter(elementId) {
+	return CHARACTERS.find(character => character.id === elementId);
+}
+
+function getAvailableCharacterIds(excludeSelectEl) {
 	const chosenElsewhere = [...containerEl.querySelectorAll('.charRowSelect')]
 		.filter(select => select !== excludeSelectEl)
 		.map(select => select.value);
-	return Object.keys(DATA.characters).filter(
-		key => !chosenElsewhere.includes(key),
-	);
+	return CHARACTERS.filter(
+		character => !chosenElsewhere.includes(character.id),
+	).map(character => character.id);
 }
 
 function refreshCharacterOptions() {
 	for (const select of containerEl.querySelectorAll('.charRowSelect')) {
 		const currentValue = select.value;
-		const availableKeys = getAvailableCharacterKeys(select);
-		select.innerHTML = '';
-		for (const key of availableKeys) {
-			select.add(new Option(DATA.characters[key].name, key));
+		const availableIds = getAvailableCharacterIds(select);
+		select.replaceChildren();
+		for (const elementId of availableIds) {
+			select.add(new Option(getCharacter(elementId).name, elementId));
 		}
-		if (availableKeys.includes(currentValue)) select.value = currentValue;
+		if (availableIds.includes(currentValue)) select.value = currentValue;
 	}
 }
 
 function updateAddButtonState() {
 	const rowCount = containerEl.querySelectorAll('.character-row').length;
-	const totalCharacters = Object.keys(DATA.characters).length;
-	addBtnEl.hidden = rowCount >= totalCharacters;
+	addBtnEl.hidden = rowCount >= CHARACTERS.length;
 	addBtnEl.textContent =
 		rowCount === 0 ? 'Select a character' : 'Add another character';
 }
 
-// Rebuilds the Variant select to match whichever character is currently chosen in this row.
-function populateVariantOptions(charSelect, variantSelect, presetVariantKey) {
-	const character = DATA.characters[charSelect.value];
-	variantSelect.innerHTML = '';
-	for (const variantKey of Object.keys(character.variants)) {
-		variantSelect.add(
-			new Option(WEREWOLF_VARIANTS[variantKey], variantKey),
-		);
+function populateVariantOptions(charSelect, variantSelect, presetVariantId) {
+	const character = getCharacter(charSelect.value);
+	variantSelect.replaceChildren();
+	for (const variant of character.variants) {
+		variantSelect.add(new Option(variant.variantName, variant.variantId));
 	}
-	if (presetVariantKey && character.variants[presetVariantKey]) {
-		variantSelect.value = presetVariantKey;
+	if (presetVariantId && getVariantById(character, presetVariantId)) {
+		variantSelect.value = presetVariantId;
 	}
 }
 
-function createCharacterRow(presetCharKey, presetVariantKey) {
+function createCharacterRow(presetElementId, presetVariantId) {
 	const row = document.createElement('div');
 	row.className = 'character-row';
 
 	const charField = document.createElement('div');
 	charField.className = 'field';
 	const charLabel = document.createElement('label');
-	charLabel.textContent = 'PC';
+	charLabel.textContent = 'Character';
 	const charSelect = document.createElement('select');
 	charSelect.className = 'charRowSelect';
-	for (const key of getAvailableCharacterKeys(charSelect)) {
-		charSelect.add(new Option(DATA.characters[key].name, key));
+	for (const elementId of getAvailableCharacterIds(charSelect)) {
+		charSelect.add(new Option(getCharacter(elementId).name, elementId));
 	}
-	if (presetCharKey) charSelect.value = presetCharKey;
+	if (presetElementId) charSelect.value = presetElementId;
 	charField.append(charLabel, charSelect);
 
 	const variantField = document.createElement('div');
@@ -105,7 +107,7 @@ function createCharacterRow(presetCharKey, presetVariantKey) {
 	const variantSelect = document.createElement('select');
 	variantSelect.className = 'variantRowSelect';
 	variantField.append(variantLabel, variantSelect);
-	populateVariantOptions(charSelect, variantSelect, presetVariantKey);
+	populateVariantOptions(charSelect, variantSelect, presetVariantId);
 
 	row.append(charField, variantField);
 
@@ -134,23 +136,22 @@ function createCharacterRow(presetCharKey, presetVariantKey) {
 function persistCharacterRows() {
 	const rows = [...containerEl.querySelectorAll('.character-row')].map(
 		row => ({
-			char: row.querySelector('.charRowSelect').value,
-			variant: row.querySelector('.variantRowSelect').value,
+			elementId: row.querySelector('.charRowSelect').value,
+			variantId: row.querySelector('.variantRowSelect').value,
 		}),
 	);
 	setCharacterRows(rows);
 }
 
 function restoreCharacterRows() {
-	const stored = getCharacterRows();
-
-	const validRows = stored.filter(entry => {
-		const character = DATA.characters[entry.char];
-		return character && character.variants[entry.variant];
+	const validRows = getCharacterRows().filter(entry => {
+		const character = getCharacter(entry.elementId);
+		return character && getVariantById(character, entry.variantId);
 	});
 
-	for (const { char, variant } of validRows)
-		createCharacterRow(char, variant);
+	for (const { elementId, variantId } of validRows) {
+		createCharacterRow(elementId, variantId);
+	}
 	refreshCharacterOptions();
 	updateAddButtonState();
 }

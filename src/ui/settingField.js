@@ -1,5 +1,5 @@
 import { OTHER_LOCATION_KEY } from '../constants.js';
-import DATA from '../data.json' with { type: 'json' };
+import { getElements, getVariantById } from '../services/catalog.js';
 import {
 	getLocationSelection,
 	getOtherLocationText,
@@ -7,27 +7,40 @@ import {
 	setOtherLocationText,
 } from '../services/storage.js';
 
+const LOCATIONS = getElements('location');
+
 let selectEl;
+let variantFieldEl;
+let variantSelectEl;
 let descEl;
 let otherTextEl;
+let restoredVariantId;
 
 export function initSettingField({
 	selectEl: select,
+	variantFieldEl: variantField,
+	variantSelectEl: variantSelect,
 	descEl: desc,
 	otherTextEl: otherText,
 }) {
 	selectEl = select;
+	variantFieldEl = variantField;
+	variantSelectEl = variantSelect;
 	descEl = desc;
 	otherTextEl = otherText;
 
 	populateLocationSelect();
 	restoreLocationSelection();
 	restoreOtherLocationText();
-	updateLocationDescDisplay();
+	updateLocationDisplay();
 
 	selectEl.addEventListener('change', () => {
 		persistLocationSelection();
-		updateLocationDescDisplay();
+		updateLocationDisplay();
+	});
+	variantSelectEl.addEventListener('change', () => {
+		persistLocationSelection();
+		updateLocationDisplay();
 	});
 	otherTextEl.addEventListener('input', persistOtherLocationText);
 }
@@ -36,27 +49,59 @@ export function getLocationDescription() {
 	if (selectEl.value === OTHER_LOCATION_KEY) {
 		return otherTextEl.value.trim() || null;
 	}
-	return DATA.settings[selectEl.value].description;
+	const location = getLocation(selectEl.value);
+	const variant = getVariantById(location, variantSelectEl.value);
+	return variant?.variantDesc || null;
+}
+
+function getLocation(elementId) {
+	return LOCATIONS.find(location => location.id === elementId);
 }
 
 function populateLocationSelect() {
-	for (const [key, setting] of Object.entries(DATA.settings)) {
-		selectEl.add(new Option(setting.name, key));
+	for (const location of LOCATIONS) {
+		selectEl.add(new Option(location.name, location.id));
 	}
 	selectEl.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));
 }
 
-function updateLocationDescDisplay() {
+function updateVariantSelect(location, presetVariantId) {
+	variantSelectEl.replaceChildren();
+	for (const variant of location.variants) {
+		variantSelectEl.add(new Option(variant.variantName, variant.variantId));
+	}
+	if (presetVariantId && getVariantById(location, presetVariantId)) {
+		variantSelectEl.value = presetVariantId;
+	}
+	variantFieldEl.hidden = location.variants.length <= 1;
+}
+
+function updateLocationDisplay() {
 	const isOther = selectEl.value === OTHER_LOCATION_KEY;
 	descEl.hidden = isOther;
 	otherTextEl.hidden = !isOther;
-	if (!isOther) {
-		descEl.textContent = DATA.settings[selectEl.value]?.description ?? '';
-	}
+	variantFieldEl.hidden = true;
+	if (isOther) return;
+
+	const location = getLocation(selectEl.value);
+	if (!location) return;
+	updateVariantSelect(location, restoredVariantId ?? variantSelectEl.value);
+	restoredVariantId = undefined;
+	descEl.textContent = getLocationDescription() ?? '';
 }
 
 function restoreLocationSelection() {
-	const storedValue = getLocationSelection();
+	const stored = getLocationSelection();
+	let storedValue = stored;
+	if (stored) {
+		try {
+			const parsed = JSON.parse(stored);
+			storedValue = parsed.elementId ?? stored;
+			restoredVariantId = parsed.variantId;
+		} catch {
+			storedValue = stored;
+		}
+	}
 	if (
 		storedValue &&
 		[...selectEl.options].some(o => o.value === storedValue)
@@ -66,7 +111,16 @@ function restoreLocationSelection() {
 }
 
 function persistLocationSelection() {
-	setLocationSelection(selectEl.value);
+	if (selectEl.value === OTHER_LOCATION_KEY) {
+		setLocationSelection(OTHER_LOCATION_KEY);
+		return;
+	}
+	setLocationSelection(
+		JSON.stringify({
+			elementId: selectEl.value,
+			variantId: variantSelectEl.value,
+		}),
+	);
 }
 
 function restoreOtherLocationText() {

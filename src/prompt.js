@@ -7,18 +7,18 @@ export function buildPrompt({
 }) {
 	const entityBlocks = [
 		...characters.map(
-			({ name, variantName, variantDesc }) =>
-				`Character: ${name} in ${variantName} variant (${variantDesc}).`,
+			({ elementName, variantName, variantDesc }) =>
+				`Character: ${elementName} in ${variantName} variant (${variantDesc}).`,
 		),
-		...npcs.map(({ name, variantName, description }) =>
+		...npcs.map(({ elementName, variantName, variantDesc }) =>
 			variantName
-				? `NPC: ${name} in ${variantName} variant (${description}).`
-				: `NPC: ${name} (${description}).`,
+				? `NPC: ${elementName} in ${variantName} variant (${variantDesc}).`
+				: `NPC: ${elementName} (${variantDesc}).`,
 		),
-		...enemies.map(({ name, variantName, description }) =>
+		...enemies.map(({ elementName, variantName, variantDesc }) =>
 			variantName
-				? `Enemy: ${name} in ${variantName} variant (${description}).`
-				: `Enemy: ${name} (${description}).`,
+				? `Enemy: ${elementName} in ${variantName} variant (${variantDesc}).`
+				: `Enemy: ${elementName} (${variantDesc}).`,
 		),
 	].join('\n');
 

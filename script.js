@@ -69,6 +69,8 @@ initEnemyRows({
 
 initSettingField({
 	selectEl: document.getElementById('locationSelect'),
+	variantFieldEl: document.getElementById('locationVariantField'),
+	variantSelectEl: document.getElementById('locationVariantSelect'),
 	descEl: document.getElementById('locationDescText'),
 	otherTextEl: document.getElementById('otherLocationText'),
 });

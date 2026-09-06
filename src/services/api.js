@@ -46,21 +46,19 @@ function blobToBase64(blob) {
 }
 
 // Skips and warns on load failure rather than failing the whole generation.
-async function loadReferenceImage({ name, variantName, imageFile }) {
+async function loadReferenceImage({ elementName, variantName, image }) {
 	try {
-		const response = await fetch(
-			`${REFERENCE_IMAGE_BASE_PATH}${imageFile}`,
-		);
+		const response = await fetch(`${REFERENCE_IMAGE_BASE_PATH}${image}`);
 		if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		const originalBlob = await response.blob();
 		const resizedBlob = await downscaleImage(originalBlob);
 		const data = await blobToBase64(resizedBlob);
 		const label = variantName
-			? `This photo shows ${name}'s appearance ONLY in ${variantName} form — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`
-			: `This photo shows ${name}'s appearance ONLY — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`;
+			? `This photo shows ${elementName}'s appearance ONLY in ${variantName} variant — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`
+			: `This photo shows ${elementName}'s appearance ONLY — face shape, coloring, features, and physique. Do NOT reuse this photo's pose, facial expression, gaze direction, or camera angle in the new image.`;
 		return { mimeType: resizedBlob.type || 'image/jpeg', data, label };
 	} catch (error) {
-		console.warn(`Skipping reference image "${imageFile}":`, error);
+		console.warn(`Skipping reference image "${image}":`, error);
 		return null;
 	}
 }
@@ -69,7 +67,7 @@ async function loadReferenceImage({ name, variantName, imageFile }) {
 export async function loadReferenceImages(entities) {
 	const loaded = await Promise.all(
 		entities
-			.filter(({ imageFile }) => imageFile)
+			.filter(({ image }) => image)
 			.map(entity => loadReferenceImage(entity)),
 	);
 	return loaded.filter(Boolean);
