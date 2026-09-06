@@ -1,171 +1,292 @@
 {
-	"characters": {
-		"lorica": {
+	"characters": [
+		{
+			"id": "bb4293d5-4742-4739-98f3-311ac2911e1f",
+			"elementType": "character",
 			"name": "Lorica Albrecht",
-			"nickname": "Lorica",
-			"breed": "lupus",
-			"tribe": "Shadow Lords",
-			"auspice": "Ahroun",
-			"variants": {
-				"homid": {
-					"description": "Lorica is 5'11\" fairly muscular, fair skinned young woman, about 21 years old. She has ice blue eyes. Black colored, slightly curly mid-back length hair that she keeps in a half-up, half-down braided hairstyle (also known as viking-style braid or braided faux hawk). She wears fitted black jeans, a dark blue halter top with a black leather biker jacket and black combat boots. She projects an aura of superiority and of a danger hidden beneath beauty, something that tickles the mind of the meek into fear. She learned long ago to hide her emotions behind a mask of impassivity.",
-					"imageFile": ""
+			"slug": "lorica",
+			"variants": [
+				{
+					"variantId": "b52696fd-d1cc-4291-b5ce-039f5b1421c4",
+					"variantName": "Homid (Human)",
+					"variantDesc": "Lorica is 5'11\" fairly muscular, fair skinned young woman, about 21 years old. She has ice blue eyes. Black colored, slightly curly mid-back length hair that she keeps in a half-up, half-down braided hairstyle (also known as viking-style braid or braided faux hawk). She wears fitted black jeans, a dark blue halter top with a black leather biker jacket and black combat boots. She projects an aura of superiority and of a danger hidden beneath beauty, something that tickles the mind of the meek into fear. She learned long ago to hide her emotions behind a mask of impassivity.",
+					"image": ""
 				},
-				"glabro": {
-					"description": "Lorica towers at a imposing 6'8\" with the dense, sculpted physique of a top-tier bodybuilder—a frame composed of pure, unyielding muscle. Her pale skin remains fair, but her eyes gleam with a fierce, unnatural intensity, taking on a subtle predatory glow. Her dark, curly hair cascades well past her waist, growing noticeably coarser while retaining its intricate braided style. Any pretense of hidden danger is entirely stripped away; in this shape, she projects raw, undisguised aggression. Her wide, feral smile reveals lengthened, razor-sharp canines, and her dark fingernails have hardened into thick, pointed talons—an ominous middle ground before true claws emerge.",
-					"imageFile": ""
+				{
+					"variantId": "6a3a4ad2-8821-4f51-bc1c-a3ff3f0f61c7",
+					"variantName": "Glabro (Hulked-Out Near-Human)",
+					"variantDesc": "Lorica towers at a imposing 6'8\" with the dense, sculpted physique of a top-tier bodybuilder—a frame composed of pure, unyielding muscle. Her pale skin remains fair, but her eyes gleam with a fierce, unnatural intensity, taking on a subtle predatory glow. Her dark, curly hair cascades well past her waist, growing noticeably coarser while retaining its intricate braided style. Any pretense of hidden danger is entirely stripped away; in this shape, she projects raw, undisguised aggression. Her wide, feral smile reveals lengthened, razor-sharp canines, and her dark fingernails have hardened into thick, pointed talons—an ominous middle ground before true claws emerge.",
+					"image": ""
 				},
-				"crinos": {
-					"description": "Lorica has pure black fur and ice blue eyes and towers at 9' tall. She has terrifying 6-inch claws. She has no adornments.",
-					"imageFile": ""
+				{
+					"variantId": "bb01a61a-6a98-4b43-94a6-e158f13139df",
+					"variantName": "Crinos (Werewolf)",
+					"variantDesc": "Lorica has pure black fur and ice blue eyes and towers at 9' tall. She has terrifying 6-inch claws. She has no adornments.",
+					"image": ""
 				},
-				"hispo": {
-					"description": "A 6-foot tall wolf-like beast with pure black fur and ice blue eyes.",
-					"imageFile": ""
+				{
+					"variantId": "4a22f0dc-2b6e-40f2-90a6-8101b73f87ce",
+					"variantName": "Hispo (Near-Wolf Beast)",
+					"variantDesc": "A 6-foot tall wolf-like beast with pure black fur and ice blue eyes.",
+					"image": ""
 				},
-				"lupus": {
-					"description": "A pure black wolf with ice blue eyes.",
-					"imageFile": ""
+				{
+					"variantId": "5711d0f2-9fb8-4e19-90f6-6520cf882131",
+					"variantName": "Lupus (Wolf)",
+					"variantDesc": "A pure black wolf with ice blue eyes.",
+					"image": ""
 				}
-			}
+			]
 		},
-		"river": {
+		{
+			"id": "26d6fb50-4daf-4422-9db8-50794ff53219",
+			"elementType": "character",
 			"name": "River-That-Remembers",
-			"nickname": "River",
-			"breed": "Lupus",
-			"tribe": "Uktena",
-			"auspice": "Theurge",
-			"variants": {
-				"homid": {
-					"description": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. Light brown eyes. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
-					"imageFile": "river-homid.png"
+			"slug": "river",
+			"variants": [
+				{
+					"variantId": "291ef9ac-3061-45fc-8cf9-7fcdaab8ac54",
+					"variantName": "Homid (Human)",
+					"variantDesc": "Petite 5'1\" woman, appearing about 18 years old. Honey-colored, slightly wavy medium-length hair with curtain bangs. Light brown eyes. She wears wide-leg jeans, sneakers, boxy cropped sweater in dusty rose. River has an air of shy innocence and even naivete at times, but she watches and learns everywhere she goes. She is still trying to get more comfortable in human form and interacting with humans in their busy, noisy world.",
+					"image": "river-homid.png"
 				},
-				"glabro": {
-					"description": "River still looks small by human standards—perhaps reaching a dense, formidable 5'3\". However, she now appears to be forged of compact muscle and bone. Her dusty rose cropped sweater fits much more tightly across her shoulders, which have broadened considerably, her jeans are tight, and she wears heavy boots. Her hair is still honey-colored, but it grows darker, coarse, and thick, spilling down her back like wild grass; her curtain bangs are heavier, partially obscuring eyes that have turned a dark, guarded gold. Her facial structure becomes sharper, more wolf-like, with a strong, pronounced jawline and heavy brow. Her nails don't quite become claws, but they grow thick and dark like hardened flint. When she moves, she has a heavy, compact gait, no longer petite but powerfully dangerous.",
-					"imageFile": "river-glabro.png"
+				{
+					"variantId": "c0239378-c187-4cdc-b59f-bdc86890242a",
+					"variantName": "Glabro (Hulked-Out Near-Human)",
+					"variantDesc": "River still looks small by human standards—perhaps reaching a dense, formidable 5'3\". However, she now appears to be forged of compact muscle and bone. Her dusty rose cropped sweater fits much more tightly across her shoulders, which have broadened considerably, her jeans are tight, and she wears heavy boots. Her hair is still honey-colored, but it grows darker, coarse, and thick, spilling down her back like wild grass; her curtain bangs are heavier, partially obscuring eyes that have turned a dark, guarded gold. Her facial structure becomes sharper, more wolf-like, with a strong, pronounced jawline and heavy brow. Her nails don't quite become claws, but they grow thick and dark like hardened flint. When she moves, she has a heavy, compact gait, no longer petite but powerfully dangerous.",
+					"image": "river-glabro.png"
 				},
-				"crinos": {
-					"description": "Standing 8.5 feet tall, River's war form is a terrifying synthesis of ancient hunter and nightmare. The massive humanoid body is corded with heavy, compact muscle, wrapped in charcoal gray fur that is no longer sleek, but shaggy and rugged like a rain-beaten forest. A coarse shock of slate (blue-gray) fur flows down her massive bipedal spine. Woven inextricably into the deep fur are hundreds of tiny polished river stones in hues of slate blue-gray, silvery white, and soft brown. (IMPORTANT: These pieces are VERY small, not draped across the fur on strings, but individually embedded deeply in the fur with no obvious sign of how they are attached. It is almost like seeing the twinkling glint of stars in a starry sky.) Her head is massive and distinctly wolf-like, with long ears capable of picking up spirit-sounds. Her eyes retain the striking amber fire of a sunset, burning with intelligent, prehistoric rage. In this form, she loses all human naivete; she stands with a heavy, deliberate, and broad posture, each paw-hand ending in flint-hard, five-inch claws. Her grace in Crinos is not the silent flow of a river, but the brutal, inexorable power of a rushing flood that will smash down anyone who stands in its path.",
-					"imageFile": "river-crinos.png"
+				{
+					"variantId": "cbdb10d8-4601-42d9-869b-f52f8dacb5d5",
+					"variantName": "Crinos (Werewolf)",
+					"variantDesc": "Standing 8.5 feet tall, River's war form is a terrifying synthesis of ancient hunter and nightmare. The massive humanoid body is corded with heavy, compact muscle, wrapped in charcoal gray fur that is no longer sleek, but shaggy and rugged like a rain-beaten forest. A coarse shock of slate (blue-gray) fur flows down her massive bipedal spine. Woven inextricably into the deep fur are hundreds of tiny polished river stones in hues of slate blue-gray, silvery white, and soft brown. (IMPORTANT: These pieces are VERY small, not draped across the fur on strings, but individually embedded deeply in the fur with no obvious sign of how they are attached. It is almost like seeing the twinkling glint of stars in a starry sky.) Her head is massive and distinctly wolf-like, with long ears capable of picking up spirit-sounds. Her eyes retain the striking amber fire of a sunset, burning with intelligent, prehistoric rage. In this form, she loses all human naivete; she stands with a heavy, deliberate, and broad posture, each paw-hand ending in flint-hard, five-inch claws. Her grace in Crinos is not the silent flow of a river, but the brutal, inexorable power of a rushing flood that will smash down anyone who stands in its path.",
+					"image": "river-crinos.png"
 				},
-				"hispo": {
-					"description": "In Hispo form, River is a massive, primal beast. Standing nearly 5 feet tall at the shoulder, she is a colossal, sleek-coated wolf that looks less like a mammal and more like an elemental force of nature. Her fur is charcoal gray and incredibly dense, sharing the texture of wet stones in a river. Down her massive spine, lighter slate (blue-gray) fur lies smooth, looking exactly like the rush of deep, fast-flowing water. The amber fire in her eyes burns brightly, appearing as intelligent as any human's. When she drops her powerful head, faint, ghostly blue tracery of Uktena spirit-tattoos seems to momentarily glow just beneath the surface of her black pelt. In this form, she is perfectly silent; she doesn't pad along—she glides, flowing over terrain like water, her long snout tested for spirits, ready to hunt, kill, and guard the Wyrm-secrets she protects.",
-					"imageFile": "river-hispo.png"
+				{
+					"variantId": "19380181-3332-4035-b27a-d8a0f1a08368",
+					"variantName": "Hispo (Near-Wolf Beast)",
+					"variantDesc": "In Hispo form, River is a massive, primal beast. Standing nearly 5 feet tall at the shoulder, she is a colossal, sleek-coated wolf that looks less like a mammal and more like an elemental force of nature. Her fur is charcoal gray and incredibly dense, sharing the texture of wet stones in a river. Down her massive spine, lighter slate (blue-gray) fur lies smooth, looking exactly like the rush of deep, fast-flowing water. The amber fire in her eyes burns brightly, appearing as intelligent as any human's. When she drops her powerful head, faint, ghostly blue tracery of Uktena spirit-tattoos seems to momentarily glow just beneath the surface of her black pelt. In this form, she is perfectly silent; she doesn't pad along—she glides, flowing over terrain like water, her long snout tested for spirits, ready to hunt, kill, and guard the Wyrm-secrets she protects.",
+					"image": "river-hispo.png"
 				},
-				"lupus": {
-					"description": "In her natural form, River is a young, slender wolf of ancient Uktena lineage. Her pelt is a profound, charcoal gray— not the deep dark of a forest night, but the shimmering, fluid darkness of the deep Hiwassee River where the shadows are smoothest. A swath of slate (blue-gray) fur runs down her spine. Her fur is unusually sleek and close-cropped, offering zero resistance to the brush, appearing to have been polished by the passage of current over millennia. She possesses the sharp, observant features and sensitive, upright ears of a predator designed to navigate both the dense Southern forests and the tricky Umbral pathways. The defining element of this form, however, is her eyes: bright, piercing amber that flashes with the intelligent fire of a sunset hitting the water. She moves with a beautiful, liquid economy, always quiet, always watchful, perfectly adapted for the silent hunt. In this form, separated from the loud, confused clatter of the human world, River-that-Remembers finds her true peace.",
-					"imageFile": "river-lupus.png"
+				{
+					"variantId": "b6919be0-818a-4a09-adfa-e73988ee6363",
+					"variantName": "Lupus (Wolf)",
+					"variantDesc": "In her natural form, River is a young, slender wolf of ancient Uktena lineage. Her pelt is a profound, charcoal gray— not the deep dark of a forest night, but the shimmering, fluid darkness of the deep Hiwassee River where the shadows are smoothest. A swath of slate (blue-gray) fur runs down her spine. Her fur is unusually sleek and close-cropped, offering zero resistance to the brush, appearing to have been polished by the passage of current over millennia. She possesses the sharp, observant features and sensitive, upright ears of a predator designed to navigate both the dense Southern forests and the tricky Umbral pathways. The defining element of this form, however, is her eyes: bright, piercing amber that flashes with the intelligent fire of a sunset hitting the water. She moves with a beautiful, liquid economy, always quiet, always watchful, perfectly adapted for the silent hunt. In this form, separated from the loud, confused clatter of the human world, River-that-Remembers finds her true peace.",
+					"image": "river-lupus.png"
 				}
-			}
+			]
 		},
-		"monkshood": {
+		{
+			"id": "5f123959-317c-4b09-b9bb-64c816a84063",
+			"elementType": "character",
 			"name": "Monkshood",
-			"nickname": "Silent-Viper-That-Punishes",
-			"breed": "Lupus",
-			"tribe": "Black Fury",
-			"auspice": "Philodox",
-			"variants": {
-				"homid": {
-					"description": "Monkshood is an exceptionally tall young woman, standing 6'3\" and weighing roughly 185 pounds. She has a powerful, athletic build, with broad shoulders, muscular arms, a strong back, and thick legs. Her strength is immediately apparent without giving her the exaggerated definition of a bodybuilder; she looks naturally built for physical exertion and fighting. Her face is attractive but somewhat severe at rest, with a strong jaw, prominent cheekbones, and heavy brows. Long, unruly brown hair frames her face, broken by a prominent streak of white running through the front of it. Her most unusual feature is her eyes, which are a striking silver rather than an ordinary gray. She tends to watch people directly and quietly, giving her an unintentionally predatory intensity. Her clothing is generally simple, durable, comfortable, and chosen primarily for freedom of movement rather than fashion. Even when freshly washed, she carries a faint but unmistakable animal scent.",
-					"imageFile": "monkshood-homid.JPG"
+			"slug": "monkshood",
+			"variants": [
+				{
+					"variantId": "37329d89-270b-4cf7-8ad6-c7bf4dd0ecc3",
+					"variantName": "Homid (Human)",
+					"variantDesc": "Monkshood is an exceptionally tall young woman, standing 6'3\" and weighing roughly 185 pounds. She has a powerful, athletic build, with broad shoulders, muscular arms, a strong back, and thick legs. Her strength is immediately apparent without giving her the exaggerated definition of a bodybuilder; she looks naturally built for physical exertion and fighting. Her face is attractive but somewhat severe at rest, with a strong jaw, prominent cheekbones, and heavy brows. Long, unruly brown hair frames her face, broken by a prominent streak of white running through the front of it. Her most unusual feature is her eyes, which are a striking silver rather than an ordinary gray. She tends to watch people directly and quietly, giving her an unintentionally predatory intensity. Her clothing is generally simple, durable, comfortable, and chosen primarily for freedom of movement rather than fashion. Even when freshly washed, she carries a faint but unmistakable animal scent.",
+					"image": "monkshood-homid.JPG"
 				},
-				"glabro": {
-					"description": "In Glabro, Monkshood stands roughly 7'0\" and weighs around 285 pounds. Her already powerful build becomes enormous, with dramatically broader shoulders, a thicker torso, heavily muscled limbs, and disproportionately long arms. Her hands broaden and her fingers thicken, ending in heavy, claw-like nails. Coarse brown body hair becomes prominent across her arms, legs, shoulders, and back, while the white streak in her hair becomes even more pronounced. Her facial structure grows heavier and more lupine, her jaw pushing slightly forward and her teeth becoming noticeably larger, particularly her canines. Her ears lengthen subtly toward points and her silver eyes reflect light with an animal quality. She remains recognizably Monkshood, but no longer looks entirely human; viewed up close, there are simply too many small things about her proportions and features that are unmistakably wrong.",
-					"imageFile": "monkshood-glabro.JPG"
+				{
+					"variantId": "3a9e1983-7b88-4a12-919f-40a9bb515a84",
+					"variantName": "Glabro (Hulked-Out Near-Human)",
+					"variantDesc": "In Glabro, Monkshood stands roughly 7'0\" and weighs around 285 pounds. Her already powerful build becomes enormous, with dramatically broader shoulders, a thicker torso, heavily muscled limbs, and disproportionately long arms. Her hands broaden and her fingers thicken, ending in heavy, claw-like nails. Coarse brown body hair becomes prominent across her arms, legs, shoulders, and back, while the white streak in her hair becomes even more pronounced. Her facial structure grows heavier and more lupine, her jaw pushing slightly forward and her teeth becoming noticeably larger, particularly her canines. Her ears lengthen subtly toward points and her silver eyes reflect light with an animal quality. She remains recognizably Monkshood, but no longer looks entirely human; viewed up close, there are simply too many small things about her proportions and features that are unmistakably wrong.",
+					"image": "monkshood-glabro.JPG"
 				},
-				"crinos": {
-					"description": "Monkshood's Crinos form is an 8'6\", roughly 500-pound werewolf covered in thick brown fur, darker across her back, shoulders, and outer limbs and lighter along her chest and underside. An irregular blaze of white begins at her forehead and crown before sweeping backward through the darker fur, preserving the distinctive white streak visible in her other forms. Her eyes remain a brilliant silver. She is powerfully muscled through the shoulders, neck, back, and thighs, with long limbs, enormous clawed hands and feet, a substantial lupine muzzle, tall ears, and heavy predatory teeth. Despite her enormous size, her proportions retain an animalistic functionality rather than resembling a human bodybuilder with a wolf's head. Her usual demeanor remains unnervingly restrained even in this form; rather than constantly snarling or posturing, Monkshood tends to stand quietly and watch, her ears tracking sounds and her silver eyes remaining fixed on whatever has her attention.",
-					"imageFile": "monkshood-crinos.JPG"
+				{
+					"variantId": "b17f33b2-52c3-4dd5-9623-ab3af68171bf",
+					"variantName": "Crinos (Werewolf)",
+					"variantDesc": "Monkshood's Crinos form is an 8'6\", roughly 500-pound werewolf covered in thick brown fur, darker across her back, shoulders, and outer limbs and lighter along her chest and underside. An irregular blaze of white begins at her forehead and crown before sweeping backward through the darker fur, preserving the distinctive white streak visible in her other forms. Her eyes remain a brilliant silver. She is powerfully muscled through the shoulders, neck, back, and thighs, with long limbs, enormous clawed hands and feet, a substantial lupine muzzle, tall ears, and heavy predatory teeth. Despite her enormous size, her proportions retain an animalistic functionality rather than resembling a human bodybuilder with a wolf's head. Her usual demeanor remains unnervingly restrained even in this form; rather than constantly snarling or posturing, Monkshood tends to stand quietly and watch, her ears tracking sounds and her silver eyes remaining fixed on whatever has her attention.",
+					"image": "monkshood-crinos.JPG"
 				},
-				"hispo": {
-					"description": "In Hispo, Monkshood resembles an enormous, prehistoric wolf, standing approximately 5'6\" at the shoulder and weighing around 200 pounds. Her body is heavily built, with a deep chest, thick neck, powerful legs, enormous paws, and a broad, heavy skull. Her muzzle is larger and more robust than in Lupus, filled with oversized teeth suited to the form's tremendous bite. Thick brown fur covers her body, becoming darker along her back and shoulders and lighter underneath, while the familiar irregular white blaze runs across her forehead and crown. Her eyes remain unmistakably silver. Though unmistakably canine, her sheer size and unusually powerful proportions make it immediately apparent that she is nothing resembling an ordinary wolf.",
-					"imageFile": "monkshood-hispo.JPG"
+				{
+					"variantId": "fcd30020-2079-4630-a07c-5464a148ba2f",
+					"variantName": "Hispo (Near-Wolf Beast)",
+					"variantDesc": "In Hispo, Monkshood resembles an enormous, prehistoric wolf, standing approximately 5'6\" at the shoulder and weighing around 200 pounds. Her body is heavily built, with a deep chest, thick neck, powerful legs, enormous paws, and a broad, heavy skull. Her muzzle is larger and more robust than in Lupus, filled with oversized teeth suited to the form's tremendous bite. Thick brown fur covers her body, becoming darker along her back and shoulders and lighter underneath, while the familiar irregular white blaze runs across her forehead and crown. Her eyes remain unmistakably silver. Though unmistakably canine, her sheer size and unusually powerful proportions make it immediately apparent that she is nothing resembling an ordinary wolf.",
+					"image": "monkshood-hispo.JPG"
 				},
-				"lupus": {
-					"description": "Monkshood's Lupus form is that of a large female wolf, standing approximately 3'0\" at the shoulder and weighing around 110 pounds. She has a robust, powerful frame with a deep chest, strong shoulders, long legs, and large paws, making her imposing without appearing obviously supernatural. Her thick coat is predominantly rich brown, with darker guard hairs along her back and shoulders and lighter fur across her underside. Her most distinctive marking is an irregular blaze of white beginning between and above her silver eyes and sweeping backward across part of her crown, the natural counterpart to the white streak in her Homid hair. Her movements are quiet, economical, and exceptionally natural. Unlike the slight social awkwardness she can display while inhabiting a human body, there is no uncertainty whatsoever in her posture or movement as a wolf. This is not Monkshood imitating an animal or transforming into something unfamiliar; this is the body in which she spent the first years of her life.",
-					"imageFile": "monkshood-lupus.JPG"
+				{
+					"variantId": "6c7de875-6206-4a7b-be21-67f97b7eb1f6",
+					"variantName": "Lupus (Wolf)",
+					"variantDesc": "Monkshood's Lupus form is that of a large female wolf, standing approximately 3'0\" at the shoulder and weighing around 110 pounds. She has a robust, powerful frame with a deep chest, strong shoulders, long legs, and large paws, making her imposing without appearing obviously supernatural. Her thick coat is predominantly rich brown, with darker guard hairs along her back and shoulders and lighter fur across her underside. Her most distinctive marking is an irregular blaze of white beginning between and above her silver eyes and sweeping backward across part of her crown, the natural counterpart to the white streak in her Homid hair. Her movements are quiet, economical, and exceptionally natural. Unlike the slight social awkwardness she can display while inhabiting a human body, there is no uncertainty whatsoever in her posture or movement as a wolf. This is not Monkshood imitating an animal or transforming into something unfamiliar; this is the body in which she spent the first years of her life.",
+					"image": "monkshood-lupus.JPG"
 				}
-			}
+			]
 		}
-	},
-	"npcs": {
-		"guideBot": {
+	],
+	"npcs": [
+		{
+			"id": "76a1101b-8e69-4cd5-9365-82ea5646ead8",
+			"elementType": "npc",
 			"name": "Guide Dummy Bot",
-			"description": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored royal blue blazer over a white button-up shirt and khaki slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, institutional lighting."
+			"slug": "guideBot",
+			"variants": [
+				{
+					"variantId": "18d8491e-e4e6-42d9-aec5-f0070febb7eb",
+					"variantName": "default",
+					"variantDesc": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored royal blue blazer over a white button-up shirt and khaki slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, institutional lighting.",
+					"image": ""
+				}
+			]
 		},
-		"jolissa": {
+		{
+			"id": "8d544ef5-9423-4b3a-ae64-1b312903d85e",
+			"elementType": "npc",
 			"name": "Jolissa Stormbreaker",
-			"form": {
-				"tacticalGear": {
-					"name": "Tactical Gear",
-					"description": "Mysterious rogue operative, slender athletic build clad in sleek matte-black tactical gear, leather straps, and utility harness. Face fully concealed by a black balaclava, leaving only intense, piercing emerald green cat-like eyes visible.  No discernible weapon in hand.Crouched on a rain-slicked urban rooftop under a stormy night sky, dark moody lighting, cinematic dark fantasy RPG illustration."
+			"slug": "jolissa",
+			"variants": [
+				{
+					"variantId": "ae73dff3-b3dc-4dd4-88bc-57f1989612a9",
+					"variantName": "Tactical Gear",
+					"variantDesc": "Mysterious rogue operative, slender athletic build clad in sleek matte-black tactical gear, leather straps, and utility harness. Face fully concealed by a black balaclava, leaving only intense, piercing emerald green cat-like eyes visible.  No discernible weapon in hand.Crouched on a rain-slicked urban rooftop under a stormy night sky, dark moody lighting, cinematic dark fantasy RPG illustration.",
+					"image": ""
 				},
-				"bastet": {
-					"name": "Bastet",
-					"description": "Ancient Bastet feline-shifter hybrid form, elegant humanoid panther with sleek midnight-black fur, sharp retractable claws, and radiant emerald green eyes full of defiance. Dark leather wraps around her waist and forearms. Crackling blue and violet lightning arcs dramatically from her bare hands, illuminating her dark fur in a thunderstorm, dark fantasy World of Darkness style."
+				{
+					"variantId": "c98f5910-3628-408b-beb4-6711cbf31e91",
+					"variantName": "Bastet",
+					"variantDesc": "Ancient Bastet feline-shifter hybrid form, elegant humanoid panther with sleek midnight-black fur, sharp retractable claws, and radiant emerald green eyes full of defiance. Dark leather wraps around her waist and forearms. Crackling blue and violet lightning arcs dramatically from her bare hands, illuminating her dark fur in a thunderstorm, dark fantasy World of Darkness style.",
+					"image": ""
 				}
-			}
+			]
 		},
-		"runsWithScissors": {
+		{
+			"id": "df716fbc-1f41-4cd4-937f-f648be066a9c",
+			"elementType": "npc",
 			"name": "Runs-with-Scissors",
-			"nickname": "Father",
-			"breed": "Homid",
-			"tribe": "Bone Gnawers",
-			"auspice": "Philodox",
-			"variants": {
-				"homid": {
-					"description": "An older man in his early 50s with a slim, gymnast build standing approximately 6 feet tall. Grey eyes and a 5 o'clock shadow; his face looks craggy and worn. He wears a pair of faded jeans and a battered Army jacket. Scuffed combat boots finish the outfit. On his head he wears an elaborate Native American headdress of white eagle feathers. He looks past his prime yet still competent in a fight."
+			"slug": "runsWithScissors",
+			"variants": [
+				{
+					"variantId": "d255042f-d2b0-4c87-836b-d8e4822a3e90",
+					"variantName": "Homid (Human)",
+					"variantDesc": "An older man in his early 50s with a slim, gymnast build standing approximately 6 feet tall. Grey eyes and a 5 o'clock shadow; his face looks craggy and worn. He wears a pair of faded jeans and a battered Army jacket. Scuffed combat boots finish the outfit. On his head he wears an elaborate Native American headdress of white eagle feathers. He looks past his prime yet still competent in a fight.",
+					"image": ""
 				},
-				"glabro": {
-					"description": "Stocky and muscled with short grey hair covering his body."
+				{
+					"variantId": "c808508f-4bd9-44c8-9e3a-53394ac1b7a4",
+					"variantName": "Glabro (Hulked-Out Near-Human)",
+					"variantDesc": "Stocky and muscled with short grey hair covering his body.",
+					"image": ""
 				},
-				"crinos": {
-					"description": "Standing 8 feet tall his body is covered with shaggy grey fur. His body is covered with dozens of aged scars prominent across his chest and legs. His piercing grey eyes carry the promise of violence."
+				{
+					"variantId": "69abdd63-c1e9-4209-9749-b2866586dc3b",
+					"variantName": "Crinos (Werewolf)",
+					"variantDesc": "Standing 8 feet tall his body is covered with shaggy grey fur. His body is covered with dozens of aged scars prominent across his chest and legs. His piercing grey eyes carry the promise of violence.",
+					"image": ""
 				},
-				"hispo": {
-					"description": "A large dark grey wolf the color of storm clouds; his back and flanks covered in scars."
+				{
+					"variantId": "94f4242c-f78e-4ead-ac46-c7a874ce988f",
+					"variantName": "Hispo (Near-Wolf Beast)",
+					"variantDesc": "A large dark grey wolf the color of storm clouds; his back and flanks covered in scars.",
+					"image": ""
 				},
-				"lupus": {
-					"description": "A slim grey wolf; his white muzzle shows his age. Scars cover his back and flanks."
+				{
+					"variantId": "89bd5eea-db38-41af-b9e9-a7d39faa01b5",
+					"variantName": "Lupus (Wolf)",
+					"variantDesc": "A slim grey wolf; his white muzzle shows his age. Scars cover his back and flanks.",
+					"image": ""
 				}
-			}
+			]
 		}
-	},
-	"enemies": {
-		"securityBot": {
+	],
+	"enemies": [
+		{
+			"id": "f3cfb1e1-6e12-4ef1-a0f0-04e8766de527",
+			"elementType": "enemy",
 			"name": "Security Bot",
-			"variants": {
-				"patrol": {
-					"name": "On Patrol",
-					"description": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored red blazer over a black button-up shirt and black slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, dark cinematic lighting."
+			"slug": "securityBot",
+			"variants": [
+				{
+					"variantId": "302a6112-6435-4d97-97c5-f8d47ab27205",
+					"variantName": "On Patrol",
+					"variantDesc": "Retro-futuristic corporate security android styled as a smooth metal crash test dummy. Seamless featureless head with synthetic matte pale skin, wearing a sharp tailored red blazer over a black button-up shirt and black slacks. Glowing bright white electric eyes behind clean glass lenses, standing in a stark corporate office hallway, uncanny horror vibe, dark cinematic lighting.",
+					"image": ""
 				},
-				"hostile": {
-					"name": "Hostile",
-					"description": "Uncanny corporate security android, smooth featureless crash test dummy head wearing a tailored red blazer and black slacks. Eyes flared into harsh glowing crimson red electric lights casting a red glare across its pale metal face. It is wielding a taser. Aggressive forward posture, dark moody hallway, red threat lighting, dark fantasy horror style."
+				{
+					"variantId": "8b2ae7ae-096e-49bc-898d-2262528c2848",
+					"variantName": "Hostile",
+					"variantDesc": "Uncanny corporate security android, smooth featureless crash test dummy head wearing a tailored red blazer and black slacks. Eyes flared into harsh glowing crimson red electric lights casting a red glare across its pale metal face. It is wielding a taser. Aggressive forward posture, dark moody hallway, red threat lighting, dark fantasy horror style.",
+					"image": ""
 				}
-			}
+			]
 		},
-		"drider": {
+		{
+			"id": "e6cf122e-66fe-4c79-9595-68ee59c6faa4",
+			"elementType": "enemy",
 			"name": "Drider",
-			"description": "Terrifying drow hybrid enemy, upper body of a dark-skinned drow elf with silver hair, seamlessly fused at the waist to the massive, armored body of a giant black arachnid. Fused dark chitin armor, eight hairy spider legs. Wields a long, ornate steel glaive polearm with a curved blade glowing with faint violet runes. Dark fantasy style."
+			"slug": "drider",
+			"variants": [
+				{
+					"variantId": "f0fe2978-3c53-4a2d-a7b7-1bc980e6a199",
+					"variantName": "default",
+					"variantDesc": "Terrifying drow hybrid enemy, upper body of a dark-skinned drow elf with silver hair, seamlessly fused at the waist to the massive, armored body of a giant black arachnid. Fused dark chitin armor, eight hairy spider legs. Wields a long, ornate steel glaive polearm with a curved blade glowing with faint violet runes. Dark fantasy style.",
+					"image": ""
+				}
+			]
 		},
-		"fomori": {
+		{
+			"id": "cb2b878a-5bbc-4da2-abf7-f4c945550ae2",
+			"elementType": "enemy",
 			"name": "Fomori",
-			"description": "World of Darkness horror, Wyrm-tainted mutant fomori. Horrifyingly blank, smooth pale skin across its upper face with no eyes, no ears, and no nose whatsoever. The bottom half of its head splits open into an unnaturally wide, gaping maw filled with jagged, mismatched yellow teeth and dripping black sludge. Its body is not muscular, but skeletal, the skin hanging on the bones. Clad in tattered industrial rags, hunched aggressive posture."
+			"slug": "fomori",
+			"variants": [
+				{
+					"variantId": "40656474-7e9d-4b89-b262-d64352bff502",
+					"variantName": "default",
+					"variantDesc": "World of Darkness horror, Wyrm-tainted mutant fomori. Horrifyingly blank, smooth pale skin across its upper face with no eyes, no ears, and no nose whatsoever. The bottom half of its head splits open into an unnaturally wide, gaping maw filled with jagged, mismatched yellow teeth and dripping black sludge. Its body is not muscular, but skeletal, the skin hanging on the bones. Clad in tattered industrial rags, hunched aggressive posture.",
+					"image": ""
+				}
+			]
 		}
-	},
-	"settings": {
-		"appalachianWoods": {
+	],
+	"locations": [
+		{
+			"id": "c99ec23f-069e-45ee-b4db-f976f9f264cb",
+			"elementType": "location",
 			"name": "Appalachian Woods of Tennessee",
-			"description": "Misty Appalachian forest in the Great Smoky Mountains of Tennessee. Maples, redbuds, and dogwoods flourish beneath the canopy of tall oaks and pines. Dappled light filters through the canopy above and the mist. A river with frothy rapids flows on one side."
+			"slug": "appalachianWoods",
+			"variants": [
+				{
+					"variantId": "00b5a7d3-ac93-4999-8145-82acddb4bea4",
+					"variantName": "Daytime",
+					"variantDesc": "Misty Appalachian forest in the Great Smoky Mountains of Tennessee. Maples, redbuds, and dogwoods flourish beneath the canopy of tall oaks and pines. Dappled light filters through the canopy above and the mist. A river with frothy rapids flows on one side.",
+					"image": ""
+				},
+				{
+					"variantId": "49a736f6-f2b1-4199-b555-f4bcbb09c312",
+					"variantName": "Nighttime",
+					"variantDesc": "Misty Appalachian forest in the Great Smoky Mountains of Tennessee. Maples, redbuds, and dogwoods flourish beneath the canopy of tall oaks and pines. Moonlight filters through the canopy above and the mist. A river with frothy rapids flows on one side.",
+					"image": ""
+				}
+			]
 		},
-		"urbanChattanoogaNight": {
+		{
+			"id": "22357f4e-bd5d-4cf7-a0e3-677bfca8685b",
+			"elementType": "location",
 			"name": "Urban Chattanooga at Night",
-			"description": "City alleyway, cracked asphalt, brick walls with peeling paint, rusted steel fire escapes, dumpster, murky water puddles, dark moody lighting."
+			"slug": "urbanChattanoogaNight",
+			"variants": [
+				{
+					"variantId": "121d629c-5a54-45b5-9c43-5033b1df30bd",
+					"variantName": "default",
+					"variantDesc": "City alleyway, cracked asphalt, brick walls with peeling paint, rusted steel fire escapes, dumpster, murky water puddles, dark moody lighting.",
+					"image": ""
+				}
+			]
 		},
-		"caern": {
+		{
+			"id": "47e0d12f-616f-4e15-b32c-5e6af6c62bd5",
+			"elementType": "location",
 			"name": "Caern",
-			"description": "A hidden glade in an ethereal plane where the trees glow subtly in blue and animal spirits hide shyly among the ferns and fallen tree limbs."
+			"slug": "caern",
+			"variants": [
+				{
+					"variantId": "dedcc0a5-ede2-456c-b76c-4a72ff885cd8",
+					"variantName": "default",
+					"variantDesc": "A hidden glade in an ethereal plane where the trees glow subtly in blue and animal spirits hide shyly among the ferns and fallen tree limbs.",
+					"image": ""
+				}
+			]
 		}
-	}
+	]
 }

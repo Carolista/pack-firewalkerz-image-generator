@@ -8,17 +8,11 @@ export const LOCATION_STORAGE_KEY = 'ww20LocationSelect';
 
 export const MAX_NPC_ROWS = 10;
 export const MAX_ENEMY_ROWS = 10;
+export const STORAGE_SCHEMA_VERSION = 2;
+
+const hostname = globalThis.window?.location?.hostname;
 
 export const SERVER_URL =
-	window.location.hostname === 'localhost' ||
-	window.location.hostname === '127.0.0.1'
+	hostname === 'localhost' || hostname === '127.0.0.1'
 		? 'http://localhost:3000/generate-image'
 		: 'https://rpg-image-generator.onrender.com/generate-image';
-
-export const WEREWOLF_VARIANTS = {
-	homid: 'Homid (Human)',
-	glabro: 'Glabro (Hulked-Out Near-Human)',
-	crinos: 'Crinos (Werewolf)',
-	hispo: 'Hispo (Near-Wolf Beast)',
-	lupus: 'Lupus (Wolf)',
-};

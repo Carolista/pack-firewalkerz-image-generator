@@ -4,58 +4,68 @@ import {
 	LOCATION_STORAGE_KEY,
 	NPC_ROWS_STORAGE_KEY,
 	OTHER_LOCATION_TEXT_STORAGE_KEY,
+	STORAGE_SCHEMA_VERSION,
 } from '../constants.js';
 
-export function getCharacterRows() {
+function getJsonValue(key, fallback) {
 	try {
-		return (
-			JSON.parse(localStorage.getItem(CHARACTER_ROWS_STORAGE_KEY)) || []
-		);
+		const raw = localStorage.getItem(key);
+		if (!raw) return fallback;
+		const parsed = JSON.parse(raw);
+		if (parsed.version !== STORAGE_SCHEMA_VERSION) {
+			localStorage.removeItem(key);
+			return fallback;
+		}
+		return parsed.data ?? fallback;
 	} catch {
-		return [];
+		localStorage.removeItem(key);
+		return fallback;
 	}
+}
+
+function setJsonValue(key, value) {
+	localStorage.setItem(
+		key,
+		JSON.stringify({ version: STORAGE_SCHEMA_VERSION, data: value }),
+	);
+}
+
+export function getCharacterRows() {
+	return getJsonValue(CHARACTER_ROWS_STORAGE_KEY, []);
 }
 
 export function setCharacterRows(rows) {
-	localStorage.setItem(CHARACTER_ROWS_STORAGE_KEY, JSON.stringify(rows));
+	setJsonValue(CHARACTER_ROWS_STORAGE_KEY, rows);
 }
 
 export function getNPCRows() {
-	try {
-		return JSON.parse(localStorage.getItem(NPC_ROWS_STORAGE_KEY)) || [];
-	} catch {
-		return [];
-	}
+	return getJsonValue(NPC_ROWS_STORAGE_KEY, []);
 }
 
 export function setNPCRows(rows) {
-	localStorage.setItem(NPC_ROWS_STORAGE_KEY, JSON.stringify(rows));
+	setJsonValue(NPC_ROWS_STORAGE_KEY, rows);
 }
 
 export function getEnemyRows() {
-	try {
-		return JSON.parse(localStorage.getItem(ENEMY_ROWS_STORAGE_KEY)) || [];
-	} catch {
-		return [];
-	}
+	return getJsonValue(ENEMY_ROWS_STORAGE_KEY, []);
 }
 
 export function setEnemyRows(rows) {
-	localStorage.setItem(ENEMY_ROWS_STORAGE_KEY, JSON.stringify(rows));
+	setJsonValue(ENEMY_ROWS_STORAGE_KEY, rows);
 }
 
 export function getOtherLocationText() {
-	return localStorage.getItem(OTHER_LOCATION_TEXT_STORAGE_KEY);
+	return getJsonValue(OTHER_LOCATION_TEXT_STORAGE_KEY, null);
 }
 
 export function setOtherLocationText(value) {
-	localStorage.setItem(OTHER_LOCATION_TEXT_STORAGE_KEY, value);
+	setJsonValue(OTHER_LOCATION_TEXT_STORAGE_KEY, value);
 }
 
 export function getLocationSelection() {
-	return localStorage.getItem(LOCATION_STORAGE_KEY);
+	return getJsonValue(LOCATION_STORAGE_KEY, null);
 }
 
 export function setLocationSelection(value) {
-	localStorage.setItem(LOCATION_STORAGE_KEY, value);
+	setJsonValue(LOCATION_STORAGE_KEY, value);
 }
