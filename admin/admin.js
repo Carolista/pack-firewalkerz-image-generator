@@ -1,4 +1,7 @@
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '../supabaseConfig.js';
+import {
+	SUPABASE_PUBLISHABLE_KEY,
+	SUPABASE_URL,
+} from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 
 const CATEGORIES = [
@@ -15,6 +18,9 @@ const dataClient = createAdminDataClient(() => session);
 
 const loginPanel = document.getElementById('loginPanel');
 const catalogPanel = document.getElementById('catalogPanel');
+const detailsPanel = document.getElementById('detailsPanel');
+const detailsContent = document.getElementById('detailsContent');
+const detailsBackBtn = document.getElementById('detailsBackBtn');
 const loginForm = document.getElementById('loginForm');
 const loginStatus = document.getElementById('loginStatus');
 const catalogStatus = document.getElementById('catalogStatus');
@@ -26,6 +32,10 @@ document.getElementById('addElementBtn').disabled = true;
 
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
+detailsBackBtn.addEventListener('click', () => {
+	window.location.hash = `#/view/${activeCategory}`;
+});
+window.addEventListener('hashchange', renderShell);
 
 renderShell();
 
@@ -64,7 +74,10 @@ async function signOut() {
 	if (session?.access_token) {
 		await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
 			method: 'POST',
-			headers: authHeaders(),
+			headers: {
+				apikey: SUPABASE_PUBLISHABLE_KEY,
+				Authorization: `Bearer ${session.access_token}`,
+			},
 		}).catch(() => {});
 	}
 	localStorage.removeItem(SESSION_KEY);
@@ -76,10 +89,12 @@ async function renderShell() {
 	const authenticated = Boolean(session?.access_token);
 	loginPanel.hidden = authenticated;
 	catalogPanel.hidden = !authenticated;
+	detailsPanel.hidden = !authenticated || !getDetailsRoute();
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
 	renderTabs();
-	await loadElements();
+	if (getDetailsRoute()) await loadDetails(getDetailsRoute());
+	else await loadElements();
 }
 
 function renderTabs() {
@@ -92,6 +107,7 @@ function renderTabs() {
 		button.textContent = category.label;
 		button.addEventListener('click', async () => {
 			activeCategory = category.key;
+			window.location.hash = `#/view/${category.key}`;
 			renderTabs();
 			await loadElements();
 		});
@@ -134,10 +150,11 @@ function renderElement(element) {
 		button.type = 'button';
 		button.textContent = label;
 		button.addEventListener('click', () => {
-			setStatus(
-				catalogStatus,
-				`${label} view for ${element.name} is the next admin slice.`,
-			);
+			if (label === 'Details') {
+				window.location.hash = `#/details/${activeCategory}/${element.id}`;
+				return;
+			}
+			setStatus(catalogStatus, `Edit view for ${element.name} is next.`);
 		});
 		actions.append(button);
 	}
@@ -149,6 +166,56 @@ function renderElement(element) {
 		article.prepend(image);
 	}
 	return article;
+}
+
+function getDetailsRoute() {
+	const parts = window.location.hash.split('/');
+	if (parts[1] !== 'details' || !parts[3]) {
+		return null;
+	}
+	return { category: parts[2], id: decodeURIComponent(parts[3]) };
+}
+
+async function loadDetails(route) {
+	catalogPanel.hidden = true;
+	detailsPanel.hidden = false;
+	detailsContent.replaceChildren();
+	setStatus(catalogStatus, '');
+	try {
+		const [element] = await dataClient.getElement(route.id);
+		if (!element) throw new Error('Element not found.');
+		activeCategory = route.category;
+		detailsContent.append(renderDetails(element));
+	} catch (error) {
+		setStatus(catalogStatus, error.message);
+	}
+}
+
+function renderDetails(element) {
+	const content = document.createElement('div');
+	const eyebrow = document.createElement('p');
+	eyebrow.className = 'eyebrow';
+	eyebrow.textContent = element.slug;
+	const heading = document.createElement('h2');
+	heading.textContent = element.name;
+	content.append(eyebrow, heading);
+	for (const variant of element.game_element_variants ?? []) {
+		const article = document.createElement('article');
+		article.className = 'variant-detail';
+		const name = document.createElement('h3');
+		name.textContent = variant.variant_name;
+		const description = document.createElement('p');
+		description.textContent = variant.variant_desc;
+		article.append(name, description);
+		if (variant.image) {
+			const image = document.createElement('img');
+			image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${variant.image}`;
+			image.alt = `${element.name}, ${variant.variant_name}`;
+			article.prepend(image);
+		}
+		content.append(article);
+	}
+	return content;
 }
 
 function getCategory() {

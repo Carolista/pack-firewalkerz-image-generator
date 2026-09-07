@@ -127,6 +127,16 @@ h3 {
 	margin: 0;
 }
 
+.variant-detail {
+	border-top: 1px solid var(--admin-line);
+	padding: 1rem 0;
+}
+
+.variant-detail img {
+	border-radius: var(--border-radius-form-elements);
+	max-width: min(100%, 24rem);
+}
+
 .status {
 	color: var(--admin-blue);
 	min-height: 1.5rem;
