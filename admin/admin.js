@@ -1,4 +1,5 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from '../supabaseConfig.js';
+import { createAdminDataClient } from './adminData.js';
 
 const CATEGORIES = [
 	{ key: 'character', label: 'Player Characters' },
@@ -10,6 +11,7 @@ const CATEGORIES = [
 const SESSION_KEY = 'packFirewalkerzAdminSession';
 let session = readSession();
 let activeCategory = 'character';
+const dataClient = createAdminDataClient(() => session);
 
 const loginPanel = document.getElementById('loginPanel');
 const catalogPanel = document.getElementById('catalogPanel');
@@ -102,13 +104,7 @@ async function loadElements() {
 	setStatus(catalogStatus, 'Loading catalog...');
 	elementList.replaceChildren();
 	try {
-		const response = await fetch(
-			`${SUPABASE_URL}/rest/v1/game_elements?element_type=eq.${activeCategory}&select=*,game_element_variants(*)&order=name.asc`,
-			{ headers: authHeaders() },
-		);
-		const elements = await response.json();
-		if (!response.ok)
-			throw new Error(elements.message ?? 'Catalog request failed.');
+		const elements = await dataClient.listElements(activeCategory);
 		for (const element of elements)
 			elementList.append(renderElement(element));
 		setStatus(catalogStatus, `${elements.length} elements`);
@@ -136,8 +132,13 @@ function renderElement(element) {
 	for (const label of ['Edit', 'Details']) {
 		const button = document.createElement('button');
 		button.type = 'button';
-		button.disabled = true;
 		button.textContent = label;
+		button.addEventListener('click', () => {
+			setStatus(
+				catalogStatus,
+				`${label} view for ${element.name} is the next admin slice.`,
+			);
+		});
 		actions.append(button);
 	}
 	article.append(copy, actions);
@@ -148,13 +149,6 @@ function renderElement(element) {
 		article.prepend(image);
 	}
 	return article;
-}
-
-function authHeaders() {
-	return {
-		apikey: SUPABASE_PUBLISHABLE_KEY,
-		Authorization: `Bearer ${session.access_token}`,
-	};
 }
 
 function getCategory() {
