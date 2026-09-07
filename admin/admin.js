@@ -144,7 +144,8 @@ async function loadElements() {
 		const elements = await dataClient.listElements(activeCategory);
 		for (const element of elements)
 			elementList.append(renderElement(element));
-		setStatus(catalogStatus, `${elements.length} elements`);
+        const numResults = elements.length;
+		setStatus(catalogStatus, `${numResults} result${numResults !== 1 ? 's' : ''}`);
 	} catch (error) {
 		setStatus(catalogStatus, error.message);
 	}
@@ -156,14 +157,12 @@ function renderElement(element) {
 	const firstVariant = element.game_element_variants?.[0];
 	const copy = document.createElement('div');
 	copy.className = 'element-copy';
-	const slug = document.createElement('p');
-	slug.className = 'eyebrow';
-	slug.textContent = element.slug;
 	const name = document.createElement('h3');
 	name.textContent = element.name;
 	const count = document.createElement('p');
-	count.textContent = `${element.game_element_variants?.length ?? 0} variant(s)`;
-	copy.append(slug, name, count);
+	const numVariants = element.game_element_variants?.length ?? 0;
+	count.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
+	copy.append(name, count);
 	const actions = document.createElement('div');
 	actions.className = 'element-actions';
 	for (const label of ['Edit', 'Details']) {
@@ -394,17 +393,19 @@ function sortAdminVariants(variants = []) {
 
 function renderDetails(element) {
 	const content = document.createElement('div');
-	const eyebrow = document.createElement('p');
-	eyebrow.className = 'eyebrow';
-	eyebrow.textContent = element.slug;
 	const heading = document.createElement('h2');
+	const status = document.getElementById('detailsStatus');
 	heading.textContent = element.name;
-	content.append(eyebrow, heading);
+	content.append(heading);
+	const numVariants = element.game_element_variants?.length ?? 0;
+	status.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
 	for (const variant of sortAdminVariants(element.game_element_variants)) {
 		const article = document.createElement('article');
 		article.className = 'variant-detail';
-		const name = document.createElement('h3');
-		name.textContent = variant.variant_name;
+        if (variant.variant_name.toLowerCase() !== 'default') {
+            const name = document.createElement('h3');
+            name.textContent = variant.variant_name;
+        }
 		const description = document.createElement('p');
 		description.textContent = variant.variant_desc;
 		article.append(name, description);

@@ -7,17 +7,17 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&family=Sono:wght,MONO@200..800,1&family=Trade+Winds&display=swap"
 			rel="stylesheet"
 		/>
+        <link href="../styles.css" rel="stylesheet" />
 		<link href="admin.css" rel="stylesheet" />
 		<script src="admin.js" type="module" defer></script>
 	</head>
 	<body>
 		<header class="admin-header">
 			<div>
-				<p class="eyebrow">Pack Firewalkerz</p>
-				<h1>Catalog Admin</h1>
+				<h1>Pack Firewalkers</h1>
 			</div>
 			<div class="header-actions">
 				<a href="../" target="_blank" rel="noreferrer"
@@ -29,7 +29,6 @@
 
 		<main>
 			<section id="loginPanel" class="panel login-panel">
-				<p class="eyebrow">Private workspace</p>
 				<h2>Sign in</h2>
 				<form id="loginForm">
 					<label>
@@ -58,7 +57,6 @@
 			<section id="catalogPanel" hidden>
 				<div class="catalog-toolbar">
 					<div>
-						<p class="eyebrow">Catalog</p>
 						<h2 id="categoryHeading">Player Characters</h2>
 					</div>
 					<button id="addElementBtn" type="button">Add new</button>
@@ -68,14 +66,17 @@
 					class="tabs"
 					aria-label="Catalog categories"
 				></nav>
-				<div id="catalogStatus" class="status" role="status"></div>
-				<div id="elementList" class="element-list"></div>
+                <div class="result-container">
+                    <div id="catalogStatus" class="status" role="status"></div>
+                    <div id="elementList" class="element-list"></div>
+                </div>
 			</section>
-
+            
 			<section id="detailsPanel" class="panel" hidden>
-				<button id="detailsBackBtn" type="button">
-					Back to catalog
+                <button id="detailsBackBtn" type="button">
+                    Back to catalog
 				</button>
+                <div id="detailsStatus" class="status" role="status"></div>
 				<div id="detailsContent"></div>
 			</section>
 

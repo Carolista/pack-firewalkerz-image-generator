@@ -2,10 +2,13 @@
 
 :root {
 	--admin-ink: #18324a;
+    --admin-dark-blue: #144261;
 	--admin-blue: #2d668d;
+    --admin-bright-blue: #3080b5;
 	--admin-pale: #eef5f8;
+    --admin-light: #cfdde3;
 	--admin-line: #b8cad4;
-	--admin-surface: #f8fbfc;
+	--admin-surface: #f8fbfc80;
 }
 
 body {
@@ -17,7 +20,7 @@ body {
 
 .admin-header,
 .catalog-toolbar {
-	align-items: end;
+	align-items: center;
 	display: flex;
 	justify-content: space-between;
 	gap: 1rem;
@@ -37,9 +40,12 @@ body {
 }
 
 h1,
-h2,
 h3 {
-	color: var(--admin-ink);
+	color: var(--admin-blue);
+}
+
+h2 {
+    color: var(--admin-bright-blue);
 }
 
 .panel,
@@ -121,11 +127,16 @@ h3 {
 	padding-top: 1rem;
 }
 
-.login-panel button,
-.header-actions button,
-.catalog-toolbar button,
-.element-actions button {
+button {
 	background: var(--admin-blue);
+}
+
+button:hover {
+    background: var(--admin-bright-blue);
+}
+
+button:active {
+    background: var(--admin-dark-blue);
 }
 
 .header-actions,
@@ -142,19 +153,31 @@ h3 {
 }
 
 .tabs {
-	border-bottom: 1px solid var(--admin-line);
-	margin: 1.25rem 0;
+	margin: 1.25rem 0 0;
 }
 
 .tab {
-	background: transparent;
-	border-bottom: 3px solid transparent;
-	border-radius: 0;
 	color: var(--admin-ink);
+	background: var(--admin-surface);
+	border-radius: 0;
 }
 
-.tab.active {
-	border-bottom-color: var(--admin-blue);
+.tab:hover {
+    color: var(--admin-blue);
+    background-color: var(--admin-line);
+}
+
+.tab.active, .tab.active:hover {
+    color: var(--admin-ink);
+    background-color: var(--admin-light);
+}
+
+.result-container {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border: 1px solid var(--admin-light);
+    border-top: 4px solid var(--admin-light);
 }
 
 .element-list {
@@ -163,10 +186,10 @@ h3 {
 }
 
 .element-card {
-	align-items: center;
-	display: flex;
-	gap: 1rem;
+    display: flex;
+	align-items: flex-start;
 	justify-content: space-between;
+	gap: 1rem;
 }
 
 .element-card img {
@@ -188,6 +211,8 @@ h3 {
 	margin: 0;
 }
 
+/* TODO: Put variant name and description to the right of image at wider widths on details page */
+
 .variant-detail {
 	border-top: 1px solid var(--admin-line);
 	padding: 1rem 0;
@@ -200,7 +225,9 @@ h3 {
 
 .status {
 	color: var(--admin-blue);
+    text-transform: capitalize;
 	min-height: 1.5rem;
+    margin-bottom: 10px;
 }
 
 @media (max-width: 600px) {
