@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Pack Firewalkerz :: Admin</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&display=swap"
+			rel="stylesheet"
+		/>
+		<link href="admin.css" rel="stylesheet" />
+		<script src="admin.js" type="module" defer></script>
+	</head>
+	<body>
+		<header class="admin-header">
+			<div>
+				<p class="eyebrow">Pack Firewalkerz</p>
+				<h1>Catalog Admin</h1>
+			</div>
+			<div class="header-actions">
+				<a href="../" target="_blank" rel="noreferrer"
+					>Open generator</a
+				>
+				<button id="signOutBtn" type="button" hidden>Sign out</button>
+			</div>
+		</header>
+
+		<main>
+			<section id="loginPanel" class="panel login-panel">
+				<p class="eyebrow">Private workspace</p>
+				<h2>Sign in</h2>
+				<form id="loginForm">
+					<label>
+						Email
+						<input
+							id="emailInput"
+							type="email"
+							autocomplete="username"
+							required
+						/>
+					</label>
+					<label>
+						Password
+						<input
+							id="passwordInput"
+							type="password"
+							autocomplete="current-password"
+							required
+						/>
+					</label>
+					<button type="submit">Sign in</button>
+					<p id="loginStatus" class="status" role="status"></p>
+				</form>
+			</section>
+
+			<section id="catalogPanel" hidden>
+				<div class="catalog-toolbar">
+					<div>
+						<p class="eyebrow">Catalog</p>
+						<h2 id="categoryHeading">Player Characters</h2>
+					</div>
+					<button id="addElementBtn" type="button">Add new</button>
+				</div>
+				<nav
+					id="categoryTabs"
+					class="tabs"
+					aria-label="Catalog categories"
+				></nav>
+				<div id="catalogStatus" class="status" role="status"></div>
+				<div id="elementList" class="element-list"></div>
+			</section>
+		</main>
+	</body>
+</html>
