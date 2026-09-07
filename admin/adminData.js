@@ -40,6 +40,11 @@ export function createAdminDataClient(getSession) {
 				`${ELEMENTS_URL}?id=eq.${encodeURIComponent(id)}&select=*,game_element_variants(*)`,
 			);
 		},
+		getElementBySlug(slug) {
+			return request(
+				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*)`,
+			);
+		},
 		createElement(element) {
 			return request(ELEMENTS_URL, {
 				method: 'POST',

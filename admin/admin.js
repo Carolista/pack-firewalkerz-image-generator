@@ -14,6 +14,7 @@ const CATEGORIES = [
 const SESSION_KEY = 'packFirewalkerzAdminSession';
 let session = readSession();
 let activeCategory = 'character';
+let formElementId = null;
 const dataClient = createAdminDataClient(() => session);
 
 const loginPanel = document.getElementById('loginPanel');
@@ -21,6 +22,14 @@ const catalogPanel = document.getElementById('catalogPanel');
 const detailsPanel = document.getElementById('detailsPanel');
 const detailsContent = document.getElementById('detailsContent');
 const detailsBackBtn = document.getElementById('detailsBackBtn');
+const formPanel = document.getElementById('formPanel');
+const formHeading = document.getElementById('formHeading');
+const elementForm = document.getElementById('elementForm');
+const formCategory = document.getElementById('formCategory');
+const formName = document.getElementById('formName');
+const formSlug = document.getElementById('formSlug');
+const formStatus = document.getElementById('formStatus');
+const variantFormRows = document.getElementById('variantFormRows');
 const loginForm = document.getElementById('loginForm');
 const loginStatus = document.getElementById('loginStatus');
 const catalogStatus = document.getElementById('catalogStatus');
@@ -28,11 +37,21 @@ const categoryHeading = document.getElementById('categoryHeading');
 const categoryTabs = document.getElementById('categoryTabs');
 const elementList = document.getElementById('elementList');
 const signOutBtn = document.getElementById('signOutBtn');
-document.getElementById('addElementBtn').disabled = true;
+const addElementBtn = document.getElementById('addElementBtn');
 
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
+addElementBtn.addEventListener('click', () => {
+	window.location.hash = `#/add/${activeCategory}`;
+});
+elementForm.addEventListener('submit', saveElement);
+document.getElementById('addVariantBtn').addEventListener('click', () => {
+	addVariantFormRow();
+});
 detailsBackBtn.addEventListener('click', () => {
+	window.location.hash = `#/view/${activeCategory}`;
+});
+document.getElementById('formBackBtn').addEventListener('click', () => {
 	window.location.hash = `#/view/${activeCategory}`;
 });
 window.addEventListener('hashchange', renderShell);
@@ -88,12 +107,16 @@ async function signOut() {
 async function renderShell() {
 	const authenticated = Boolean(session?.access_token);
 	loginPanel.hidden = authenticated;
-	catalogPanel.hidden = !authenticated;
-	detailsPanel.hidden = !authenticated || !getDetailsRoute();
+	const detailsRoute = getDetailsRoute();
+	const formRoute = getFormRoute();
+	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
+	detailsPanel.hidden = !authenticated || !detailsRoute;
+	formPanel.hidden = !authenticated || !formRoute;
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
 	renderTabs();
-	if (getDetailsRoute()) await loadDetails(getDetailsRoute());
+	if (detailsRoute) await loadDetails(detailsRoute);
+	else if (formRoute) await loadForm(formRoute);
 	else await loadElements();
 }
 
@@ -108,8 +131,6 @@ function renderTabs() {
 		button.addEventListener('click', async () => {
 			activeCategory = category.key;
 			window.location.hash = `#/view/${category.key}`;
-			renderTabs();
-			await loadElements();
 		});
 		categoryTabs.append(button);
 	}
@@ -151,10 +172,10 @@ function renderElement(element) {
 		button.textContent = label;
 		button.addEventListener('click', () => {
 			if (label === 'Details') {
-				window.location.hash = `#/details/${activeCategory}/${element.id}`;
+				window.location.hash = `#/details/${activeCategory}/${encodeURIComponent(element.slug)}`;
 				return;
 			}
-			setStatus(catalogStatus, `Edit view for ${element.name} is next.`);
+			window.location.hash = `#/edit/${activeCategory}/${encodeURIComponent(element.slug)}`;
 		});
 		actions.append(button);
 	}
@@ -173,7 +194,171 @@ function getDetailsRoute() {
 	if (parts[1] !== 'details' || !parts[3]) {
 		return null;
 	}
-	return { category: parts[2], id: decodeURIComponent(parts[3]) };
+	return { category: parts[2], slug: decodeURIComponent(parts[3]) };
+}
+
+function getFormRoute() {
+	const parts = window.location.hash.split('/');
+	if (parts[1] === 'add' && parts[2]) {
+		return { mode: 'add', category: parts[2] };
+	}
+	if (parts[1] === 'edit' && parts[2] && parts[3]) {
+		return {
+			mode: 'edit',
+			category: parts[2],
+			slug: decodeURIComponent(parts[3]),
+		};
+	}
+	return null;
+}
+
+async function loadForm(route) {
+	activeCategory = route.category;
+	formHeading.textContent =
+		route.mode === 'add' ? 'Add element' : 'Edit element';
+	formCategory.replaceChildren();
+	for (const category of CATEGORIES) {
+		formCategory.add(new Option(category.label, category.key));
+	}
+	formCategory.value = route.category;
+	formCategory.disabled = route.mode === 'edit';
+	variantFormRows.replaceChildren();
+	formElementId = null;
+	try {
+		if (route.mode === 'add') {
+			formName.value = '';
+			formSlug.value = '';
+			addVariantFormRow();
+			return;
+		}
+		const [element] = await dataClient.getElementBySlug(route.slug);
+		if (!element) throw new Error('Element not found.');
+		formElementId = element.id;
+		formName.value = element.name;
+		formSlug.value = element.slug;
+		for (const variant of sortAdminVariants(
+			element.game_element_variants,
+		)) {
+			addVariantFormRow(variant);
+		}
+	} catch (error) {
+		setStatus(formStatus, error.message);
+	}
+}
+
+function addVariantFormRow(variant = {}) {
+	const row = document.createElement('div');
+	row.className = 'variant-form-row';
+	row.dataset.variantId = variant.id ?? '';
+	const existingNames = new Set(
+		[...variantFormRows.querySelectorAll('.variant-name')].map(input =>
+			input.value.trim().toLowerCase(),
+		),
+	);
+	let defaultName = variant.variant_name;
+	if (!defaultName) {
+		defaultName = existingNames.size
+			? `Variant ${existingNames.size + 1}`
+			: 'default';
+		while (existingNames.has(defaultName.toLowerCase())) {
+			defaultName = `Variant ${existingNames.size + 2}`;
+		}
+	}
+	row.innerHTML = `
+		<label class="variant-name-field">Variant Name *<input class="variant-name" required value="${defaultName}" /></label>
+		<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
+		<label class="variant-desc-field">Description *<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
+		<div class="variant-image-field">
+			<label>Image Path<input class="variant-image" value="${variant.image ?? ''}" /></label>
+			<div class="admin-image-preview" aria-label="Image preview"></div>
+		</div>
+		<button class="remove-variant" type="button">Remove variant</button>
+	`;
+	row.querySelector('.remove-variant').addEventListener('click', () =>
+		row.remove(),
+	);
+	variantFormRows.append(row);
+	const description = row.querySelector('.variant-desc');
+	const resizeDescription = () => {
+		description.style.height = 'auto';
+		description.style.height = `${description.scrollHeight}px`;
+	};
+	description.addEventListener('input', resizeDescription);
+	resizeDescription();
+	const imageInput = row.querySelector('.variant-image');
+	const imagePreview = row.querySelector('.admin-image-preview');
+	const updateImagePreview = () => {
+		imagePreview.replaceChildren();
+		if (!imageInput.value.trim()) return;
+		const image = document.createElement('img');
+		image.src = imageInput.value.startsWith('http')
+			? imageInput.value
+			: `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${imageInput.value}`;
+		image.alt = 'Variant preview';
+		imagePreview.append(image);
+	};
+	imageInput.addEventListener('input', updateImagePreview);
+	updateImagePreview();
+}
+
+async function saveElement(event) {
+	event.preventDefault();
+	setStatus(formStatus, 'Saving...');
+	const route = getFormRoute();
+	const elementPayload = {
+		element_type: formCategory.value,
+		name: formName.value.trim(),
+		slug: formSlug.value.trim(),
+	};
+	const rows = [...variantFormRows.querySelectorAll('.variant-form-row')];
+	if (!rows.length) {
+		setStatus(formStatus, 'Add at least one variant.');
+		return;
+	}
+	const variantNames = rows.map(row =>
+		row.querySelector('.variant-name').value.trim(),
+	);
+	if (variantNames.some(name => !name)) {
+		setStatus(formStatus, 'Every variant needs a name.');
+		return;
+	}
+	const duplicateNames = variantNames.filter(
+		(name, index) =>
+			variantNames.findIndex(
+				candidate => candidate.toLowerCase() === name.toLowerCase(),
+			) !== index,
+	);
+	if (duplicateNames.length) {
+		setStatus(formStatus, 'Variant names must be unique.');
+		return;
+	}
+	try {
+		let elementId = formElementId;
+		if (route.mode === 'add') {
+			const [created] = await dataClient.createElement(elementPayload);
+			elementId = created.id;
+		} else if (elementId) {
+			await dataClient.updateElement(elementId, elementPayload);
+		} else {
+			throw new Error('The element could not be identified for editing.');
+		}
+		for (const row of rows) {
+			const payload = {
+				element_id: elementId,
+				variant_name: row.querySelector('.variant-name').value.trim(),
+				variant_desc: row.querySelector('.variant-desc').value.trim(),
+				sort_order:
+					Number(row.querySelector('.variant-sort').value) || null,
+				image: row.querySelector('.variant-image').value.trim(),
+			};
+			const variantId = row.dataset.variantId;
+			if (variantId) await dataClient.updateVariant(variantId, payload);
+			else await dataClient.createVariant(payload);
+		}
+		window.location.hash = `#/view/${formCategory.value}`;
+	} catch (error) {
+		setStatus(formStatus, error.message);
+	}
 }
 
 async function loadDetails(route) {
@@ -182,13 +367,29 @@ async function loadDetails(route) {
 	detailsContent.replaceChildren();
 	setStatus(catalogStatus, '');
 	try {
-		const [element] = await dataClient.getElement(route.id);
+		const [element] = await dataClient.getElementBySlug(route.slug);
 		if (!element) throw new Error('Element not found.');
 		activeCategory = route.category;
 		detailsContent.append(renderDetails(element));
 	} catch (error) {
 		setStatus(catalogStatus, error.message);
 	}
+}
+
+function sortAdminVariants(variants = []) {
+	return [...variants].sort((left, right) => {
+		const leftOrder = left.sort_order;
+		const rightOrder = right.sort_order;
+		if (leftOrder !== null && leftOrder !== undefined) {
+			if (rightOrder === null || rightOrder === undefined) return -1;
+			if (leftOrder !== rightOrder) return leftOrder - rightOrder;
+		} else if (rightOrder !== null && rightOrder !== undefined) {
+			return 1;
+		}
+		return left.variant_name.localeCompare(right.variant_name, undefined, {
+			sensitivity: 'base',
+		});
+	});
 }
 
 function renderDetails(element) {
@@ -199,7 +400,7 @@ function renderDetails(element) {
 	const heading = document.createElement('h2');
 	heading.textContent = element.name;
 	content.append(eyebrow, heading);
-	for (const variant of element.game_element_variants ?? []) {
+	for (const variant of sortAdminVariants(element.game_element_variants)) {
 		const article = document.createElement('article');
 		article.className = 'variant-detail';
 		const name = document.createElement('h3');

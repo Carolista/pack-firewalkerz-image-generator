@@ -78,6 +78,40 @@
 				</button>
 				<div id="detailsContent"></div>
 			</section>
+
+			<section id="formPanel" class="panel" hidden>
+				<button id="formBackBtn" type="button">Back to catalog</button>
+				<h2 id="formHeading">Add element</h2>
+				<form id="elementForm">
+					<label>
+						Category
+						<select id="formCategory" required></select>
+					</label>
+					<label>
+						Name
+						<input id="formName" required />
+					</label>
+					<label>
+						Slug
+						<input
+							id="formSlug"
+							required
+							pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+						/>
+					</label>
+					<div>
+						<div class="form-section-heading">
+							<h3>Variants</h3>
+							<button id="addVariantBtn" type="button">
+								Add variant
+							</button>
+						</div>
+						<div id="variantFormRows"></div>
+					</div>
+					<button type="submit">Save</button>
+					<p id="formStatus" class="status" role="status"></p>
+				</form>
+			</section>
 		</main>
 	</body>
 </html>

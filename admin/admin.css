@@ -60,6 +60,67 @@ h3 {
 	gap: 1rem;
 }
 
+#elementForm,
+.variant-form-row {
+	display: grid;
+	gap: 1rem;
+}
+
+.variant-form-row {
+	grid-template-columns: 2fr 1fr;
+}
+
+.variant-name-field {
+	grid-column: 1;
+}
+
+.variant-sort-field {
+	grid-column: 2;
+}
+
+.variant-desc-field {
+	grid-column: 1;
+}
+
+.variant-image-field {
+	grid-column: 2;
+}
+
+.variant-image-field label {
+	margin-bottom: 0;
+}
+
+.admin-image-preview {
+	align-items: center;
+	aspect-ratio: 1;
+	background: var(--admin-pale);
+	border: 1px dashed var(--admin-line);
+	display: flex;
+	justify-content: center;
+	margin-top: 0.5rem;
+	min-height: 0;
+	width: 100%;
+}
+
+.admin-image-preview img {
+	height: 100%;
+	max-width: 100%;
+	object-fit: contain;
+	width: 100%;
+}
+
+.form-section-heading {
+	align-items: center;
+	display: flex;
+	justify-content: space-between;
+}
+
+.variant-form-row {
+	border-top: 1px solid var(--admin-line);
+	margin-top: 1rem;
+	padding-top: 1rem;
+}
+
 .login-panel button,
 .header-actions button,
 .catalog-toolbar button,
@@ -153,5 +214,16 @@ h3 {
 	.element-card img {
 		max-width: 100%;
 		width: 100%;
+	}
+
+	.variant-form-row {
+		grid-template-columns: 1fr;
+	}
+
+	.variant-name-field,
+	.variant-sort-field,
+	.variant-desc-field,
+	.variant-image-field {
+		grid-column: 1;
 	}
 }
