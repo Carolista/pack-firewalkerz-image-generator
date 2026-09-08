@@ -3,7 +3,11 @@ import test from 'node:test';
 
 import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
-import { buildPrompt, isReferenceModeLocation } from '../src/prompt.js';
+import {
+	buildPrompt,
+	isLocationReferenceMode,
+	isReferenceModeLocation,
+} from '../src/prompt.js';
 import { getElements, getVariantById } from '../src/services/catalog.js';
 
 test('normalizes and validates the catalog', () => {
@@ -354,4 +358,57 @@ test('renders normal prompt with Neutral Void and existing entities', () => {
 	assert.match(prompt, /Character: River-That-Remembers/);
 	assert.match(prompt, /Environment\/Setting: Neutral Void:/);
 	assert.match(prompt, /Action\/Scene: Standing in the void/);
+});
+
+test('detects location reference mode', () => {
+	const locationRefMode = {
+		elementId: 'custom-location-reference',
+		elementName: 'Custom location (reference)',
+		variantName: 'reference',
+		variantDesc: 'A mystical forest temple...',
+	};
+
+	assert.ok(isLocationReferenceMode(locationRefMode));
+});
+
+test('does not detect location reference mode for normal locations', () => {
+	const normalLocation = {
+		elementId: 'appalachian-id',
+		elementName: 'Appalachian Woods',
+		variantName: 'Daytime',
+		variantDesc: 'A misty forest...',
+		slug: 'appalachianWoods',
+	};
+
+	assert.ok(!isLocationReferenceMode(normalLocation));
+});
+
+test('renders location reference mode prompt', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementId: 'custom-location-reference',
+			elementName: 'Custom location (reference)',
+			variantName: 'reference',
+			variantDesc:
+				'A mystical forest temple with ancient stone carvings and glowing runes.',
+		},
+		locationDesc:
+			'A mystical forest temple with ancient stone carvings and glowing runes.',
+		scene: '',
+	});
+
+	assert.match(
+		prompt,
+		/Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style/,
+	);
+	assert.match(
+		prompt,
+		/Location: A mystical forest temple with ancient stone carvings and glowing runes/,
+	);
+	assert.ok(!prompt.includes('Render exactly one individual'));
+	assert.ok(!prompt.includes('Action\/Scene'));
+	assert.ok(!prompt.includes('Environment\/Setting'));
 });

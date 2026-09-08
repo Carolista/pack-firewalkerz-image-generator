@@ -1,4 +1,8 @@
-import { buildPrompt, isReferenceModeLocation } from './src/prompt.js';
+import {
+	buildPrompt,
+	isLocationReferenceMode,
+	isReferenceModeLocation,
+} from './src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
 	isNetworkError,
@@ -119,13 +123,16 @@ async function generateSceneImage() {
 			return;
 		}
 
+		const isLocationRef = isLocationReferenceMode(location);
+		const isNeutralVoidRef = isReferenceModeLocation(location);
+
 		const hasEntities =
 			hasAtLeastOneCharacterRow() ||
 			hasAtLeastOneNPCRow() ||
 			hasAtLeastOneEnemyRow();
 
-		// Reference mode (Neutral Void) allows no entities
-		if (!hasEntities && !isReferenceModeLocation(location)) {
+		// Location reference mode and Neutral Void reference mode allow no entities
+		if (!hasEntities && !isLocationRef && !isNeutralVoidRef) {
 			await showAlert(
 				'Please add at least one character, NPC, or enemy.',
 			);
@@ -133,29 +140,29 @@ async function generateSceneImage() {
 		}
 
 		const scene = sceneText.value.trim();
-		if (!scene) {
-			const sceneLabel = isReferenceModeLocation(location)
+
+		// Location reference mode doesn't use scene, but Neutral Void does
+		if (!isLocationRef && !scene) {
+			const sceneLabel = isNeutralVoidRef
 				? 'Please describe the new character, NPC, or enemy.'
 				: 'Please describe the scene action.';
 			await showAlert(sceneLabel);
 			return;
 		}
 
-		// In reference mode, ignore any saved entities and use empty arrays
-		const characters = isReferenceModeLocation(location)
-			? []
-			: getCharacterSelections();
-		const npcs = isReferenceModeLocation(location)
-			? []
-			: getNPCSelections();
-		const enemies = isReferenceModeLocation(location)
-			? []
-			: getEnemySelections();
+		// In reference modes, ignore any saved entities and use empty arrays
+		const characters =
+			isLocationRef || isNeutralVoidRef ? [] : getCharacterSelections();
+		const npcs =
+			isLocationRef || isNeutralVoidRef ? [] : getNPCSelections();
+		const enemies =
+			isLocationRef || isNeutralVoidRef ? [] : getEnemySelections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
 			enemies,
 			location,
+			locationDesc: isLocationRef ? location.variantDesc : undefined,
 			scene,
 		});
 		const referenceImages = await loadReferenceImages([

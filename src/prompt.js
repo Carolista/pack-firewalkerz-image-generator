@@ -1,7 +1,13 @@
+import { CUSTOM_LOCATION_REFERENCE_KEY } from './constants.js';
+
 export const NEUTRAL_VOID_SLUG = 'neutral-void';
 
 export function isReferenceModeLocation(location) {
 	return location?.slug === NEUTRAL_VOID_SLUG;
+}
+
+export function isLocationReferenceMode(location) {
+	return location?.elementId === CUSTOM_LOCATION_REFERENCE_KEY;
 }
 
 export function buildPrompt({
@@ -12,7 +18,13 @@ export function buildPrompt({
 	locationDesc,
 	scene,
 }) {
-	// Reference mode: no entity blocks, subject description from scene
+	// Location reference mode: location description only
+	if (isLocationReferenceMode(location)) {
+		return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
+Location: ${locationDesc ?? location?.variantDesc ?? ''}`;
+	}
+
+	// Neutral Void reference mode: no entity blocks, subject description from scene
 	if (
 		isReferenceModeLocation(location) &&
 		!characters.length &&

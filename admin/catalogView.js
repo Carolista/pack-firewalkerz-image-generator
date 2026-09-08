@@ -1,10 +1,10 @@
 import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 
-const BUTTON_ACTIONS = [
-	{ key: 'details', label: 'View Details', faClasses: 'fa-regular fa-eye' },
-	{ key: 'edit', label: 'Edit', faClasses: 'fa-solid fa-pen-to-square' },
-	{ key: 'delete', label: 'Delete', faClasses: 'fa-solid fa-trash-can' },
-];
+const BUTTON_ACTIONS = {
+	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },
+	edit: { label: 'Edit', faClasses: 'fa-solid fa-pen-to-square' },
+	delete: { label: 'Delete', faClasses: 'fa-solid fa-trash-can' },
+};
 
 export function createCatalogView({
 	categories,
@@ -30,7 +30,11 @@ export function createCatalogView({
 				button.title = `View all ${categories[category].shortPlural}`;
 				const icon = document.createElement('i');
 				icon.className = categories[category].faClasses;
-				button.append(icon, ` ${categories[category].shortPlural}`);
+				const label =
+					category === getActiveCategory()
+						? ` ${categories[category].shortPlural}`
+						: '';
+				button.append(icon, label);
 				button.addEventListener('click', () => {
 					setActiveCategory(category);
 					navigateTo({ name: 'view', category });
@@ -80,16 +84,16 @@ export function createCatalogView({
 		copy.append(name, count);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
-		for (const action of BUTTON_ACTIONS) {
+		for (const action of Object.keys(BUTTON_ACTIONS)) {
 			const button = document.createElement('button');
 			button.type = 'button';
-			button.title = `${action.label}: ${element.name}`;
-			button.innerHTML = `<i class="${action.faClasses}"></i>`;
+			button.title = `${BUTTON_ACTIONS[action].label}: ${element.name}`;
+			button.innerHTML = `<i class="${BUTTON_ACTIONS[action].faClasses}"></i>`;
 			button.addEventListener('click', () => {
-				if (action.key === 'delete') requestElementDeletion(element);
+				if (action === 'delete') requestElementDeletion(element);
 				else
 					navigateTo({
-						name: action.key,
+						name: action,
 						category: getActiveCategory(),
 						slug: element.slug,
 					});
