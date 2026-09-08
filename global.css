@@ -22,17 +22,43 @@
 	--border-radius-form-elements: 2px;
 }
 
+* {
+	box-sizing: border-box;
+}
+
+html {
+	background-color: #111;
+	min-height: 100%;
+	overscroll-behavior: none;
+}
+
+html::before {
+	content: '';
+    position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100svh;
+    background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    z-index: -1;
+    will-change: transform;
+    pointer-events: none;
+}
+
 body {
-	background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
-	background-position: center;
-	background-attachment: fixed;
-	background-size: cover;
+    position: relative;
+    background: transparent;
 	font-family: var(--font-regular);
 	font-weight: 400;
 	font-size: 20px;
 	max-width: 800px;
-	margin: 2rem auto;
-	padding: 0 1rem;
+	margin: 0 auto;
+	padding: 1rem;
+    z-index: 1;
 }
 
 h1 {
@@ -155,7 +181,7 @@ button {
 	font-size: 0.9rem;
 	font-weight: 400;
 	text-transform: capitalize;
-	padding: 0.75rem 1.5rem;
+	padding: 0.75rem 1rem;
 	outline: none;
 	border: none;
 	border-radius: var(--border-radius-form-elements);

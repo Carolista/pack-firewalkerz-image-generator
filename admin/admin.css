@@ -11,19 +11,23 @@
 	--admin-surface: #f8fbfc80;
 }
 
+html::before {
+    background-image: url('../assets/ui/moon-behind-blue-clouds.jpg');
+}
+
 body {
-	background-image: url('../assets/ui/moon-behind-blue-clouds.jpg');
-	background-color: var(--admin-pale);
 	color: var(--admin-ink);
 	max-width: 1080px;
 }
 
 .admin-header,
 .catalog-toolbar {
+    display: flex;
+    flex-direction: row;
 	align-items: center;
-	display: flex;
 	justify-content: space-between;
 	gap: 1rem;
+    padding: 0 0 0.8rem;
 }
 
 .admin-header {
@@ -39,13 +43,18 @@ body {
 	text-transform: uppercase;
 }
 
-h1,
-h3 {
-	color: var(--admin-blue);
+h1 {
+	color: var(--admin-bright-blue);
 }
 
 h2 {
-    color: var(--admin-bright-blue);
+    color: var(--admin-pale);
+    margin-top: 0;
+}
+
+h3 {
+    font-weight: 400;
+    color: var(--admin-dark-blue);
 }
 
 .panel,
@@ -159,6 +168,7 @@ button:active {
 .tab {
 	color: var(--admin-ink);
 	background: var(--admin-surface);
+    font-size: 1.2rem;
 	border-radius: 0;
 }
 
@@ -224,10 +234,10 @@ button:active {
 }
 
 .status {
-	color: var(--admin-blue);
+	color: var(--admin-bright-blue);
     text-transform: capitalize;
 	min-height: 1.5rem;
-    margin-bottom: 10px;
+    margin: 0;
 }
 
 @media (max-width: 600px) {

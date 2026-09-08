@@ -4,11 +4,53 @@ import {
 } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 
-const CATEGORIES = [
-	{ key: 'character', label: 'Player Characters' },
-	{ key: 'npc', label: 'NPCs' },
-	{ key: 'enemy', label: 'Enemies' },
-	{ key: 'location', label: 'Locations' },
+const CATEGORIES = {
+	character: {
+        shortSingular: 'PC',
+		shortPlural: 'PCs',
+        longSingular: 'Player Character',
+		longPlural: 'Player Characters',
+		faClasses: 'fa-solid fa-paw-claws',
+	},
+	npc: {
+        shortSingular: 'NPC',
+		shortPlural: 'NPCs',
+		longSingular: 'Non-Player Character',
+		longPlural: 'Non-Player Characters',
+		faClasses: 'fa-solid fa-people',
+	},
+	enemy: {
+        shortSingular: 'Enemy',
+		shortPlural: 'Enemies',
+        longSingular: 'Enemy',
+		longPlural: 'Enemies',
+		faClasses: 'fa-solid fa-face-angry-horns',
+	},
+	location: {
+        shortSingular: 'Location',
+		shortPlural: 'Locations',
+        longSingular: 'Location',
+		longPlural: 'Locations',
+		faClasses: 'fa-solid fa-circle-location-arrow',
+	},
+};
+
+const BUTTON_ACTIONS = [
+	{
+		key: 'details',
+		label: 'View Details',
+		faClasses: 'fa-regular fa-eye',
+	},
+	{
+		key: 'edit',
+		label: 'Edit',
+		faClasses: 'fa-solid fa-pen-to-square',
+	},
+	{
+		key: 'delete',
+		label: 'Delete',
+		faClasses: 'fa-solid fa-trash-can',
+	},
 ];
 
 const SESSION_KEY = 'packFirewalkerzAdminSession';
@@ -33,7 +75,6 @@ const variantFormRows = document.getElementById('variantFormRows');
 const loginForm = document.getElementById('loginForm');
 const loginStatus = document.getElementById('loginStatus');
 const catalogStatus = document.getElementById('catalogStatus');
-const categoryHeading = document.getElementById('categoryHeading');
 const categoryTabs = document.getElementById('categoryTabs');
 const elementList = document.getElementById('elementList');
 const signOutBtn = document.getElementById('signOutBtn');
@@ -122,30 +163,38 @@ async function renderShell() {
 
 function renderTabs() {
 	categoryTabs.replaceChildren();
-	for (const category of CATEGORIES) {
+	for (const category of Object.keys(CATEGORIES)) {
 		const button = document.createElement('button');
 		button.type = 'button';
-		button.className =
-			category.key === activeCategory ? 'tab active' : 'tab';
-		button.textContent = category.label;
+		button.className = category === activeCategory ? 'tab active' : 'tab';
+		button.title = `View all ${CATEGORIES[category].shortPlural}`;
+		const icon = `<i class="${CATEGORIES[category].faClasses}"></i>`;
+		button.innerHTML =
+			category === activeCategory
+				? `${icon} ${CATEGORIES[category].shortPlural}`
+				: icon;
 		button.addEventListener('click', async () => {
-			activeCategory = category.key;
-			window.location.hash = `#/view/${category.key}`;
+			activeCategory = category;
+			window.location.hash = `#/view/${category}`;
 		});
 		categoryTabs.append(button);
 	}
-	categoryHeading.textContent = getCategory().label;
 }
 
 async function loadElements() {
 	setStatus(catalogStatus, 'Loading catalog...');
 	elementList.replaceChildren();
 	try {
+		addElementBtn.innerHTML = `<i class="fa-solid fa-circle-plus"></i> Add ${CATEGORIES[activeCategory].longSingular}`;
+        addElementBtn.title = `Create a new ${CATEGORIES[activeCategory].longSingular}`
 		const elements = await dataClient.listElements(activeCategory);
 		for (const element of elements)
 			elementList.append(renderElement(element));
-        const numResults = elements.length;
-		setStatus(catalogStatus, `${numResults} result${numResults !== 1 ? 's' : ''}`);
+		const numResults = elements.length;
+		setStatus(
+			catalogStatus,
+			`${CATEGORIES[activeCategory].longPlural}: ${numResults} result${numResults !== 1 ? 's' : ''}`,
+		);
 	} catch (error) {
 		setStatus(catalogStatus, error.message);
 	}
@@ -165,16 +214,20 @@ function renderElement(element) {
 	copy.append(name, count);
 	const actions = document.createElement('div');
 	actions.className = 'element-actions';
-	for (const label of ['Edit', 'Details']) {
+	for (const action of BUTTON_ACTIONS) {
 		const button = document.createElement('button');
 		button.type = 'button';
-		button.textContent = label;
+		button.title = `${action.label}: ${element.name}`;
+		button.innerHTML = `<i class="${action.faClasses}"></i>`;
 		button.addEventListener('click', () => {
-			if (label === 'Details') {
+			if (action.key === 'details') {
 				window.location.hash = `#/details/${activeCategory}/${encodeURIComponent(element.slug)}`;
 				return;
+			} else if (action.key === 'edit') {
+				window.location.hash = `#/edit/${activeCategory}/${encodeURIComponent(element.slug)}`;
+			} else if (action.key === 'delete') {
+				// TODO: set path with slug for delete
 			}
-			window.location.hash = `#/edit/${activeCategory}/${encodeURIComponent(element.slug)}`;
 		});
 		actions.append(button);
 	}
@@ -216,8 +269,10 @@ async function loadForm(route) {
 	formHeading.textContent =
 		route.mode === 'add' ? 'Add element' : 'Edit element';
 	formCategory.replaceChildren();
-	for (const category of CATEGORIES) {
-		formCategory.add(new Option(category.label, category.key));
+	for (const category of Object.keys(CATEGORIES)) {
+		formCategory.add(
+			new Option(CATEGORIES[category].shortPlural, category),
+		);
 	}
 	formCategory.value = route.category;
 	formCategory.disabled = route.mode === 'edit';
@@ -402,10 +457,10 @@ function renderDetails(element) {
 	for (const variant of sortAdminVariants(element.game_element_variants)) {
 		const article = document.createElement('article');
 		article.className = 'variant-detail';
-        if (variant.variant_name.toLowerCase() !== 'default') {
-            const name = document.createElement('h3');
-            name.textContent = variant.variant_name;
-        }
+		if (variant.variant_name.toLowerCase() !== 'default') {
+			const name = document.createElement('h3');
+			name.textContent = variant.variant_name;
+		}
 		const description = document.createElement('p');
 		description.textContent = variant.variant_desc;
 		article.append(name, description);
@@ -421,7 +476,7 @@ function renderDetails(element) {
 }
 
 function getCategory() {
-	return CATEGORIES.find(category => category.key === activeCategory);
+	return CATEGORIES[activeCategory];
 }
 
 function readSession() {

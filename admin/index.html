@@ -10,8 +10,12 @@
 			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&family=Sono:wght,MONO@200..800,1&family=Trade+Winds&display=swap"
 			rel="stylesheet"
 		/>
-        <link href="../styles.css" rel="stylesheet" />
+		<link href="../global.css" rel="stylesheet" />
 		<link href="admin.css" rel="stylesheet" />
+		<script
+			src="https://kit.fontawesome.com/679a59d672.js"
+			crossorigin="anonymous"
+		></script>
 		<script src="admin.js" type="module" defer></script>
 	</head>
 	<body>
@@ -21,9 +25,9 @@
 			</div>
 			<div class="header-actions">
 				<a href="../" target="_blank" rel="noreferrer"
-					>Open generator</a
+					><button type="button" title="Open Image Generator Tool in a new tab">Image Generator <i class="fa-solid fa-arrow-up-right-from-square"></i></button></a
 				>
-				<button id="signOutBtn" type="button" hidden>Sign out</button>
+				<button id="signOutBtn" type="button" title="Sign out of the Admin Portal" hidden>Sign Out <i class="fa-solid fa-right-from-bracket"></i></button>
 			</div>
 		</header>
 
@@ -55,28 +59,28 @@
 			</section>
 
 			<section id="catalogPanel" hidden>
-				<div class="catalog-toolbar">
-					<div>
-						<h2 id="categoryHeading">Player Characters</h2>
-					</div>
-					<button id="addElementBtn" type="button">Add new</button>
-				</div>
-				<nav
-					id="categoryTabs"
-					class="tabs"
-					aria-label="Catalog categories"
+                <h2>ADMIN PORTAL</h2>
+                <nav
+                id="categoryTabs"
+                class="tabs"
+                aria-label="Catalog categories"
 				></nav>
-                <div class="result-container">
-                    <div id="catalogStatus" class="status" role="status"></div>
-                    <div id="elementList" class="element-list"></div>
-                </div>
+				<div class="result-container">
+                    <div class="catalog-toolbar">
+                        <div>
+                            <div id="catalogStatus" class="status" role="status"></div>
+                        </div>
+                        <button id="addElementBtn" type="button"></button>
+                    </div>
+					<div id="elementList" class="element-list"></div>
+				</div>
 			</section>
-            
+
 			<section id="detailsPanel" class="panel" hidden>
-                <button id="detailsBackBtn" type="button">
-                    Back to catalog
+				<button id="detailsBackBtn" type="button">
+					Back to catalog
 				</button>
-                <div id="detailsStatus" class="status" role="status"></div>
+				<div id="detailsStatus" class="status" role="status"></div>
 				<div id="detailsContent"></div>
 			</section>
 
