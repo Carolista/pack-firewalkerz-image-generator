@@ -71,8 +71,8 @@ function refreshCharacterOptions() {
 function updateAddButtonState() {
 	const rowCount = containerEl.querySelectorAll('.character-row').length;
 	addBtnEl.hidden = rowCount >= characters.length;
-	addBtnEl.textContent =
-		rowCount === 0 ? 'Select a character' : 'Add another character';
+	addBtnEl.innerHTML =
+		rowCount === 0 ? '<i class="fa-solid fa-user-magnifying-glass"></i> Select a character' : '<i class="fa-solid fa-circle-plus"></i> Add another character';
 }
 
 function populateVariantOptions(charSelect, variantSelect, presetVariantId) {
@@ -123,7 +123,7 @@ function createCharacterRow(presetElementId, presetVariantId) {
 	const removeBtn = document.createElement('button');
 	removeBtn.type = 'button';
 	removeBtn.className = 'removeRowBtn';
-	removeBtn.textContent = '✕';
+	removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 	removeBtn.addEventListener('click', () => {
 		row.remove();
 		refreshCharacterOptions();

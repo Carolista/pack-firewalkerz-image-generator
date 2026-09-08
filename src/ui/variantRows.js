@@ -94,7 +94,7 @@ export function initVariantRows({
 		const removeBtn = document.createElement('button');
 		removeBtn.type = 'button';
 		removeBtn.className = 'removeRowBtn';
-		removeBtn.textContent = '✕';
+		removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 		removeBtn.addEventListener('click', () => {
 			row.remove();
 			refreshElementOptions();
@@ -109,10 +109,10 @@ export function initVariantRows({
 		const count = container.querySelectorAll(`.${rowClassName}`).length;
 		const cap = allowDuplicates ? maxRows : elements.length;
 		addBtn.hidden = count >= cap;
-		addBtn.textContent =
+		addBtn.innerHTML =
 			count === 0
-				? `Select ${entityArticle} ${entityLabel}`
-				: `Add another ${entityLabel}`;
+				? `<i class="fa-solid fa-user-magnifying-glass"></i> Select ${entityArticle} ${entityLabel}`
+				: `<i class="fa-solid fa-circle-plus"></i> Add another ${entityLabel}`;
 	}
 
 	function persistRows() {

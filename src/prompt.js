@@ -20,7 +20,9 @@ export function buildPrompt({
 }) {
 	// Location reference mode: location description only
 	if (isLocationReferenceMode(location)) {
-		return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
+		return `Dark fantasy environment concept art in a detailed, atmospheric, painterly digital illustration style.
+Depict only the location and its architecture, furnishings, terrain, lighting, and atmosphere.
+Do not include any people, characters, animals, monsters, werewolves, humanoid figures, faces, silhouettes, statues, or creature imagery anywhere in the scene, including stained glass, murals, carvings, paintings, or other decorations.
 Location: ${locationDesc ?? location?.variantDesc ?? ''}`;
 	}
 

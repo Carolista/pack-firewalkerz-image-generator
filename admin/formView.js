@@ -99,9 +99,9 @@ export function createFormView({
 			}
 		}
 		row.innerHTML = `
-			<label class="variant-name-field">Variant Name *<input class="variant-name" required value="${defaultName}" /></label>
+			<label class="variant-name-field">Variant Name*<input class="variant-name" required value="${defaultName}" /></label>
 			<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
-			<label class="variant-desc-field">Description *<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
+			<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			<div class="variant-image-field"><label>Image Path<input class="variant-image" value="${variant.image ?? ''}" /></label><div class="admin-image-preview" aria-label="Image preview"></div></div>
 			<button class="delete-variant" type="button"><i class="fa-solid fa-square-minus"></i> Delete variant</button>
 		`;

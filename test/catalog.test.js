@@ -402,8 +402,13 @@ test('renders location reference mode prompt', () => {
 
 	assert.match(
 		prompt,
-		/Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style/,
+		/Dark fantasy environment concept art in a detailed, atmospheric, painterly digital illustration style/,
 	);
+	assert.match(
+		prompt,
+		/Do not include any people, characters, animals, monsters, werewolves/,
+	);
+	assert.ok(!prompt.includes('World of Darkness'));
 	assert.match(
 		prompt,
 		/Location: A mystical forest temple with ancient stone carvings and glowing runes/,

@@ -1,3 +1,4 @@
+import { CUSTOM_LOCATION_REFERENCE_KEY } from './src/constants.js';
 import {
 	buildPrompt,
 	isLocationReferenceMode,
@@ -57,6 +58,7 @@ const downloadBtn = document.getElementById('downloadBtn');
 const resetBtn = document.getElementById('resetBtn');
 const retryBtn = document.getElementById('retryBtn');
 const sceneText = document.getElementById('sceneText');
+const locationSelect = document.getElementById('locationSelect');
 
 const generationControls = { generateBtn, retryBtn };
 
@@ -123,7 +125,9 @@ async function generateSceneImage() {
 			return;
 		}
 
-		const isLocationRef = isLocationReferenceMode(location);
+		const isLocationRef =
+			locationSelect.value === CUSTOM_LOCATION_REFERENCE_KEY ||
+			isLocationReferenceMode(location);
 		const isNeutralVoidRef = isReferenceModeLocation(location);
 
 		const hasEntities =
