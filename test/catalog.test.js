@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
-import { buildPrompt } from '../src/prompt.js';
+import { buildPrompt, isReferenceModeLocation } from '../src/prompt.js';
 import { getElements, getVariantById } from '../src/services/catalog.js';
 
 test('normalizes and validates the catalog', () => {
@@ -12,7 +12,7 @@ test('normalizes and validates the catalog', () => {
 	assert.equal(catalog.characters.length, 3);
 	assert.equal(catalog.npcs.length, 3);
 	assert.equal(catalog.enemies.length, 3);
-	assert.equal(catalog.locations.length, 3);
+	assert.equal(catalog.locations.length, 4);
 
 	for (const elements of Object.values(catalog)) {
 		for (const element of elements) {
@@ -267,4 +267,91 @@ test('renders the selected location variant in the prompt', () => {
 		prompt,
 		/Environment\/Setting: Appalachian Woods \(Nighttime\): A dark forest/,
 	);
+});
+
+test('includes Neutral Void location in the catalog', () => {
+	const catalog = assertCatalog(normalizeCatalog(DATA));
+	const neutralVoid = catalog.locations.find(
+		loc => loc.slug === 'neutral-void',
+	);
+
+	assert.ok(neutralVoid, 'Neutral Void location should exist');
+	assert.equal(neutralVoid.name, 'Neutral Void');
+	assert.equal(neutralVoid.variants.length, 1);
+	assert.equal(neutralVoid.variants[0].variantName, 'default');
+	assert.match(
+		neutralVoid.variants[0].variantDesc,
+		/neutral void.*generic background.*render the individual form/i,
+	);
+});
+
+test('detects reference mode for Neutral Void location', () => {
+	const neutralVoidLocation = {
+		elementId: 'test-id',
+		elementName: 'Neutral Void',
+		slug: 'neutral-void',
+		variantName: 'default',
+		variantDesc: 'A neutral void...',
+	};
+
+	assert.ok(isReferenceModeLocation(neutralVoidLocation));
+});
+
+test('does not detect reference mode for normal locations', () => {
+	const normalLocation = {
+		elementId: 'test-id',
+		elementName: 'Appalachian Woods',
+		slug: 'appalachianWoods',
+		variantName: 'Nighttime',
+		variantDesc: 'A dark forest...',
+	};
+
+	assert.ok(!isReferenceModeLocation(normalLocation));
+});
+
+test('renders reference mode prompt with no entities', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Neutral Void',
+			variantName: 'default',
+			variantDesc:
+				"A neutral void to be used as a generic background for reference images with PCs, NPCs, and enemies. Keep this exact background and render the individual form of the character, NPC, or enemy in the foreground based on the variant's description.",
+			slug: 'neutral-void',
+		},
+		scene: 'A warrior in full plate armor, standing at attention.',
+	});
+
+	assert.match(prompt, /render exactly one individual/i);
+	assert.match(prompt, /A warrior in full plate armor/);
+	assert.match(prompt, /Keep the Neutral Void background unchanged/i);
+	assert.match(prompt, /Do not modify or replace the background/);
+});
+
+test('renders normal prompt with Neutral Void and existing entities', () => {
+	const prompt = buildPrompt({
+		characters: [
+			{
+				elementName: 'River-That-Remembers',
+				variantName: 'Crinos (Werewolf)',
+				variantDesc: 'A large werewolf form...',
+			},
+		],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Neutral Void',
+			variantName: 'default',
+			variantDesc: 'A neutral void...',
+			slug: 'neutral-void',
+		},
+		scene: 'Standing in the void.',
+	});
+
+	// With entities, should use normal mode even with Neutral Void
+	assert.match(prompt, /Character: River-That-Remembers/);
+	assert.match(prompt, /Environment\/Setting: Neutral Void:/);
+	assert.match(prompt, /Action\/Scene: Standing in the void/);
 });

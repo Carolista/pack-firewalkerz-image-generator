@@ -1,4 +1,4 @@
-import { buildPrompt } from './src/prompt.js';
+import { buildPrompt, isReferenceModeLocation } from './src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
 	isNetworkError,
@@ -49,6 +49,7 @@ let generationInProgress = false;
 const statusText = document.getElementById('statusText');
 const generateBtn = document.getElementById('generateBtn');
 const shareBtn = document.getElementById('shareBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 const resetBtn = document.getElementById('resetBtn');
 const retryBtn = document.getElementById('retryBtn');
 const sceneText = document.getElementById('sceneText');
@@ -90,11 +91,13 @@ initGenerationOutput({
 	image: document.getElementById('outputImg'),
 	placeholder: document.getElementById('imagePlaceholder'),
 	shareBtn,
+	downloadBtn,
 	retryBtn,
 });
 
 generateBtn.addEventListener('click', generateSceneImage);
 shareBtn.addEventListener('click', shareImage);
+downloadBtn.addEventListener('click', downloadImage);
 resetBtn.addEventListener('click', resetScene);
 retryBtn.addEventListener('click', generateSceneImage);
 
@@ -110,26 +113,31 @@ async function generateSceneImage() {
 	setGenerationBusy(generationControls, true);
 
 	try {
-		if (
-			!hasAtLeastOneCharacterRow() &&
-			!hasAtLeastOneNPCRow() &&
-			!hasAtLeastOneEnemyRow()
-		) {
-			await showAlert(
-				'Please add at least one character, NPC, or enemy.',
-			);
-			return;
-		}
-
 		const location = getLocationSelectionDetails();
 		if (!location) {
 			await showAlert('Please describe the custom setting.');
 			return;
 		}
 
+		const hasEntities =
+			hasAtLeastOneCharacterRow() ||
+			hasAtLeastOneNPCRow() ||
+			hasAtLeastOneEnemyRow();
+
+		// Reference mode (Neutral Void) allows no entities
+		if (!hasEntities && !isReferenceModeLocation(location)) {
+			await showAlert(
+				'Please add at least one character, NPC, or enemy.',
+			);
+			return;
+		}
+
 		const scene = sceneText.value.trim();
 		if (!scene) {
-			await showAlert('Please describe the scene action.');
+			const sceneLabel = isReferenceModeLocation(location)
+				? 'Please describe the new character, NPC, or enemy.'
+				: 'Please describe the scene action.';
+			await showAlert(sceneLabel);
 			return;
 		}
 
@@ -184,4 +192,16 @@ async function shareImage() {
 		title: 'Pack Firewalkerz Scene',
 		text: "Look at what happened in tonight's session!",
 	});
+}
+
+function downloadImage() {
+	if (!generatedBlob) return;
+	const url = URL.createObjectURL(generatedBlob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = 'pack-firewalkerz-scene.jpg';
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
 }

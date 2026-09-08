@@ -1,4 +1,5 @@
 import { OTHER_LOCATION_KEY } from '../constants.js';
+import { NEUTRAL_VOID_SLUG } from '../prompt.js';
 import { getElements, getVariantById } from '../services/catalog.js';
 import {
 	getLocationSelection,
@@ -15,6 +16,8 @@ let variantSelectEl;
 let descEl;
 let otherTextEl;
 let restoredVariantId;
+let sceneHeadingEl;
+let sceneHintEl;
 
 export function initSettingField({
 	selectEl: select,
@@ -28,20 +31,25 @@ export function initSettingField({
 	variantSelectEl = variantSelect;
 	descEl = desc;
 	otherTextEl = otherText;
+	sceneHeadingEl = document.getElementById('sceneHeading');
+	sceneHintEl = document.getElementById('sceneHint');
 	locations = getElements('location');
 
 	populateLocationSelect();
 	restoreLocationSelection();
 	restoreOtherLocationText();
 	updateLocationDisplay();
+	updateSceneUI();
 
 	selectEl.addEventListener('change', () => {
 		persistLocationSelection();
 		updateLocationDisplay();
+		updateSceneUI();
 	});
 	variantSelectEl.addEventListener('change', () => {
 		persistLocationSelection();
 		updateLocationDisplay();
+		updateSceneUI();
 	});
 	otherTextEl.addEventListener('input', persistOtherLocationText);
 }
@@ -62,6 +70,7 @@ export function getLocationSelectionDetails() {
 					variantName: 'default',
 					variantDesc,
 					image: '',
+					slug: null,
 				}
 			: null;
 	}
@@ -76,6 +85,7 @@ export function getLocationSelectionDetails() {
 				variantName: variant.variantName,
 				variantDesc: variant.variantDesc,
 				image: variant.image,
+				slug: location.slug,
 			}
 		: null;
 }
@@ -85,9 +95,19 @@ function getLocation(elementId) {
 }
 
 function populateLocationSelect() {
-	for (const location of locations) {
-		selectEl.add(new Option(location.name, location.id));
+	// Add Neutral Void first if it exists
+	const neutralVoid = locations.find(loc => loc.slug === NEUTRAL_VOID_SLUG);
+	if (neutralVoid) {
+		selectEl.add(new Option(neutralVoid.name, neutralVoid.id));
 	}
+
+	// Add remaining locations (excluding Neutral Void)
+	for (const location of locations) {
+		if (location.slug !== NEUTRAL_VOID_SLUG) {
+			selectEl.add(new Option(location.name, location.id));
+		}
+	}
+
 	selectEl.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));
 }
 
@@ -146,4 +166,29 @@ function restoreOtherLocationText() {
 
 function persistOtherLocationText() {
 	setOtherLocationText(otherTextEl.value);
+}
+
+function updateSceneUI() {
+	const location = getLocationSelectionDetails();
+	const isReferenceMode = location?.slug === NEUTRAL_VOID_SLUG;
+
+	const characterCard = document.getElementById('characterCard');
+	const npcCard = document.getElementById('npcCard');
+	const enemyCard = document.getElementById('enemyCard');
+
+	if (isReferenceMode) {
+		sceneHeadingEl.textContent = 'Reference Subject';
+		sceneHintEl.textContent =
+			'Describe the new character, NPC, or enemy to be rendered as a reference image against the Neutral Void background.';
+		characterCard.style.display = 'none';
+		npcCard.style.display = 'none';
+		enemyCard.style.display = 'none';
+	} else {
+		sceneHeadingEl.textContent = 'Scene Activity';
+		sceneHintEl.textContent =
+			'Describe actions, facial expressions, placement of characters within the setting, any items or props present, etc.';
+		characterCard.style.display = 'block';
+		npcCard.style.display = 'block';
+		enemyCard.style.display = 'block';
+	}
 }

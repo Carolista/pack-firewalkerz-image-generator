@@ -1,3 +1,9 @@
+export const NEUTRAL_VOID_SLUG = 'neutral-void';
+
+export function isReferenceModeLocation(location) {
+	return location?.slug === NEUTRAL_VOID_SLUG;
+}
+
 export function buildPrompt({
 	characters,
 	npcs,
@@ -6,6 +12,21 @@ export function buildPrompt({
 	locationDesc,
 	scene,
 }) {
+	// Reference mode: no entity blocks, subject description from scene
+	if (
+		isReferenceModeLocation(location) &&
+		!characters.length &&
+		!npcs.length &&
+		!enemies.length
+	) {
+		return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
+Render exactly one individual character, NPC, or enemy in the foreground as follows:
+${scene}
+Keep the Neutral Void background unchanged. Do not modify or replace the background.
+If a reference photo is provided below, use it only for the subject's appearance and likeness. Do not copy the reference photo's pose, expression, camera angle, or background.`;
+	}
+
+	// Normal mode: entity blocks and environment setting
 	const entityBlocks = [
 		...characters.map(
 			({ elementName, variantName, variantDesc }) =>

@@ -4,6 +4,7 @@ let statusEl;
 let imageEl;
 let placeholderEl;
 let shareBtnEl;
+let downloadBtnEl;
 let retryBtnEl;
 let imageRequestId = 0;
 
@@ -12,12 +13,14 @@ export function initGenerationOutput({
 	image,
 	placeholder,
 	shareBtn,
+	downloadBtn,
 	retryBtn,
 }) {
 	statusEl = status;
 	imageEl = image;
 	placeholderEl = placeholder;
 	shareBtnEl = shareBtn;
+	downloadBtnEl = downloadBtn;
 	retryBtnEl = retryBtn;
 }
 
@@ -30,6 +33,7 @@ export function showGenerating() {
 	imageEl.style.display = 'none';
 	placeholderEl.hidden = false;
 	shareBtnEl.style.display = 'none';
+	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'none';
 	placeholderEl
 		.closest('.card')
@@ -47,6 +51,7 @@ export function showSuccess({ imageUrl, blob }) {
 		if (canShareFile(blob, 'scene.jpg', 'image/jpeg')) {
 			shareBtnEl.style.display = 'inline-block';
 		}
+		downloadBtnEl.style.display = 'inline-block';
 	};
 	imageEl.onerror = () => {
 		if (requestId !== imageRequestId) return;
@@ -69,6 +74,8 @@ export function showError(message) {
 	placeholderEl.hidden = true;
 	imageEl.style.display = 'none';
 	statusEl.innerText = `Error: ${message}`;
+	shareBtnEl.style.display = 'none';
+	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'inline-block';
 }
 
@@ -80,6 +87,7 @@ export function resetOutput() {
 	imageEl.style.display = 'none';
 	placeholderEl.hidden = true;
 	shareBtnEl.style.display = 'none';
+	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'none';
 	statusEl.innerText = 'Waiting for prompt...';
 }

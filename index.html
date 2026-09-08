@@ -24,28 +24,6 @@
 		</header>
 		<main>
 			<div class="card">
-				<h3>Player Characters</h3>
-				<div id="characterRows"></div>
-				<button id="addCharacterBtn" type="button">
-					Add another character
-				</button>
-			</div>
-			<div class="card">
-				<h3>Non-Player Characters</h3>
-				<div id="npcRows"></div>
-				<button id="addNPCBtn" type="button">Add another NPC</button>
-			</div>
-			<div class="card">
-				<h3>Enemies</h3>
-				<p class="field-hint">
-					Note: The same type of enemy can be added more than once.
-				</p>
-				<div id="enemyRows"></div>
-				<button id="addEnemyBtn" type="button">
-					Add another enemy
-				</button>
-			</div>
-			<div class="card">
 				<h3>Setting</h3>
 				<div class="field">
 					<label for="locationSelect">Location</label>
@@ -64,9 +42,31 @@
 					></textarea>
 				</div>
 			</div>
-			<div class="card">
-				<h3>Scene Activity</h3>
+			<div id="characterCard" class="card">
+				<h3>Player Characters</h3>
+				<div id="characterRows"></div>
+				<button id="addCharacterBtn" type="button">
+					Add another character
+				</button>
+			</div>
+			<div id="npcCard" class="card">
+				<h3>Non-Player Characters</h3>
+				<div id="npcRows"></div>
+				<button id="addNPCBtn" type="button">Add another NPC</button>
+			</div>
+			<div id="enemyCard" class="card">
+				<h3>Enemies</h3>
 				<p class="field-hint">
+					Note: The same type of enemy can be added more than once.
+				</p>
+				<div id="enemyRows"></div>
+				<button id="addEnemyBtn" type="button">
+					Add another enemy
+				</button>
+			</div>
+			<div class="card">
+				<h3 id="sceneHeading">Scene Activity</h3>
+				<p id="sceneHint" class="field-hint">
 					Describe actions, facial expressions, placement of
 					characters within the setting, any items or props present,
 					etc.
@@ -94,6 +94,9 @@
 				<div style="margin-top: 0.5rem">
 					<button id="shareBtn" style="display: none">
 						Share to Device
+					</button>
+					<button id="downloadBtn" style="display: none">
+						Download JPEG
 					</button>
 				</div>
 			</div>
