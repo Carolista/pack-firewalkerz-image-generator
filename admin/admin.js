@@ -1,7 +1,7 @@
-import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 import { createAuthClient } from './auth.js';
 import { createCatalogView } from './catalogView.js';
+import { createDetailsView } from './detailsView.js';
 import { createFormView } from './formView.js';
 import { createModalController } from './modals.js';
 import { getRoute, navigateTo } from './routing.js';
@@ -119,6 +119,13 @@ const catalogView = createCatalogView({
 		activeCategory = category;
 	},
 });
+const detailsView = createDetailsView({
+	container: detailsContainer,
+	content: detailsContent,
+	status: catalogStatus,
+	dataClient,
+	modals,
+});
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
 addElementBtn.addEventListener('click', () => {
@@ -190,97 +197,9 @@ async function renderShell() {
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
 	catalogView.renderTabs();
-	if (detailsRoute) await loadDetails(detailsRoute);
+	if (detailsRoute) await detailsView.load(detailsRoute);
 	else if (formRoute) await formView.load(formRoute);
 	else await catalogView.loadElements();
-}
-
-async function loadDetails(route) {
-	catalogPanel.hidden = true;
-	detailsContainer.hidden = false;
-	detailsContent.replaceChildren();
-	setStatus(catalogStatus, '');
-	try {
-		const [element] = await dataClient.getElementBySlug(route.slug);
-		if (!element) throw new Error('Element not found.');
-		activeCategory = route.category;
-		detailsContent.append(renderDetails(element));
-	} catch (error) {
-		setStatus(catalogStatus, error.message);
-	}
-}
-
-function sortAdminVariants(variants = []) {
-	return [...variants].sort((left, right) => {
-		const leftOrder = left.sort_order;
-		const rightOrder = right.sort_order;
-		if (leftOrder !== null && leftOrder !== undefined) {
-			if (rightOrder === null || rightOrder === undefined) return -1;
-			if (leftOrder !== rightOrder) return leftOrder - rightOrder;
-		} else if (rightOrder !== null && rightOrder !== undefined) {
-			return 1;
-		}
-		return left.variant_name.localeCompare(right.variant_name, undefined, {
-			sensitivity: 'base',
-		});
-	});
-}
-
-function renderDetails(element) {
-	const detailsName = document.getElementById('detailsName');
-	const status = document.getElementById('detailsStatus');
-	detailsName.textContent = element.name;
-	const content = document.getElementById('detailsContent');
-	const numVariants = element.game_element_variants?.length ?? 0;
-	status.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
-	for (const variant of sortAdminVariants(element.game_element_variants)) {
-		const article = document.createElement('article');
-		article.className = 'variant-detail';
-		const detailsText = document.createElement('div');
-		let variantName;
-		if (variant.variant_name.toLowerCase() !== 'default') {
-			variantName = document.createElement('h3');
-			variantName.textContent = variant.variant_name;
-		}
-		const deleteButton = document.createElement('button');
-		deleteButton.type = 'button';
-		deleteButton.classList.add('delete-variant');
-		deleteButton.innerHTML = `<i class="fa-solid fa-square-minus"></i> Delete Variant`;
-		deleteButton.addEventListener('click', async () => {
-			const confirmed = await modals.showConfirmation(
-				'Confirm Deletion',
-				`Delete the ${variant.variant_name} variant from ${element.name}?`,
-			);
-			if (!confirmed) return;
-			try {
-				modals.setConfirmBusy(true);
-				await dataClient.deleteVariant(variant.id);
-				await loadDetails({
-					category: activeCategory,
-					slug: element.slug,
-				});
-			} catch (error) {
-				setStatus(
-					document.getElementById('detailsStatus'),
-					error.message,
-				);
-			} finally {
-				modals.setConfirmBusy(false);
-			}
-		});
-		const description = document.createElement('p');
-		description.textContent = variant.variant_desc;
-		detailsText.append(variantName, deleteButton, description);
-		article.append(detailsText);
-		if (variant.image) {
-			const image = document.createElement('img');
-			image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${variant.image}`;
-			image.alt = `${element.name}, ${variant.variant_name}`;
-			article.prepend(image);
-		}
-		content.append(article);
-	}
-	return content;
 }
 
 function setStatus(element, message) {
