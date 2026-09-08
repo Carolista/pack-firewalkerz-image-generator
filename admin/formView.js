@@ -162,6 +162,14 @@ export function createFormView({
 			new Set(names.map(name => name.toLowerCase())).size !== names.length
 		)
 			return setStatus(formStatus, 'Variant names must be unique.');
+		if (
+			rows.length > 1 &&
+			names.some(name => name.toLowerCase() === 'default')
+		)
+			return setStatus(
+				formStatus,
+				'When an element has multiple variants, none can be named "default". Please rename variants to descriptive names.',
+			);
 		try {
 			if (route.name === 'add') {
 				const [created] = await dataClient.createElement({
