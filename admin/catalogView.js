@@ -71,7 +71,12 @@ export function createCatalogView({
 		name.textContent = element.name;
 		const count = document.createElement('p');
 		const variantCount = element.game_element_variants?.length ?? 0;
-		count.textContent = `${variantCount} variant${variantCount !== 1 ? 's' : ''}`;
+		if (variantCount > 1) {
+			const variantList = sortVariants(element.game_element_variants)
+				.map(variant => variant.variant_name)
+				.join(', ');
+			count.textContent = `${variantCount} variants: ${variantList}`;
+		}
 		copy.append(name, count);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
@@ -95,7 +100,7 @@ export function createCatalogView({
 		if (firstVariant?.image) {
 			const image = document.createElement('img');
 			image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${firstVariant.image}`;
-			image.alt = `${element.name} reference`;
+			image.alt = `${element.name} reference image`;
 			article.prepend(image);
 		}
 		return article;
