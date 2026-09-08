@@ -73,8 +73,8 @@ h3 {
 	color: var(--admin-dark-blue);
 }
 
-h2#confirmModalHeading {
-	color: var(--admin-bright-blue);
+h2.modal-heading {
+	color: var(--admin-blue);
 }
 
 h3.variant-heading {

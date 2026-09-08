@@ -348,10 +348,6 @@ footer {
 }
 
 @media (max-width: 600px) {
-	body {
-		background-attachment: scroll;
-		margin-top: 1rem;
-	}
 
 	#generateBtn,
 	#resetBtn {

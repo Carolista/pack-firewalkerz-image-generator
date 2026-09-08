@@ -1,6 +1,7 @@
 import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 import { createAuthClient } from './auth.js';
+import { createModalController } from './modals.js';
 
 const CATEGORIES = {
 	character: {
@@ -94,7 +95,18 @@ const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
 const confirmModalConfirmBtn = document.getElementById(
 	'confirmModalConfirmBtn',
 );
-let confirmResolver;
+
+const modals = createModalController({
+	reauthOverlay: reauthModalOverlay,
+	reauthForm,
+	reauthStatus,
+	confirmOverlay: confirmModalOverlay,
+	confirmHeading: confirmModalHeading,
+	confirmMessage: confirmModalMessage,
+	confirmCancelBtn: confirmModalCancelBtn,
+	confirmConfirmBtn: confirmModalConfirmBtn,
+	onReauthenticate: reauthenticate,
+});
 
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
@@ -102,7 +114,6 @@ addElementBtn.addEventListener('click', () => {
 	window.location.hash = `#/add/${activeCategory}`;
 });
 elementForm.addEventListener('submit', saveElement);
-reauthForm.addEventListener('submit', reauthenticate);
 document.getElementById('addVariantBtn').addEventListener('click', () => {
 	addVariantFormRow();
 });
@@ -116,12 +127,6 @@ document.getElementById('formCancelBtn').addEventListener('click', () => {
 	requestFormNavigation();
 });
 window.addEventListener('hashchange', renderShell);
-confirmModalCancelBtn.addEventListener('click', () =>
-	resolveConfirmation(false),
-);
-confirmModalConfirmBtn.addEventListener('click', () =>
-	resolveConfirmation(true),
-);
 
 renderShell();
 
@@ -141,21 +146,22 @@ async function signIn(event) {
 }
 
 function showReauthenticationModal() {
-	reauthModalOverlay.hidden = false;
+	modals.showReauthentication();
 }
 
 async function reauthenticate(event) {
 	event.preventDefault();
-	setStatus(reauthStatus, 'Signing in...');
+	const status = modals.getReauthenticationStatusElement();
+	setStatus(status, 'Signing in...');
 	try {
 		await authClient.completeReauthentication(
 			document.getElementById('reauthEmailInput').value,
 			document.getElementById('reauthPasswordInput').value,
 		);
-		reauthModalOverlay.hidden = true;
-		setStatus(reauthStatus, '');
+		modals.completeReauthentication();
+		setStatus(status, '');
 	} catch (error) {
-		setStatus(reauthStatus, error.message);
+		setStatus(status, error.message);
 	}
 }
 
@@ -264,7 +270,7 @@ function renderElement(element) {
 
 async function requestElementDeletion(element) {
 	const numVariants = element.game_element_variants?.length || 0;
-	const confirmed = await showConfirmation(
+	const confirmed = await modals.showConfirmation(
 		'Confirm Deletion',
 		`Delete ${element.name} and its ${numVariants} variant${numVariants !== 1 ? 's' : ''}?`,
 	);
@@ -382,7 +388,7 @@ function addVariantFormRow(variant = {}) {
 	row.querySelector('.delete-variant').addEventListener('click', async () => {
 		const variantId = row.dataset.variantId;
 		if (variantId) {
-			const confirmed = await showConfirmation(
+			const confirmed = await modals.showConfirmation(
 				'Confirm Deletion',
 				`Delete the ${row.querySelector('.variant-name').value} variant?`,
 			);
@@ -518,7 +524,7 @@ function setInitialFormSnapshot() {
 
 async function requestFormNavigation() {
 	if (initialFormSnapshot && getFormSnapshot() !== initialFormSnapshot) {
-		const confirmed = await showConfirmation(
+		const confirmed = await modals.showConfirmation(
 			'Unsaved changes',
 			'Leave this form and discard your changes?',
 			{ cancelLabel: 'Stay', confirmLabel: 'Discard Changes' },
@@ -526,27 +532,6 @@ async function requestFormNavigation() {
 		if (!confirmed) return;
 	}
 	window.location.hash = `#/view/${activeCategory}`;
-}
-
-function showConfirmation(
-	heading,
-	message,
-	{ cancelLabel = 'Cancel', confirmLabel = 'Delete' } = {},
-) {
-	confirmModalHeading.textContent = heading;
-	confirmModalMessage.textContent = message;
-	confirmModalCancelBtn.textContent = cancelLabel;
-	confirmModalConfirmBtn.textContent = confirmLabel;
-	confirmModalOverlay.hidden = false;
-	return new Promise(resolve => {
-		confirmResolver = resolve;
-	});
-}
-
-function resolveConfirmation(value) {
-	confirmModalOverlay.hidden = true;
-	confirmResolver?.(value);
-	confirmResolver = null;
 }
 
 function sortAdminVariants(variants = []) {
@@ -586,14 +571,13 @@ function renderDetails(element) {
 		deleteButton.classList.add('delete-variant');
 		deleteButton.innerHTML = `<i class="fa-solid fa-square-minus"></i> Delete Variant`;
 		deleteButton.addEventListener('click', async () => {
-			const confirmed = await showConfirmation(
+			const confirmed = await modals.showConfirmation(
 				'Confirm Deletion',
 				`Delete the ${variant.variant_name} variant from ${element.name}?`,
 			);
 			if (!confirmed) return;
 			try {
-				confirmModalConfirmBtn.disabled = true;
-				confirmModalConfirmBtn.textContent = 'Deleting...';
+				modals.setConfirmBusy(true);
 				await dataClient.deleteVariant(variant.id);
 				await loadDetails({
 					category: activeCategory,
@@ -605,8 +589,7 @@ function renderDetails(element) {
 					error.message,
 				);
 			} finally {
-				confirmModalConfirmBtn.disabled = false;
-				confirmModalConfirmBtn.textContent = 'Delete';
+				modals.setConfirmBusy(false);
 			}
 		});
 		const description = document.createElement('p');
