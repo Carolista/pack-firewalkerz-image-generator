@@ -1,6 +1,7 @@
 import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 import { createAuthClient } from './auth.js';
+import { createCatalogView } from './catalogView.js';
 import { createFormView } from './formView.js';
 import { createModalController } from './modals.js';
 import { getRoute, navigateTo } from './routing.js';
@@ -35,24 +36,6 @@ const CATEGORIES = {
 		faClasses: 'fa-solid fa-circle-location-arrow',
 	},
 };
-
-const BUTTON_ACTIONS = [
-	{
-		key: 'details',
-		label: 'View Details',
-		faClasses: 'fa-regular fa-eye',
-	},
-	{
-		key: 'edit',
-		label: 'Edit',
-		faClasses: 'fa-solid fa-pen-to-square',
-	},
-	{
-		key: 'delete',
-		label: 'Delete',
-		faClasses: 'fa-solid fa-trash-can',
-	},
-];
 
 let activeCategory = 'character';
 const authClient = createAuthClient({
@@ -120,6 +103,21 @@ const formView = createFormView({
 	navigateTo,
 	getRoute,
 	categories: CATEGORIES,
+});
+const catalogView = createCatalogView({
+	categories: CATEGORIES,
+	categoryTabs,
+	categoryHeading: document.querySelector('#catalogPanel > h2'),
+	catalogStatus,
+	elementList,
+	addElementBtn,
+	dataClient,
+	modals,
+	navigateTo,
+	getActiveCategory: () => activeCategory,
+	setActiveCategory: category => {
+		activeCategory = category;
+	},
 });
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
@@ -191,114 +189,10 @@ async function renderShell() {
 	formContainer.hidden = !authenticated || !formRoute;
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
-	renderTabs();
+	catalogView.renderTabs();
 	if (detailsRoute) await loadDetails(detailsRoute);
 	else if (formRoute) await formView.load(formRoute);
-	else await loadElements();
-}
-
-function renderTabs() {
-	categoryTabs.replaceChildren();
-	for (const category of Object.keys(CATEGORIES)) {
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.className = category === activeCategory ? 'tab active' : 'tab';
-		button.title = `View all ${CATEGORIES[category].shortPlural}`;
-		const icon = `<i class="${CATEGORIES[category].faClasses}"></i>`;
-		button.innerHTML =
-			category === activeCategory
-				? `${icon} ${CATEGORIES[category].shortPlural}`
-				: icon;
-		button.addEventListener('click', async () => {
-			activeCategory = category;
-			navigateTo({ name: 'view', category });
-		});
-		categoryTabs.append(button);
-	}
-}
-
-async function loadElements() {
-	setStatus(catalogStatus, 'Loading catalog...');
-	elementList.replaceChildren();
-	try {
-		addElementBtn.innerHTML = `<i class="fa-solid fa-square-plus"></i> Add ${CATEGORIES[activeCategory].longSingular}`;
-		addElementBtn.title = `Create a new ${CATEGORIES[activeCategory].longSingular}`;
-		const elements = await dataClient.listElements(activeCategory);
-		for (const element of elements)
-			elementList.append(renderElement(element));
-		const numResults = elements.length;
-		setStatus(
-			catalogStatus,
-			`${CATEGORIES[activeCategory].longPlural}: ${numResults} result${numResults !== 1 ? 's' : ''}`,
-		);
-	} catch (error) {
-		setStatus(catalogStatus, error.message);
-	}
-}
-
-function renderElement(element) {
-	const article = document.createElement('article');
-	article.className = 'element-card';
-	const firstVariant = sortAdminVariants(element.game_element_variants)[0];
-	const copy = document.createElement('div');
-	copy.className = 'element-copy';
-	const elementName = document.createElement('h3');
-	elementName.textContent = element.name;
-	const count = document.createElement('p');
-	const numVariants = element.game_element_variants?.length ?? 0;
-	count.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
-	copy.append(elementName, count);
-	const actions = document.createElement('div');
-	actions.className = 'element-actions';
-	for (const action of BUTTON_ACTIONS) {
-		const button = document.createElement('button');
-		button.type = 'button';
-		button.title = `${action.label}: ${element.name}`;
-		button.innerHTML = `<i class="${action.faClasses}"></i>`;
-		button.addEventListener('click', () => {
-			if (action.key === 'details') {
-				navigateTo({
-					name: 'details',
-					category: activeCategory,
-					slug: element.slug,
-				});
-				return;
-			} else if (action.key === 'edit') {
-				navigateTo({
-					name: 'edit',
-					category: activeCategory,
-					slug: element.slug,
-				});
-			} else if (action.key === 'delete') {
-				requestElementDeletion(element);
-			}
-		});
-		actions.append(button);
-	}
-	article.append(copy, actions);
-	if (firstVariant?.image) {
-		const image = document.createElement('img');
-		image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${firstVariant.image}`;
-		image.alt = `${element.name} reference`;
-		article.prepend(image);
-	}
-	return article;
-}
-
-async function requestElementDeletion(element) {
-	const numVariants = element.game_element_variants?.length || 0;
-	const confirmed = await modals.showConfirmation(
-		'Confirm Deletion',
-		`Delete ${element.name} and its ${numVariants} variant${numVariants !== 1 ? 's' : ''}?`,
-	);
-	if (!confirmed) return;
-	setStatus(catalogStatus, 'Deleting...');
-	try {
-		await dataClient.deleteElement(element.id);
-		await loadElements();
-	} catch (error) {
-		setStatus(catalogStatus, error.message);
-	}
+	else await catalogView.loadElements();
 }
 
 async function loadDetails(route) {
