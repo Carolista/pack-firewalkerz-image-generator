@@ -2,6 +2,7 @@ import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 import { createAuthClient } from './auth.js';
 import { createModalController } from './modals.js';
+import { getRoute, navigateTo } from './routing.js';
 
 const CATEGORIES = {
 	character: {
@@ -111,14 +112,14 @@ const modals = createModalController({
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
 addElementBtn.addEventListener('click', () => {
-	window.location.hash = `#/add/${activeCategory}`;
+	navigateTo({ name: 'add', category: activeCategory });
 });
 elementForm.addEventListener('submit', saveElement);
 document.getElementById('addVariantBtn').addEventListener('click', () => {
 	addVariantFormRow();
 });
 detailsBackBtn.addEventListener('click', () => {
-	window.location.hash = `#/view/${activeCategory}`;
+	navigateTo({ name: 'view', category: activeCategory });
 });
 document.getElementById('formBackBtn').addEventListener('click', () => {
 	requestFormNavigation();
@@ -173,10 +174,10 @@ async function signOut() {
 async function renderShell() {
 	const authenticated = Boolean(authClient.getSession()?.access_token);
 	loginPanel.hidden = authenticated;
-	const viewRoute = getViewRoute();
-	if (viewRoute) activeCategory = viewRoute.category;
-	const detailsRoute = getDetailsRoute();
-	const formRoute = getFormRoute();
+	const route = getRoute();
+	if (route?.category) activeCategory = route.category;
+	const detailsRoute = route?.name === 'details' ? route : null;
+	const formRoute = ['add', 'edit'].includes(route?.name) ? route : null;
 	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
 	detailsContainer.hidden = !authenticated || !detailsRoute;
 	formContainer.hidden = !authenticated || !formRoute;
@@ -202,7 +203,7 @@ function renderTabs() {
 				: icon;
 		button.addEventListener('click', async () => {
 			activeCategory = category;
-			window.location.hash = `#/view/${category}`;
+			navigateTo({ name: 'view', category });
 		});
 		categoryTabs.append(button);
 	}
@@ -248,10 +249,18 @@ function renderElement(element) {
 		button.innerHTML = `<i class="${action.faClasses}"></i>`;
 		button.addEventListener('click', () => {
 			if (action.key === 'details') {
-				window.location.hash = `#/details/${activeCategory}/${encodeURIComponent(element.slug)}`;
+				navigateTo({
+					name: 'details',
+					category: activeCategory,
+					slug: element.slug,
+				});
 				return;
 			} else if (action.key === 'edit') {
-				window.location.hash = `#/edit/${activeCategory}/${encodeURIComponent(element.slug)}`;
+				navigateTo({
+					name: 'edit',
+					category: activeCategory,
+					slug: element.slug,
+				});
 			} else if (action.key === 'delete') {
 				requestElementDeletion(element);
 			}
@@ -284,38 +293,9 @@ async function requestElementDeletion(element) {
 	}
 }
 
-function getDetailsRoute() {
-	const parts = window.location.hash.split('/');
-	if (parts[1] !== 'details' || !parts[3]) {
-		return null;
-	}
-	return { category: parts[2], slug: decodeURIComponent(parts[3]) };
-}
-
-function getViewRoute() {
-	const parts = window.location.hash.split('/');
-	if (parts[1] !== 'view' || !CATEGORIES[parts[2]]) return null;
-	return { category: parts[2] };
-}
-
-function getFormRoute() {
-	const parts = window.location.hash.split('/');
-	if (parts[1] === 'add' && parts[2]) {
-		return { mode: 'add', category: parts[2] };
-	}
-	if (parts[1] === 'edit' && parts[2] && parts[3]) {
-		return {
-			mode: 'edit',
-			category: parts[2],
-			slug: decodeURIComponent(parts[3]),
-		};
-	}
-	return null;
-}
-
 async function loadForm(route) {
 	activeCategory = route.category;
-	formHeading.textContent = route.mode === 'add' ? 'Add new element' : 'Edit';
+	formHeading.textContent = route.name === 'add' ? 'Add new element' : 'Edit';
 	formCategory.replaceChildren();
 	for (const category of Object.keys(CATEGORIES)) {
 		formCategory.add(
@@ -323,12 +303,12 @@ async function loadForm(route) {
 		);
 	}
 	formCategory.value = route.category;
-	formCategory.disabled = route.mode === 'edit';
+	formCategory.disabled = route.name === 'edit';
 	variantFormRows.replaceChildren();
 	formElementId = null;
 	deletedVariantIds = [];
 	try {
-		if (route.mode === 'add') {
+		if (route.name === 'add') {
 			formName.value = '';
 			formSlug.value = '';
 			addVariantFormRow();
@@ -337,7 +317,7 @@ async function loadForm(route) {
 		}
 		const [element] = await dataClient.getElementBySlug(route.slug);
 		if (!element) throw new Error('Element not found.');
-		if (route.mode === 'edit') {
+		if (route.name === 'edit') {
 			formHeading.textContent += ` ${element.name}`;
 		}
 		formElementId = element.id;
@@ -425,7 +405,7 @@ function addVariantFormRow(variant = {}) {
 async function saveElement(event) {
 	event.preventDefault();
 	setStatus(formStatus, 'Saving...');
-	const route = getFormRoute();
+	const route = getRoute();
 	const elementPayload = {
 		element_type: formCategory.value,
 		name: formName.value.trim(),
@@ -455,7 +435,7 @@ async function saveElement(event) {
 	}
 	try {
 		let elementId = formElementId;
-		if (route.mode === 'add') {
+		if (route.name === 'add') {
 			const [created] = await dataClient.createElement(elementPayload);
 			elementId = created.id;
 		} else if (elementId) {
@@ -480,7 +460,7 @@ async function saveElement(event) {
 			await dataClient.deleteVariant(variantId);
 		}
 		setStatus(formStatus, '');
-		window.location.hash = `#/view/${formCategory.value}`;
+		navigateTo({ name: 'view', category: formCategory.value });
 	} catch (error) {
 		setStatus(formStatus, error.message);
 	}
@@ -531,7 +511,7 @@ async function requestFormNavigation() {
 		);
 		if (!confirmed) return;
 	}
-	window.location.hash = `#/view/${activeCategory}`;
+	navigateTo({ name: 'view', category: activeCategory });
 }
 
 function sortAdminVariants(variants = []) {

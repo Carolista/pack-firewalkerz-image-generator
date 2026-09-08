@@ -348,7 +348,6 @@ footer {
 }
 
 @media (max-width: 600px) {
-
 	#generateBtn,
 	#resetBtn {
 		display: block;
