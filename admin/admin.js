@@ -1,6 +1,7 @@
 import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
 import { createAuthClient } from './auth.js';
+import { createFormView } from './formView.js';
 import { createModalController } from './modals.js';
 import { getRoute, navigateTo } from './routing.js';
 
@@ -54,9 +55,6 @@ const BUTTON_ACTIONS = [
 ];
 
 let activeCategory = 'character';
-let formElementId = null;
-let deletedVariantIds = [];
-let initialFormSnapshot = '';
 const authClient = createAuthClient({
 	onSessionExpired: showReauthenticationModal,
 });
@@ -71,7 +69,6 @@ const detailsContainer = document.getElementById('detailsContainer');
 const detailsContent = document.getElementById('detailsContent');
 const detailsBackBtn = document.getElementById('detailsBackBtn');
 const formContainer = document.getElementById('formContainer');
-const formPanel = document.getElementById('formPanel');
 const formHeading = document.getElementById('formHeading');
 const elementForm = document.getElementById('elementForm');
 const formCategory = document.getElementById('formCategory');
@@ -108,24 +105,35 @@ const modals = createModalController({
 	confirmConfirmBtn: confirmModalConfirmBtn,
 	onReauthenticate: reauthenticate,
 });
-
+const formView = createFormView({
+	formContainer,
+	formHeading,
+	elementForm,
+	formCategory,
+	formName,
+	formSlug,
+	formStatus,
+	variantFormRows,
+	addVariantBtn: document.getElementById('addVariantBtn'),
+	dataClient,
+	modals,
+	navigateTo,
+	getRoute,
+	categories: CATEGORIES,
+});
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
 addElementBtn.addEventListener('click', () => {
 	navigateTo({ name: 'add', category: activeCategory });
 });
-elementForm.addEventListener('submit', saveElement);
-document.getElementById('addVariantBtn').addEventListener('click', () => {
-	addVariantFormRow();
-});
 detailsBackBtn.addEventListener('click', () => {
 	navigateTo({ name: 'view', category: activeCategory });
 });
 document.getElementById('formBackBtn').addEventListener('click', () => {
-	requestFormNavigation();
+	formView.requestNavigation();
 });
 document.getElementById('formCancelBtn').addEventListener('click', () => {
-	requestFormNavigation();
+	formView.requestNavigation();
 });
 window.addEventListener('hashchange', renderShell);
 
@@ -185,7 +193,7 @@ async function renderShell() {
 	if (!authenticated) return;
 	renderTabs();
 	if (detailsRoute) await loadDetails(detailsRoute);
-	else if (formRoute) await loadForm(formRoute);
+	else if (formRoute) await formView.load(formRoute);
 	else await loadElements();
 }
 
@@ -293,179 +301,6 @@ async function requestElementDeletion(element) {
 	}
 }
 
-async function loadForm(route) {
-	activeCategory = route.category;
-	formHeading.textContent = route.name === 'add' ? 'Add new element' : 'Edit';
-	formCategory.replaceChildren();
-	for (const category of Object.keys(CATEGORIES)) {
-		formCategory.add(
-			new Option(CATEGORIES[category].shortPlural, category),
-		);
-	}
-	formCategory.value = route.category;
-	formCategory.disabled = route.name === 'edit';
-	variantFormRows.replaceChildren();
-	formElementId = null;
-	deletedVariantIds = [];
-	try {
-		if (route.name === 'add') {
-			formName.value = '';
-			formSlug.value = '';
-			addVariantFormRow();
-			setInitialFormSnapshot();
-			return;
-		}
-		const [element] = await dataClient.getElementBySlug(route.slug);
-		if (!element) throw new Error('Element not found.');
-		if (route.name === 'edit') {
-			formHeading.textContent += ` ${element.name}`;
-		}
-		formElementId = element.id;
-		formName.value = element.name;
-		formSlug.value = element.slug;
-		for (const variant of sortAdminVariants(
-			element.game_element_variants,
-		)) {
-			addVariantFormRow(variant);
-		}
-		setInitialFormSnapshot();
-	} catch (error) {
-		setStatus(formStatus, error.message);
-	}
-}
-
-function addVariantFormRow(variant = {}) {
-	const row = document.createElement('div');
-	row.className = 'variant-form-row';
-	row.dataset.variantId = variant.id ?? '';
-	const existingNames = new Set(
-		[...variantFormRows.querySelectorAll('.variant-name')].map(input =>
-			input.value.trim().toLowerCase(),
-		),
-	);
-	let defaultName = variant.variant_name;
-	if (!defaultName) {
-		defaultName = existingNames.size
-			? `Variant ${existingNames.size + 1}`
-			: 'default';
-		while (existingNames.has(defaultName.toLowerCase())) {
-			defaultName = `Variant ${existingNames.size + 2}`;
-		}
-	}
-	row.innerHTML = `
-		<label class="variant-name-field">Variant Name *<input class="variant-name" required value="${defaultName}" /></label>
-		<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
-		<label class="variant-desc-field">Description *<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
-		<div class="variant-image-field">
-			<label>Image Path<input class="variant-image" value="${variant.image ?? ''}" /></label>
-			<div class="admin-image-preview" aria-label="Image preview"></div>   
-        </div>
-        <button class="delete-variant" type="button">
-            <i class="fa-solid fa-square-minus"></i> 
-            Delete variant
-        </button>
-	`;
-	row.querySelector('.delete-variant').addEventListener('click', async () => {
-		const variantId = row.dataset.variantId;
-		if (variantId) {
-			const confirmed = await modals.showConfirmation(
-				'Confirm Deletion',
-				`Delete the ${row.querySelector('.variant-name').value} variant?`,
-			);
-			if (!confirmed) return;
-			deletedVariantIds.push(variantId);
-		}
-		row.remove();
-	});
-	variantFormRows.append(row);
-	row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-	const description = row.querySelector('.variant-desc');
-	const resizeDescription = () => {
-		description.style.height = 'auto';
-		description.style.height = `${description.scrollHeight}px`;
-	};
-	description.addEventListener('input', resizeDescription);
-	resizeDescription();
-	const imageInput = row.querySelector('.variant-image');
-	const imagePreview = row.querySelector('.admin-image-preview');
-	const updateImagePreview = () => {
-		imagePreview.replaceChildren();
-		if (!imageInput.value.trim()) return;
-		const image = document.createElement('img');
-		image.src = imageInput.value.startsWith('http')
-			? imageInput.value
-			: `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${imageInput.value}`;
-		image.alt = 'Variant preview';
-		imagePreview.append(image);
-	};
-	imageInput.addEventListener('input', updateImagePreview);
-	updateImagePreview();
-}
-
-async function saveElement(event) {
-	event.preventDefault();
-	setStatus(formStatus, 'Saving...');
-	const route = getRoute();
-	const elementPayload = {
-		element_type: formCategory.value,
-		name: formName.value.trim(),
-		slug: formSlug.value.trim(),
-	};
-	const rows = [...variantFormRows.querySelectorAll('.variant-form-row')];
-	if (!rows.length) {
-		setStatus(formStatus, 'Add at least one variant.');
-		return;
-	}
-	const variantNames = rows.map(row =>
-		row.querySelector('.variant-name').value.trim(),
-	);
-	if (variantNames.some(name => !name)) {
-		setStatus(formStatus, 'Every variant needs a name.');
-		return;
-	}
-	const duplicateNames = variantNames.filter(
-		(name, index) =>
-			variantNames.findIndex(
-				candidate => candidate.toLowerCase() === name.toLowerCase(),
-			) !== index,
-	);
-	if (duplicateNames.length) {
-		setStatus(formStatus, 'Variant names must be unique.');
-		return;
-	}
-	try {
-		let elementId = formElementId;
-		if (route.name === 'add') {
-			const [created] = await dataClient.createElement(elementPayload);
-			elementId = created.id;
-		} else if (elementId) {
-			await dataClient.updateElement(elementId, elementPayload);
-		} else {
-			throw new Error('The element could not be identified for editing.');
-		}
-		for (const row of rows) {
-			const payload = {
-				element_id: elementId,
-				variant_name: row.querySelector('.variant-name').value.trim(),
-				variant_desc: row.querySelector('.variant-desc').value.trim(),
-				sort_order:
-					Number(row.querySelector('.variant-sort').value) || null,
-				image: row.querySelector('.variant-image').value.trim(),
-			};
-			const variantId = row.dataset.variantId;
-			if (variantId) await dataClient.updateVariant(variantId, payload);
-			else await dataClient.createVariant(payload);
-		}
-		for (const variantId of deletedVariantIds) {
-			await dataClient.deleteVariant(variantId);
-		}
-		setStatus(formStatus, '');
-		navigateTo({ name: 'view', category: formCategory.value });
-	} catch (error) {
-		setStatus(formStatus, error.message);
-	}
-}
-
 async function loadDetails(route) {
 	catalogPanel.hidden = true;
 	detailsContainer.hidden = false;
@@ -479,39 +314,6 @@ async function loadDetails(route) {
 	} catch (error) {
 		setStatus(catalogStatus, error.message);
 	}
-}
-
-function getFormSnapshot() {
-	return JSON.stringify({
-		category: formCategory.value,
-		name: formName.value,
-		slug: formSlug.value,
-		variants: [
-			...variantFormRows.querySelectorAll('.variant-form-row'),
-		].map(row => ({
-			id: row.dataset.variantId,
-			name: row.querySelector('.variant-name').value,
-			description: row.querySelector('.variant-desc').value,
-			sortOrder: row.querySelector('.variant-sort').value,
-			image: row.querySelector('.variant-image').value,
-		})),
-	});
-}
-
-function setInitialFormSnapshot() {
-	initialFormSnapshot = getFormSnapshot();
-}
-
-async function requestFormNavigation() {
-	if (initialFormSnapshot && getFormSnapshot() !== initialFormSnapshot) {
-		const confirmed = await modals.showConfirmation(
-			'Unsaved changes',
-			'Leave this form and discard your changes?',
-			{ cancelLabel: 'Stay', confirmLabel: 'Discard Changes' },
-		);
-		if (!confirmed) return;
-	}
-	navigateTo({ name: 'view', category: activeCategory });
 }
 
 function sortAdminVariants(variants = []) {
