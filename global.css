@@ -295,7 +295,7 @@ button {
 .character-row .removeRowBtn,
 .npc-row .removeRowBtn,
 .enemy-row .removeRowBtn {
-    font-size: 1.2rem;
+	font-size: 1.2rem;
 	grid-column: 2;
 	grid-row: 2;
 	align-self: stretch;

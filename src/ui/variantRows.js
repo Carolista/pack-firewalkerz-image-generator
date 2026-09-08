@@ -11,6 +11,7 @@ export function initVariantRows({
 	setStoredRows,
 	entityLabel,
 	entityArticle,
+	showVariantWhenSingleVariant = false,
 }) {
 	const getElement = id => elements.find(element => element.id === id);
 
@@ -44,7 +45,7 @@ export function initVariantRows({
 	function populateVariantField(elementSelect, row, presetVariantId) {
 		const existing = row.querySelector('.variantField');
 		const element = getElement(elementSelect.value);
-		if (element.variants.length <= 1) {
+		if (!showVariantWhenSingleVariant && element.variants.length <= 1) {
 			existing?.remove();
 			return;
 		}
