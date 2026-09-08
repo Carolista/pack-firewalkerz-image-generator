@@ -145,3 +145,5 @@ vite.config.ts.timestamp-*
 .DS_Store
 
 admin_prod_req.md
+CONTEXT.md
+.copilotinstructions
