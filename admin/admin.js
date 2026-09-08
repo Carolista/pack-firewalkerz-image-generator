@@ -57,7 +57,9 @@ const SESSION_KEY = 'packFirewalkerzAdminSession';
 let session = readSession();
 let activeCategory = 'character';
 let formElementId = null;
+let deletedVariantIds = [];
 let reauthResolver;
+let initialFormSnapshot = '';
 const dataClient = createAdminDataClient(
 	() => session,
 	showReauthenticationModal,
@@ -87,6 +89,14 @@ const addElementBtn = document.getElementById('addElementBtn');
 const reauthModalOverlay = document.getElementById('reauthModalOverlay');
 const reauthForm = document.getElementById('reauthForm');
 const reauthStatus = document.getElementById('reauthStatus');
+const confirmModalOverlay = document.getElementById('confirmModalOverlay');
+const confirmModalHeading = document.getElementById('confirmModalHeading');
+const confirmModalMessage = document.getElementById('confirmModalMessage');
+const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
+const confirmModalConfirmBtn = document.getElementById(
+	'confirmModalConfirmBtn',
+);
+let confirmResolver;
 
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
@@ -102,12 +112,18 @@ detailsBackBtn.addEventListener('click', () => {
 	window.location.hash = `#/view/${activeCategory}`;
 });
 document.getElementById('formBackBtn').addEventListener('click', () => {
-	window.location.hash = `#/view/${activeCategory}`;
+	requestFormNavigation();
 });
 document.getElementById('formCancelBtn').addEventListener('click', () => {
-	window.location.hash = `#/view/${activeCategory}`;
+	requestFormNavigation();
 });
 window.addEventListener('hashchange', renderShell);
+confirmModalCancelBtn.addEventListener('click', () =>
+	resolveConfirmation(false),
+);
+confirmModalConfirmBtn.addEventListener('click', () =>
+	resolveConfirmation(true),
+);
 
 renderShell();
 
@@ -268,7 +284,7 @@ function renderElement(element) {
 			} else if (action.key === 'edit') {
 				window.location.hash = `#/edit/${activeCategory}/${encodeURIComponent(element.slug)}`;
 			} else if (action.key === 'delete') {
-				// TODO: set path with slug for delete
+				requestElementDeletion(element);
 			}
 		});
 		actions.append(button);
@@ -281,6 +297,22 @@ function renderElement(element) {
 		article.prepend(image);
 	}
 	return article;
+}
+
+async function requestElementDeletion(element) {
+	const numVariants = element.game_element_variants?.length || 0;
+	const confirmed = await showConfirmation(
+		'Confirm Deletion',
+		`Delete ${element.name} and its ${numVariants} variant${numVariants !== 1 ? 's' : ''}?`,
+	);
+	if (!confirmed) return;
+	setStatus(catalogStatus, 'Deleting...');
+	try {
+		await dataClient.deleteElement(element.id);
+		await loadElements();
+	} catch (error) {
+		setStatus(catalogStatus, error.message);
+	}
 }
 
 function getDetailsRoute() {
@@ -319,11 +351,13 @@ async function loadForm(route) {
 	formCategory.disabled = route.mode === 'edit';
 	variantFormRows.replaceChildren();
 	formElementId = null;
+	deletedVariantIds = [];
 	try {
 		if (route.mode === 'add') {
 			formName.value = '';
 			formSlug.value = '';
 			addVariantFormRow();
+			setInitialFormSnapshot();
 			return;
 		}
 		const [element] = await dataClient.getElementBySlug(route.slug);
@@ -339,6 +373,7 @@ async function loadForm(route) {
 		)) {
 			addVariantFormRow(variant);
 		}
+		setInitialFormSnapshot();
 	} catch (error) {
 		setStatus(formStatus, error.message);
 	}
@@ -370,15 +405,25 @@ function addVariantFormRow(variant = {}) {
 			<label>Image Path<input class="variant-image" value="${variant.image ?? ''}" /></label>
 			<div class="admin-image-preview" aria-label="Image preview"></div>   
         </div>
-        <button class="remove-variant" type="button">
+        <button class="delete-variant" type="button">
             <i class="fa-solid fa-square-minus"></i> 
             Delete variant
         </button>
 	`;
-	row.querySelector('.remove-variant').addEventListener('click', () =>
-		row.remove(),
-	);
+	row.querySelector('.delete-variant').addEventListener('click', async () => {
+		const variantId = row.dataset.variantId;
+		if (variantId) {
+			const confirmed = await showConfirmation(
+				'Confirm Deletion',
+				`Delete the ${row.querySelector('.variant-name').value} variant?`,
+			);
+			if (!confirmed) return;
+			deletedVariantIds.push(variantId);
+		}
+		row.remove();
+	});
 	variantFormRows.append(row);
+	row.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 	const description = row.querySelector('.variant-desc');
 	const resizeDescription = () => {
 		description.style.height = 'auto';
@@ -456,6 +501,9 @@ async function saveElement(event) {
 			if (variantId) await dataClient.updateVariant(variantId, payload);
 			else await dataClient.createVariant(payload);
 		}
+		for (const variantId of deletedVariantIds) {
+			await dataClient.deleteVariant(variantId);
+		}
 		setStatus(formStatus, '');
 		window.location.hash = `#/view/${formCategory.value}`;
 	} catch (error) {
@@ -476,6 +524,60 @@ async function loadDetails(route) {
 	} catch (error) {
 		setStatus(catalogStatus, error.message);
 	}
+}
+
+function getFormSnapshot() {
+	return JSON.stringify({
+		category: formCategory.value,
+		name: formName.value,
+		slug: formSlug.value,
+		variants: [
+			...variantFormRows.querySelectorAll('.variant-form-row'),
+		].map(row => ({
+			id: row.dataset.variantId,
+			name: row.querySelector('.variant-name').value,
+			description: row.querySelector('.variant-desc').value,
+			sortOrder: row.querySelector('.variant-sort').value,
+			image: row.querySelector('.variant-image').value,
+		})),
+	});
+}
+
+function setInitialFormSnapshot() {
+	initialFormSnapshot = getFormSnapshot();
+}
+
+async function requestFormNavigation() {
+	if (initialFormSnapshot && getFormSnapshot() !== initialFormSnapshot) {
+		const confirmed = await showConfirmation(
+			'Unsaved changes',
+			'Leave this form and discard your changes?',
+			{ cancelLabel: 'Stay', confirmLabel: 'Discard Changes' },
+		);
+		if (!confirmed) return;
+	}
+	window.location.hash = `#/view/${activeCategory}`;
+}
+
+function showConfirmation(
+	heading,
+	message,
+	{ cancelLabel = 'Cancel', confirmLabel = 'Delete' } = {},
+) {
+	confirmModalHeading.textContent = heading;
+	confirmModalMessage.textContent = message;
+	confirmModalCancelBtn.textContent = cancelLabel;
+	confirmModalConfirmBtn.textContent = confirmLabel;
+	confirmModalOverlay.hidden = false;
+	return new Promise(resolve => {
+		confirmResolver = resolve;
+	});
+}
+
+function resolveConfirmation(value) {
+	confirmModalOverlay.hidden = true;
+	confirmResolver?.(value);
+	confirmResolver = null;
 }
 
 function sortAdminVariants(variants = []) {
@@ -510,9 +612,37 @@ function renderDetails(element) {
 			variantName = document.createElement('h3');
 			variantName.textContent = variant.variant_name;
 		}
+		const deleteButton = document.createElement('button');
+		deleteButton.type = 'button';
+		deleteButton.classList.add('delete-variant');
+		deleteButton.innerHTML = `<i class="fa-solid fa-square-minus"></i> Delete Variant`;
+		deleteButton.addEventListener('click', async () => {
+			const confirmed = await showConfirmation(
+				'Confirm Deletion',
+				`Delete the ${variant.variant_name} variant from ${element.name}?`,
+			);
+			if (!confirmed) return;
+			try {
+				confirmModalConfirmBtn.disabled = true;
+				confirmModalConfirmBtn.textContent = 'Deleting...';
+				await dataClient.deleteVariant(variant.id);
+				await loadDetails({
+					category: activeCategory,
+					slug: element.slug,
+				});
+			} catch (error) {
+				setStatus(
+					document.getElementById('detailsStatus'),
+					error.message,
+				);
+			} finally {
+				confirmModalConfirmBtn.disabled = false;
+				confirmModalConfirmBtn.textContent = 'Delete';
+			}
+		});
 		const description = document.createElement('p');
 		description.textContent = variant.variant_desc;
-		detailsText.append(variantName, description);
+		detailsText.append(variantName, deleteButton, description);
 		article.append(detailsText);
 		if (variant.image) {
 			const image = document.createElement('img');

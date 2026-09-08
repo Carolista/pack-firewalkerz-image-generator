@@ -33,6 +33,19 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 		return data;
 	}
 
+	async function deleteRow(url, label) {
+		const deleted = await request(url, {
+			method: 'DELETE',
+			headers: { Prefer: 'return=representation' },
+		});
+		if (!Array.isArray(deleted) || deleted.length === 0) {
+			throw new Error(
+				`No ${label} was deleted. Check authenticated DELETE permissions and RLS policies.`,
+			);
+		}
+		return deleted;
+	}
+
 	return {
 		listElements(category) {
 			return request(
@@ -64,10 +77,10 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 			});
 		},
 		deleteElement(id) {
-			return request(`${ELEMENTS_URL}?id=eq.${encodeURIComponent(id)}`, {
-				method: 'DELETE',
-				headers: { Prefer: 'return=representation' },
-			});
+			return deleteRow(
+				`${ELEMENTS_URL}?id=eq.${encodeURIComponent(id)}`,
+				'element',
+			);
 		},
 		createVariant(variant) {
 			return request(VARIANTS_URL, {
@@ -84,10 +97,10 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 			});
 		},
 		deleteVariant(id) {
-			return request(`${VARIANTS_URL}?id=eq.${encodeURIComponent(id)}`, {
-				method: 'DELETE',
-				headers: { Prefer: 'return=representation' },
-			});
+			return deleteRow(
+				`${VARIANTS_URL}?id=eq.${encodeURIComponent(id)}`,
+				'variant',
+			);
 		},
 	};
 }

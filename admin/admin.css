@@ -40,16 +40,23 @@ select {
 	margin-bottom: 2rem;
 }
 
-button.cancel {
-	background-color: var(--cancel-color);
+button {
+	color: white;
 }
 
-button.cancel:hover {
-	background-color: var(--cancel-color-light);
+button.cancel,
+button.delete {
+	background-color: var(--red);
 }
 
-button.cancel:active {
-	background-color: var(--cancel-color-dark);
+button.cancel:hover,
+button.delete:hover {
+	background-color: var(--red-light);
+}
+
+button.cancel:active,
+button.delete:active {
+	background-color: var(--red-dark);
 }
 
 h1 {
@@ -64,6 +71,10 @@ h2 {
 h3 {
 	font-weight: 400;
 	color: var(--admin-dark-blue);
+}
+
+h2#confirmModalHeading {
+	color: var(--admin-bright-blue);
 }
 
 h3.variant-heading {
@@ -114,23 +125,23 @@ h3.variant-heading {
 	grid-column: 2;
 }
 
-.remove-variant {
+.delete-variant {
 	grid-column: 2;
 	justify-self: end;
 	background-color: transparent;
-	color: var(--cancel-color);
+	color: var(--red);
 	font-size: 1.1rem;
 	padding: 0;
 }
 
-.remove-variant:hover {
+.delete-variant:hover {
 	background-color: transparent;
-	color: var(--cancel-color-light);
+	color: var(--red-light);
 }
 
-.remove-variant:active {
+.delete-variant:active {
 	background-color: transparent;
-	color: var(--cancel-color-dark);
+	color: var(--red-dark);
 }
 
 .admin-image-preview {
@@ -303,11 +314,23 @@ button:active {
 	max-width: min(100%, 24rem);
 }
 
+.details-heading-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
 .status {
 	color: var(--admin-bright-blue);
 	text-transform: capitalize;
 	min-height: 1.5rem;
 	margin: 0;
+}
+
+.confirm-actions {
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
 }
 
 #detailsStatus {
@@ -334,11 +357,11 @@ button:active {
 	.variant-sort-field,
 	.variant-desc-field,
 	.variant-image-field,
-	.remove-variant {
+	.delete-variant {
 		grid-column: 1;
 	}
 
-	.remove-variant {
+	.delete-variant {
 		justify-self: center;
 	}
 
