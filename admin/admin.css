@@ -101,15 +101,11 @@ h3 {
 	grid-column: 2;
 }
 
-.variant-image-field label {
-	margin-bottom: 0;
-}
-
 .admin-image-preview {
 	align-items: center;
 	aspect-ratio: 1;
 	background: var(--admin-pale);
-	border: 1px dashed var(--admin-line);
+	border: 2px solid var(--admin-line);
 	display: flex;
 	justify-content: center;
 	margin-top: 0.5rem;
@@ -131,9 +127,20 @@ h3 {
 }
 
 .variant-form-row {
-	border-top: 1px solid var(--admin-line);
+	border-top: 2px solid var(--admin-line);
 	margin-top: 1rem;
 	padding-top: 1rem;
+}
+
+#detailsPanel {
+    margin-top: 2rem;
+}
+
+#detailsHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 button {
@@ -221,10 +228,11 @@ button:active {
 	margin: 0;
 }
 
-/* TODO: Put variant name and description to the right of image at wider widths on details page */
-
 .variant-detail {
-	border-top: 1px solid var(--admin-line);
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+	border-top: 2px solid var(--admin-line);
 	padding: 1rem 0;
 }
 
@@ -263,4 +271,11 @@ button:active {
 	.variant-image-field {
 		grid-column: 1;
 	}
+
+}
+
+@media (max-width: 800px) {  
+    .variant-detail {
+        flex-direction: column;
+    }
 }

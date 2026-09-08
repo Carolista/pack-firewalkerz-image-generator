@@ -25,9 +25,23 @@
 			</div>
 			<div class="header-actions">
 				<a href="../" target="_blank" rel="noreferrer"
-					><button type="button" title="Open Image Generator Tool in a new tab">Image Generator <i class="fa-solid fa-arrow-up-right-from-square"></i></button></a
+					><button
+						type="button"
+						title="Open Image Generator Tool in a new tab"
+					>
+						Image Generator
+						<i
+							class="fa-solid fa-arrow-up-right-from-square"
+						></i></button
+				></a>
+				<button
+					id="signOutBtn"
+					type="button"
+					title="Sign out of the Admin Portal"
+					hidden
 				>
-				<button id="signOutBtn" type="button" title="Sign out of the Admin Portal" hidden>Sign Out <i class="fa-solid fa-right-from-bracket"></i></button>
+					Sign Out <i class="fa-solid fa-right-from-bracket"></i>
+				</button>
 			</div>
 		</header>
 
@@ -59,29 +73,39 @@
 			</section>
 
 			<section id="catalogPanel" hidden>
-                <h2>ADMIN PORTAL</h2>
-                <nav
-                id="categoryTabs"
-                class="tabs"
-                aria-label="Catalog categories"
+				<h2>ADMIN PORTAL</h2>
+				<nav
+					id="categoryTabs"
+					class="tabs"
+					aria-label="Catalog categories"
 				></nav>
 				<div class="result-container">
-                    <div class="catalog-toolbar">
-                        <div>
-                            <div id="catalogStatus" class="status" role="status"></div>
-                        </div>
-                        <button id="addElementBtn" type="button"></button>
-                    </div>
+					<div class="catalog-toolbar">
+						<div>
+							<div
+								id="catalogStatus"
+								class="status"
+								role="status"
+							></div>
+						</div>
+						<button id="addElementBtn" type="button"></button>
+					</div>
 					<div id="elementList" class="element-list"></div>
 				</div>
 			</section>
 
-			<section id="detailsPanel" class="panel" hidden>
+			<section id="detailsContainer" hidden>
 				<button id="detailsBackBtn" type="button">
-					Back to catalog
+					<i class="fa-solid fa-square-arrow-left"></i> Back to
+					Catalog
 				</button>
-				<div id="detailsStatus" class="status" role="status"></div>
-				<div id="detailsContent"></div>
+				<div id="detailsPanel" class="panel">
+                    <div id="detailsHeader">
+                        <h2 id="detailsName"></h2>
+                        <div id="detailsStatus" class="status" role="status"></div>
+                    </div>
+					<div id="detailsContent"></div>
+				</div>
 			</section>
 
 			<section id="formPanel" class="panel" hidden>

@@ -6,30 +6,30 @@ import { createAdminDataClient } from './adminData.js';
 
 const CATEGORIES = {
 	character: {
-        shortSingular: 'PC',
+		shortSingular: 'PC',
 		shortPlural: 'PCs',
-        longSingular: 'Player Character',
+		longSingular: 'Player Character',
 		longPlural: 'Player Characters',
 		faClasses: 'fa-solid fa-paw-claws',
 	},
 	npc: {
-        shortSingular: 'NPC',
+		shortSingular: 'NPC',
 		shortPlural: 'NPCs',
 		longSingular: 'Non-Player Character',
 		longPlural: 'Non-Player Characters',
 		faClasses: 'fa-solid fa-people',
 	},
 	enemy: {
-        shortSingular: 'Enemy',
+		shortSingular: 'Enemy',
 		shortPlural: 'Enemies',
-        longSingular: 'Enemy',
+		longSingular: 'Enemy',
 		longPlural: 'Enemies',
 		faClasses: 'fa-solid fa-face-angry-horns',
 	},
 	location: {
-        shortSingular: 'Location',
+		shortSingular: 'Location',
 		shortPlural: 'Locations',
-        longSingular: 'Location',
+		longSingular: 'Location',
 		longPlural: 'Locations',
 		faClasses: 'fa-solid fa-circle-location-arrow',
 	},
@@ -61,7 +61,7 @@ const dataClient = createAdminDataClient(() => session);
 
 const loginPanel = document.getElementById('loginPanel');
 const catalogPanel = document.getElementById('catalogPanel');
-const detailsPanel = document.getElementById('detailsPanel');
+const detailsContainer = document.getElementById('detailsContainer');
 const detailsContent = document.getElementById('detailsContent');
 const detailsBackBtn = document.getElementById('detailsBackBtn');
 const formPanel = document.getElementById('formPanel');
@@ -151,7 +151,7 @@ async function renderShell() {
 	const detailsRoute = getDetailsRoute();
 	const formRoute = getFormRoute();
 	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
-	detailsPanel.hidden = !authenticated || !detailsRoute;
+	detailsContainer.hidden = !authenticated || !detailsRoute;
 	formPanel.hidden = !authenticated || !formRoute;
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
@@ -186,7 +186,7 @@ async function loadElements() {
 	elementList.replaceChildren();
 	try {
 		addElementBtn.innerHTML = `<i class="fa-solid fa-circle-plus"></i> Add ${CATEGORIES[activeCategory].longSingular}`;
-        addElementBtn.title = `Create a new ${CATEGORIES[activeCategory].longSingular}`
+		addElementBtn.title = `Create a new ${CATEGORIES[activeCategory].longSingular}`;
 		const elements = await dataClient.listElements(activeCategory);
 		for (const element of elements)
 			elementList.append(renderElement(element));
@@ -206,12 +206,12 @@ function renderElement(element) {
 	const firstVariant = element.game_element_variants?.[0];
 	const copy = document.createElement('div');
 	copy.className = 'element-copy';
-	const name = document.createElement('h3');
-	name.textContent = element.name;
+	const elementName = document.createElement('h3');
+	elementName.textContent = element.name;
 	const count = document.createElement('p');
 	const numVariants = element.game_element_variants?.length ?? 0;
 	count.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
-	copy.append(name, count);
+	copy.append(elementName, count);
 	const actions = document.createElement('div');
 	actions.className = 'element-actions';
 	for (const action of BUTTON_ACTIONS) {
@@ -417,7 +417,7 @@ async function saveElement(event) {
 
 async function loadDetails(route) {
 	catalogPanel.hidden = true;
-	detailsPanel.hidden = false;
+	detailsContainer.hidden = false;
 	detailsContent.replaceChildren();
 	setStatus(catalogStatus, '');
 	try {
@@ -447,23 +447,25 @@ function sortAdminVariants(variants = []) {
 }
 
 function renderDetails(element) {
-	const content = document.createElement('div');
-	const heading = document.createElement('h2');
-	const status = document.getElementById('detailsStatus');
-	heading.textContent = element.name;
-	content.append(heading);
+    const detailsName = document.getElementById('detailsName');
+    const status = document.getElementById('detailsStatus');
+	detailsName.textContent = element.name;
+	const content = document.getElementById('detailsContent');
 	const numVariants = element.game_element_variants?.length ?? 0;
 	status.textContent = `${numVariants} variant${numVariants !== 1 ? 's' : ''}`;
 	for (const variant of sortAdminVariants(element.game_element_variants)) {
 		const article = document.createElement('article');
 		article.className = 'variant-detail';
+        const detailsText = document.createElement('div');
+        let variantName;
 		if (variant.variant_name.toLowerCase() !== 'default') {
-			const name = document.createElement('h3');
-			name.textContent = variant.variant_name;
+			variantName = document.createElement('h3');
+			variantName.textContent = variant.variant_name;
 		}
 		const description = document.createElement('p');
 		description.textContent = variant.variant_desc;
-		article.append(name, description);
+		detailsText.append(variantName, description);
+		article.append(detailsText);
 		if (variant.image) {
 			const image = document.createElement('img');
 			image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${variant.image}`;
@@ -473,10 +475,6 @@ function renderDetails(element) {
 		content.append(article);
 	}
 	return content;
-}
-
-function getCategory() {
-	return CATEGORIES[activeCategory];
 }
 
 function readSession() {
