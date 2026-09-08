@@ -206,6 +206,8 @@ async function signOut() {
 async function renderShell() {
 	const authenticated = Boolean(session?.access_token);
 	loginPanel.hidden = authenticated;
+	const viewRoute = getViewRoute();
+	if (viewRoute) activeCategory = viewRoute.category;
 	const detailsRoute = getDetailsRoute();
 	const formRoute = getFormRoute();
 	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
@@ -321,6 +323,12 @@ function getDetailsRoute() {
 		return null;
 	}
 	return { category: parts[2], slug: decodeURIComponent(parts[3]) };
+}
+
+function getViewRoute() {
+	const parts = window.location.hash.split('/');
+	if (parts[1] !== 'view' || !CATEGORIES[parts[2]]) return null;
+	return { category: parts[2] };
 }
 
 function getFormRoute() {
