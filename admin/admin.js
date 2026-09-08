@@ -1,8 +1,6 @@
-import {
-	SUPABASE_PUBLISHABLE_KEY,
-	SUPABASE_URL,
-} from '../src/services/supabaseConfig.js';
+import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
 import { createAdminDataClient } from './adminData.js';
+import { createAuthClient } from './auth.js';
 
 const CATEGORIES = {
 	character: {
@@ -53,16 +51,16 @@ const BUTTON_ACTIONS = [
 	},
 ];
 
-const SESSION_KEY = 'packFirewalkerzAdminSession';
-let session = readSession();
 let activeCategory = 'character';
 let formElementId = null;
 let deletedVariantIds = [];
-let reauthResolver;
 let initialFormSnapshot = '';
+const authClient = createAuthClient({
+	onSessionExpired: showReauthenticationModal,
+});
 const dataClient = createAdminDataClient(
-	() => session,
-	showReauthenticationModal,
+	() => authClient.getSession(),
+	() => authClient.reauthenticate(),
 );
 
 const loginPanel = document.getElementById('loginPanel');
@@ -131,7 +129,7 @@ async function signIn(event) {
 	event.preventDefault();
 	setStatus(loginStatus, 'Signing in...');
 	try {
-		await authenticate(
+		await authClient.signIn(
 			document.getElementById('emailInput').value,
 			document.getElementById('passwordInput').value,
 		);
@@ -142,69 +140,32 @@ async function signIn(event) {
 	}
 }
 
-async function authenticate(email, password) {
-	const response = await fetch(
-		`${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-		{
-			method: 'POST',
-			headers: {
-				apikey: SUPABASE_PUBLISHABLE_KEY,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({ email, password }),
-		},
-	);
-	const data = await response.json();
-	if (!response.ok) {
-		throw new Error(
-			data.error_description ?? data.msg ?? 'Sign-in failed.',
-		);
-	}
-	session = data;
-	localStorage.setItem(SESSION_KEY, JSON.stringify(session));
-}
-
 function showReauthenticationModal() {
 	reauthModalOverlay.hidden = false;
-	return new Promise(resolve => {
-		reauthResolver = resolve;
-	});
 }
 
 async function reauthenticate(event) {
 	event.preventDefault();
 	setStatus(reauthStatus, 'Signing in...');
 	try {
-		await authenticate(
+		await authClient.completeReauthentication(
 			document.getElementById('reauthEmailInput').value,
 			document.getElementById('reauthPasswordInput').value,
 		);
 		reauthModalOverlay.hidden = true;
 		setStatus(reauthStatus, '');
-		reauthResolver?.();
-		reauthResolver = null;
 	} catch (error) {
 		setStatus(reauthStatus, error.message);
 	}
 }
 
 async function signOut() {
-	if (session?.access_token) {
-		await fetch(`${SUPABASE_URL}/auth/v1/logout`, {
-			method: 'POST',
-			headers: {
-				apikey: SUPABASE_PUBLISHABLE_KEY,
-				Authorization: `Bearer ${session.access_token}`,
-			},
-		}).catch(() => {});
-	}
-	localStorage.removeItem(SESSION_KEY);
-	session = null;
+	await authClient.signOut();
 	renderShell();
 }
 
 async function renderShell() {
-	const authenticated = Boolean(session?.access_token);
+	const authenticated = Boolean(authClient.getSession()?.access_token);
 	loginPanel.hidden = authenticated;
 	const viewRoute = getViewRoute();
 	if (viewRoute) activeCategory = viewRoute.category;
@@ -661,14 +622,6 @@ function renderDetails(element) {
 		content.append(article);
 	}
 	return content;
-}
-
-function readSession() {
-	try {
-		return JSON.parse(localStorage.getItem(SESSION_KEY));
-	} catch {
-		return null;
-	}
 }
 
 function setStatus(element, message) {
