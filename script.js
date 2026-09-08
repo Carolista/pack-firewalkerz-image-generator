@@ -141,9 +141,16 @@ async function generateSceneImage() {
 			return;
 		}
 
-		const characters = getCharacterSelections();
-		const npcs = getNPCSelections();
-		const enemies = getEnemySelections();
+		// In reference mode, ignore any saved entities and use empty arrays
+		const characters = isReferenceModeLocation(location)
+			? []
+			: getCharacterSelections();
+		const npcs = isReferenceModeLocation(location)
+			? []
+			: getNPCSelections();
+		const enemies = isReferenceModeLocation(location)
+			? []
+			: getEnemySelections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
