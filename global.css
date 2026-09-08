@@ -12,6 +12,9 @@
 	--cream-translucent: #fdf0d980;
 	--dark-gray: #504e4b;
 	--gray: #bdbbb8;
+	--cancel-color: #992a0b;
+	--cancel-color-light: #b13412;
+	--cancel-color-dark: #802107;
 	--light-gray: #dcd9d5;
 	--font-regular: 'Libertinus Sans', sans-serif;
 	--font-title: 'Trade Winds', fantasy;
@@ -34,31 +37,31 @@ html {
 
 html::before {
 	content: '';
-    position: fixed;
+	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100vw;
 	height: 100svh;
-    background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
+	background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
+	background-position: center center;
+	background-size: cover;
+	background-repeat: no-repeat;
 
-    z-index: -1;
-    will-change: transform;
-    pointer-events: none;
+	z-index: -1;
+	will-change: transform;
+	pointer-events: none;
 }
 
 body {
-    position: relative;
-    background: transparent;
+	position: relative;
+	background: transparent;
 	font-family: var(--font-regular);
 	font-weight: 400;
 	font-size: 20px;
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 1rem;
-    z-index: 1;
+	z-index: 1;
 }
 
 h1 {
@@ -82,6 +85,10 @@ h3 {
 	font-size: 1.6rem;
 	text-transform: uppercase;
 	margin: 0 0 1rem;
+}
+
+.back-button {
+	margin-bottom: 0.5rem;
 }
 
 .card {

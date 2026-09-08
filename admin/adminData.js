@@ -6,7 +6,7 @@ import {
 const ELEMENTS_URL = `${SUPABASE_URL}/rest/v1/game_elements`;
 const VARIANTS_URL = `${SUPABASE_URL}/rest/v1/game_element_variants`;
 
-export function createAdminDataClient(getSession) {
+export function createAdminDataClient(getSession, onAuthExpired) {
 	function headers() {
 		const accessToken = getSession()?.access_token;
 		if (!accessToken) throw new Error('Your admin session has expired.');
@@ -17,12 +17,16 @@ export function createAdminDataClient(getSession) {
 		};
 	}
 
-	async function request(url, options = {}) {
+	async function request(url, options = {}, canRetryAfterAuth = true) {
 		const response = await fetch(url, {
 			...options,
 			headers: { ...headers(), ...options.headers },
 		});
 		const data = await response.json().catch(() => null);
+		if (response.status === 401 && canRetryAfterAuth && onAuthExpired) {
+			await onAuthExpired();
+			return request(url, options, false);
+		}
 		if (!response.ok) {
 			throw new Error(data?.message ?? 'Supabase request failed.');
 		}

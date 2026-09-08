@@ -57,13 +57,18 @@ const SESSION_KEY = 'packFirewalkerzAdminSession';
 let session = readSession();
 let activeCategory = 'character';
 let formElementId = null;
-const dataClient = createAdminDataClient(() => session);
+let reauthResolver;
+const dataClient = createAdminDataClient(
+	() => session,
+	showReauthenticationModal,
+);
 
 const loginPanel = document.getElementById('loginPanel');
 const catalogPanel = document.getElementById('catalogPanel');
 const detailsContainer = document.getElementById('detailsContainer');
 const detailsContent = document.getElementById('detailsContent');
 const detailsBackBtn = document.getElementById('detailsBackBtn');
+const formContainer = document.getElementById('formContainer');
 const formPanel = document.getElementById('formPanel');
 const formHeading = document.getElementById('formHeading');
 const elementForm = document.getElementById('elementForm');
@@ -79,6 +84,9 @@ const categoryTabs = document.getElementById('categoryTabs');
 const elementList = document.getElementById('elementList');
 const signOutBtn = document.getElementById('signOutBtn');
 const addElementBtn = document.getElementById('addElementBtn');
+const reauthModalOverlay = document.getElementById('reauthModalOverlay');
+const reauthForm = document.getElementById('reauthForm');
+const reauthStatus = document.getElementById('reauthStatus');
 
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);
@@ -86,6 +94,7 @@ addElementBtn.addEventListener('click', () => {
 	window.location.hash = `#/add/${activeCategory}`;
 });
 elementForm.addEventListener('submit', saveElement);
+reauthForm.addEventListener('submit', reauthenticate);
 document.getElementById('addVariantBtn').addEventListener('click', () => {
 	addVariantFormRow();
 });
@@ -93,6 +102,9 @@ detailsBackBtn.addEventListener('click', () => {
 	window.location.hash = `#/view/${activeCategory}`;
 });
 document.getElementById('formBackBtn').addEventListener('click', () => {
+	window.location.hash = `#/view/${activeCategory}`;
+});
+document.getElementById('formCancelBtn').addEventListener('click', () => {
 	window.location.hash = `#/view/${activeCategory}`;
 });
 window.addEventListener('hashchange', renderShell);
@@ -103,30 +115,60 @@ async function signIn(event) {
 	event.preventDefault();
 	setStatus(loginStatus, 'Signing in...');
 	try {
-		const response = await fetch(
-			`${SUPABASE_URL}/auth/v1/token?grant_type=password`,
-			{
-				method: 'POST',
-				headers: {
-					apikey: SUPABASE_PUBLISHABLE_KEY,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					email: document.getElementById('emailInput').value,
-					password: document.getElementById('passwordInput').value,
-				}),
-			},
+		await authenticate(
+			document.getElementById('emailInput').value,
+			document.getElementById('passwordInput').value,
 		);
-		const data = await response.json();
-		if (!response.ok)
-			throw new Error(
-				data.error_description ?? data.msg ?? 'Sign-in failed.',
-			);
-		session = data;
-		localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+		setStatus(loginStatus, '');
 		await renderShell();
 	} catch (error) {
 		setStatus(loginStatus, error.message);
+	}
+}
+
+async function authenticate(email, password) {
+	const response = await fetch(
+		`${SUPABASE_URL}/auth/v1/token?grant_type=password`,
+		{
+			method: 'POST',
+			headers: {
+				apikey: SUPABASE_PUBLISHABLE_KEY,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ email, password }),
+		},
+	);
+	const data = await response.json();
+	if (!response.ok) {
+		throw new Error(
+			data.error_description ?? data.msg ?? 'Sign-in failed.',
+		);
+	}
+	session = data;
+	localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+}
+
+function showReauthenticationModal() {
+	reauthModalOverlay.hidden = false;
+	return new Promise(resolve => {
+		reauthResolver = resolve;
+	});
+}
+
+async function reauthenticate(event) {
+	event.preventDefault();
+	setStatus(reauthStatus, 'Signing in...');
+	try {
+		await authenticate(
+			document.getElementById('reauthEmailInput').value,
+			document.getElementById('reauthPasswordInput').value,
+		);
+		reauthModalOverlay.hidden = true;
+		setStatus(reauthStatus, '');
+		reauthResolver?.();
+		reauthResolver = null;
+	} catch (error) {
+		setStatus(reauthStatus, error.message);
 	}
 }
 
@@ -152,7 +194,7 @@ async function renderShell() {
 	const formRoute = getFormRoute();
 	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
 	detailsContainer.hidden = !authenticated || !detailsRoute;
-	formPanel.hidden = !authenticated || !formRoute;
+	formContainer.hidden = !authenticated || !formRoute;
 	signOutBtn.hidden = !authenticated;
 	if (!authenticated) return;
 	renderTabs();
@@ -185,7 +227,7 @@ async function loadElements() {
 	setStatus(catalogStatus, 'Loading catalog...');
 	elementList.replaceChildren();
 	try {
-		addElementBtn.innerHTML = `<i class="fa-solid fa-circle-plus"></i> Add ${CATEGORIES[activeCategory].longSingular}`;
+		addElementBtn.innerHTML = `<i class="fa-solid fa-square-plus"></i> Add ${CATEGORIES[activeCategory].longSingular}`;
 		addElementBtn.title = `Create a new ${CATEGORIES[activeCategory].longSingular}`;
 		const elements = await dataClient.listElements(activeCategory);
 		for (const element of elements)
@@ -203,7 +245,7 @@ async function loadElements() {
 function renderElement(element) {
 	const article = document.createElement('article');
 	article.className = 'element-card';
-	const firstVariant = element.game_element_variants?.[0];
+	const firstVariant = sortAdminVariants(element.game_element_variants)[0];
 	const copy = document.createElement('div');
 	copy.className = 'element-copy';
 	const elementName = document.createElement('h3');
@@ -266,8 +308,7 @@ function getFormRoute() {
 
 async function loadForm(route) {
 	activeCategory = route.category;
-	formHeading.textContent =
-		route.mode === 'add' ? 'Add element' : 'Edit element';
+	formHeading.textContent = route.mode === 'add' ? 'Add new element' : 'Edit';
 	formCategory.replaceChildren();
 	for (const category of Object.keys(CATEGORIES)) {
 		formCategory.add(
@@ -287,6 +328,9 @@ async function loadForm(route) {
 		}
 		const [element] = await dataClient.getElementBySlug(route.slug);
 		if (!element) throw new Error('Element not found.');
+		if (route.mode === 'edit') {
+			formHeading.textContent += ` ${element.name}`;
+		}
 		formElementId = element.id;
 		formName.value = element.name;
 		formSlug.value = element.slug;
@@ -324,9 +368,12 @@ function addVariantFormRow(variant = {}) {
 		<label class="variant-desc-field">Description *<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 		<div class="variant-image-field">
 			<label>Image Path<input class="variant-image" value="${variant.image ?? ''}" /></label>
-			<div class="admin-image-preview" aria-label="Image preview"></div>
-		</div>
-		<button class="remove-variant" type="button">Remove variant</button>
+			<div class="admin-image-preview" aria-label="Image preview"></div>   
+        </div>
+        <button class="remove-variant" type="button">
+            <i class="fa-solid fa-square-minus"></i> 
+            Delete variant
+        </button>
 	`;
 	row.querySelector('.remove-variant').addEventListener('click', () =>
 		row.remove(),
@@ -409,6 +456,7 @@ async function saveElement(event) {
 			if (variantId) await dataClient.updateVariant(variantId, payload);
 			else await dataClient.createVariant(payload);
 		}
+		setStatus(formStatus, '');
 		window.location.hash = `#/view/${formCategory.value}`;
 	} catch (error) {
 		setStatus(formStatus, error.message);
@@ -447,8 +495,8 @@ function sortAdminVariants(variants = []) {
 }
 
 function renderDetails(element) {
-    const detailsName = document.getElementById('detailsName');
-    const status = document.getElementById('detailsStatus');
+	const detailsName = document.getElementById('detailsName');
+	const status = document.getElementById('detailsStatus');
 	detailsName.textContent = element.name;
 	const content = document.getElementById('detailsContent');
 	const numVariants = element.game_element_variants?.length ?? 0;
@@ -456,8 +504,8 @@ function renderDetails(element) {
 	for (const variant of sortAdminVariants(element.game_element_variants)) {
 		const article = document.createElement('article');
 		article.className = 'variant-detail';
-        const detailsText = document.createElement('div');
-        let variantName;
+		const detailsText = document.createElement('div');
+		let variantName;
 		if (variant.variant_name.toLowerCase() !== 'default') {
 			variantName = document.createElement('h3');
 			variantName.textContent = variant.variant_name;

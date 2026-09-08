@@ -2,17 +2,17 @@
 
 :root {
 	--admin-ink: #18324a;
-    --admin-dark-blue: #144261;
+	--admin-dark-blue: #144261;
 	--admin-blue: #2d668d;
-    --admin-bright-blue: #3080b5;
+	--admin-bright-blue: #3080b5;
 	--admin-pale: #eef5f8;
-    --admin-light: #cfdde3;
+	--admin-light: #cfdde3;
 	--admin-line: #b8cad4;
 	--admin-surface: #f8fbfc80;
 }
 
 html::before {
-    background-image: url('../assets/ui/moon-behind-blue-clouds.jpg');
+	background-image: url('../assets/ui/moon-behind-blue-clouds.jpg');
 }
 
 body {
@@ -20,27 +20,36 @@ body {
 	max-width: 1080px;
 }
 
+input,
+textarea,
+select {
+	background-color: var(--admin-pale);
+}
+
 .admin-header,
 .catalog-toolbar {
-    display: flex;
-    flex-direction: row;
+	display: flex;
+	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
 	gap: 1rem;
-    padding: 0 0 0.8rem;
+	padding: 0 0 0.8rem;
 }
 
 .admin-header {
 	margin-bottom: 2rem;
 }
 
-.eyebrow {
-	color: var(--admin-blue);
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	letter-spacing: 0.08em;
-	margin: 0 0 0.35rem;
-	text-transform: uppercase;
+button.cancel {
+	background-color: var(--cancel-color);
+}
+
+button.cancel:hover {
+	background-color: var(--cancel-color-light);
+}
+
+button.cancel:active {
+	background-color: var(--cancel-color-dark);
 }
 
 h1 {
@@ -48,13 +57,17 @@ h1 {
 }
 
 h2 {
-    color: var(--admin-pale);
-    margin-top: 0;
+	color: var(--admin-pale);
+	margin-top: 0;
 }
 
 h3 {
-    font-weight: 400;
-    color: var(--admin-dark-blue);
+	font-weight: 400;
+	color: var(--admin-dark-blue);
+}
+
+h3.variant-heading {
+	margin: 1.5rem 0 0;
 }
 
 .panel,
@@ -101,11 +114,29 @@ h3 {
 	grid-column: 2;
 }
 
+.remove-variant {
+	grid-column: 2;
+	justify-self: end;
+	background-color: transparent;
+	color: var(--cancel-color);
+	font-size: 1.1rem;
+	padding: 0;
+}
+
+.remove-variant:hover {
+	background-color: transparent;
+	color: var(--cancel-color-light);
+}
+
+.remove-variant:active {
+	background-color: transparent;
+	color: var(--cancel-color-dark);
+}
+
 .admin-image-preview {
 	align-items: center;
 	aspect-ratio: 1;
 	background: var(--admin-pale);
-	border: 2px solid var(--admin-line);
 	display: flex;
 	justify-content: center;
 	margin-top: 0.5rem;
@@ -121,26 +152,56 @@ h3 {
 }
 
 .form-section-heading {
-	align-items: center;
 	display: flex;
 	justify-content: space-between;
+	align-items: flex-end;
+}
+
+.form-header {
+	align-items: flex-start;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.form-header h2 {
+	margin: 0;
+}
+
+.form-actions {
+	display: flex;
+	gap: 0.75rem;
+	justify-content: flex-end;
+}
+
+.form-actions button {
+	width: fit-content;
+}
+
+.form-actions .status {
+	margin-right: auto;
+	order: -1;
 }
 
 .variant-form-row {
-	border-top: 2px solid var(--admin-line);
+	border-top: 4px solid var(--admin-line);
 	margin-top: 1rem;
 	padding-top: 1rem;
 }
 
+#formPanel {
+	margin-top: 0;
+}
+
 #detailsPanel {
-    margin-top: 2rem;
+	margin-top: 2rem;
 }
 
 #detailsHeader {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
 }
 
 button {
@@ -148,11 +209,11 @@ button {
 }
 
 button:hover {
-    background: var(--admin-bright-blue);
+	background: var(--admin-bright-blue);
 }
 
 button:active {
-    background: var(--admin-dark-blue);
+	background: var(--admin-dark-blue);
 }
 
 .header-actions,
@@ -175,26 +236,27 @@ button:active {
 .tab {
 	color: var(--admin-ink);
 	background: var(--admin-surface);
-    font-size: 1.2rem;
+	font-size: 1.2rem;
 	border-radius: 0;
 }
 
 .tab:hover {
-    color: var(--admin-blue);
-    background-color: var(--admin-line);
+	color: var(--admin-blue);
+	background-color: var(--admin-line);
 }
 
-.tab.active, .tab.active:hover {
-    color: var(--admin-ink);
-    background-color: var(--admin-light);
+.tab.active,
+.tab.active:hover {
+	color: var(--admin-ink);
+	background-color: var(--admin-light);
 }
 
 .result-container {
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-    border: 1px solid var(--admin-light);
-    border-top: 4px solid var(--admin-light);
+	display: flex;
+	flex-direction: column;
+	padding: 20px;
+	border: 1px solid var(--admin-light);
+	border-top: 4px solid var(--admin-light);
 }
 
 .element-list {
@@ -203,7 +265,7 @@ button:active {
 }
 
 .element-card {
-    display: flex;
+	display: flex;
 	align-items: flex-start;
 	justify-content: space-between;
 	gap: 1rem;
@@ -229,10 +291,10 @@ button:active {
 }
 
 .variant-detail {
-    display: flex;
-    gap: 1.5rem;
-    align-items: flex-start;
-	border-top: 2px solid var(--admin-line);
+	display: flex;
+	gap: 1.5rem;
+	align-items: flex-start;
+	border-top: 4px solid var(--admin-line);
 	padding: 1rem 0;
 }
 
@@ -243,13 +305,16 @@ button:active {
 
 .status {
 	color: var(--admin-bright-blue);
-    text-transform: capitalize;
+	text-transform: capitalize;
 	min-height: 1.5rem;
-    margin: 0;
+	margin: 0;
+}
+
+#detailsStatus {
+	color: var(--admin-ink);
 }
 
 @media (max-width: 600px) {
-	.admin-header,
 	.catalog-toolbar,
 	.element-card {
 		align-items: stretch;
@@ -268,14 +333,55 @@ button:active {
 	.variant-name-field,
 	.variant-sort-field,
 	.variant-desc-field,
-	.variant-image-field {
+	.variant-image-field,
+	.remove-variant {
 		grid-column: 1;
 	}
 
+	.remove-variant {
+		justify-self: center;
+	}
+
+	.form-actions {
+		gap: 0.5rem;
+		justify-content: stretch;
+		flex-wrap: wrap;
+	}
+
+	.form-actions button {
+		flex: 1;
+		width: auto;
+	}
+
+	.form-actions .status {
+		flex-basis: 100%;
+		margin-right: 0;
+		order: 3;
+	}
 }
 
-@media (max-width: 800px) {  
-    .variant-detail {
-        flex-direction: column;
-    }
+@media (max-width: 800px) {
+	.admin-header {
+		align-items: stretch;
+		flex-direction: column;
+	}
+	.variant-detail {
+		flex-direction: column;
+	}
+}
+
+@media (min-width: 1001px) {
+	#formPanel {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 1rem;
+	}
+
+	#formPanel > label {
+		margin-bottom: 0;
+	}
+
+	#formPanel > div {
+		grid-column: 1 / -1;
+	}
 }

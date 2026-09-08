@@ -21,7 +21,7 @@
 	<body>
 		<header class="admin-header">
 			<div>
-				<h1>Pack Firewalkers</h1>
+				<h1>Pack Firewalkerz</h1>
 			</div>
 			<div class="header-actions">
 				<a href="../" target="_blank" rel="noreferrer"
@@ -95,52 +95,104 @@
 			</section>
 
 			<section id="detailsContainer" hidden>
-				<button id="detailsBackBtn" type="button">
-					<i class="fa-solid fa-square-arrow-left"></i> Back to
-					Catalog
+				<button id="detailsBackBtn" type="button" class="back-button">
+					<i class="fa-solid fa-square-arrow-left"></i>
+					Back to Catalog
 				</button>
 				<div id="detailsPanel" class="panel">
-                    <div id="detailsHeader">
-                        <h2 id="detailsName"></h2>
-                        <div id="detailsStatus" class="status" role="status"></div>
-                    </div>
+					<div id="detailsHeader">
+						<h2 id="detailsName"></h2>
+						<div
+							id="detailsStatus"
+							class="status"
+							role="status"
+						></div>
+					</div>
 					<div id="detailsContent"></div>
 				</div>
 			</section>
 
-			<section id="formPanel" class="panel" hidden>
-				<button id="formBackBtn" type="button">Back to catalog</button>
-				<h2 id="formHeading">Add element</h2>
+			<section id="formContainer" hidden>
 				<form id="elementForm">
-					<label>
-						Category
-						<select id="formCategory" required></select>
-					</label>
-					<label>
-						Name
-						<input id="formName" required />
-					</label>
-					<label>
-						Slug
-						<input
-							id="formSlug"
-							required
-							pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-						/>
-					</label>
-					<div>
-						<div class="form-section-heading">
-							<h3>Variants</h3>
-							<button id="addVariantBtn" type="button">
-								Add variant
-							</button>
-						</div>
-						<div id="variantFormRows"></div>
+					<div class="form-header">
+						<button
+							id="formBackBtn"
+							type="button"
+							class="back-button cancel"
+						>
+							<i class="fa-solid fa-square-arrow-left"></i>
+							Back to catalog
+						</button>
+						<h2 id="formHeading">Add new element</h2>
 					</div>
-					<button type="submit">Save</button>
-					<p id="formStatus" class="status" role="status"></p>
+					<div id="formPanel" class="panel">
+						<label>
+							Category
+							<select id="formCategory" required></select>
+						</label>
+						<label>
+							Name
+							<input id="formName" required />
+						</label>
+						<label>
+							Slug
+							<input
+								id="formSlug"
+								required
+								pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+							/>
+						</label>
+						<div>
+							<div class="form-section-heading">
+								<h3 class="variant-heading">Variants</h3>
+								<button id="addVariantBtn" type="button">
+									<i class="fa-solid fa-square-plus"></i>
+									Add variant
+								</button>
+							</div>
+							<div id="variantFormRows"></div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button id="formCancelBtn" type="button" class="cancel">
+							<i class="fa-solid fa-square-xmark"></i> Cancel
+						</button>
+						<button type="submit">
+							<i class="fa-solid fa-floppy-disk"></i> Save
+						</button>
+						<p id="formStatus" class="status" role="status"></p>
+					</div>
 				</form>
 			</section>
+
+			<div id="reauthModalOverlay" class="modal-overlay" hidden>
+				<div class="modal">
+					<h2>Session expired</h2>
+					<p>Please sign in again to continue.</p>
+					<form id="reauthForm">
+						<label>
+							Email
+							<input
+								id="reauthEmailInput"
+								type="email"
+								autocomplete="username"
+								required
+							/>
+						</label>
+						<label>
+							Password
+							<input
+								id="reauthPasswordInput"
+								type="password"
+								autocomplete="current-password"
+								required
+							/>
+						</label>
+						<button type="submit">Sign in</button>
+						<p id="reauthStatus" class="status" role="status"></p>
+					</form>
+				</div>
+			</div>
 		</main>
 	</body>
 </html>
