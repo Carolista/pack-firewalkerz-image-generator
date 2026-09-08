@@ -393,25 +393,30 @@ test('renders location reference mode prompt', () => {
 			elementName: 'Custom location (reference)',
 			variantName: 'reference',
 			variantDesc:
-				'A mystical forest temple with ancient stone carvings and glowing runes.',
+				'A misty old-growth forest surrounding a stone chapel and a cold mountain stream.',
 		},
 		locationDesc:
-			'A mystical forest temple with ancient stone carvings and glowing runes.',
+			'A misty old-growth forest surrounding a stone chapel and a cold mountain stream.',
 		scene: '',
 	});
 
 	assert.match(
 		prompt,
-		/Dark fantasy environment concept art in a detailed, atmospheric, painterly digital illustration style/,
+		/Detailed, atmospheric, painterly digital illustration/,
 	);
 	assert.match(
 		prompt,
-		/Do not include any people, characters, animals, monsters, werewolves/,
+		/faithfully render all details it describes, whether natural, architectural, cultural, or civilized/,
+	);
+	assert.match(
+		prompt,
+		/Do not add unrelated subjects, creatures, themes, or visual motifs/,
 	);
 	assert.ok(!prompt.includes('World of Darkness'));
+	assert.ok(!prompt.includes('fantasy'));
 	assert.match(
 		prompt,
-		/Location: A mystical forest temple with ancient stone carvings and glowing runes/,
+		/Location: A misty old-growth forest surrounding a stone chapel and a cold mountain stream/,
 	);
 	assert.ok(!prompt.includes('Render exactly one individual'));
 	assert.ok(!prompt.includes('Action\/Scene'));
