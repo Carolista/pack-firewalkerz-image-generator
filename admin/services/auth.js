@@ -1,7 +1,7 @@
 import {
 	SUPABASE_PUBLISHABLE_KEY,
 	SUPABASE_URL,
-} from '../src/services/supabaseConfig.js';
+} from '../../src/services/supabaseConfig.js';
 
 export const ADMIN_SESSION_KEY = 'packFirewalkerzAdminSession';
 

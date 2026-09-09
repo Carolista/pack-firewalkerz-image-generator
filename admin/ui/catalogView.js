@@ -1,4 +1,4 @@
-import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
+import { SUPABASE_URL } from '../../src/services/supabaseConfig.js';
 
 const BUTTON_ACTIONS = {
 	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },

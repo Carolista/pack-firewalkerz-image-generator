@@ -1,7 +1,7 @@
 import {
 	SUPABASE_PUBLISHABLE_KEY,
 	SUPABASE_URL,
-} from '../src/services/supabaseConfig.js';
+} from '../../src/services/supabaseConfig.js';
 
 const ELEMENTS_URL = `${SUPABASE_URL}/rest/v1/game_elements`;
 const VARIANTS_URL = `${SUPABASE_URL}/rest/v1/game_element_variants`;

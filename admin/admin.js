@@ -1,10 +1,10 @@
-import { createAdminDataClient } from './adminData.js';
-import { createAuthClient } from './auth.js';
-import { createCatalogView } from './catalogView.js';
-import { createDetailsView } from './detailsView.js';
-import { createFormView } from './formView.js';
-import { createModalController } from './modals.js';
 import { getRoute, navigateTo } from './routing.js';
+import { createAdminDataClient } from './services/adminData.js';
+import { createAuthClient } from './services/auth.js';
+import { createCatalogView } from './ui/catalogView.js';
+import { createDetailsView } from './ui/detailsView.js';
+import { createFormView } from './ui/formView.js';
+import { createModalController } from './ui/modals.js';
 
 const CATEGORIES = {
 	character: {

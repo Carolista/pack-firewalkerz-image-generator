@@ -1,4 +1,4 @@
-import { SUPABASE_URL } from '../src/services/supabaseConfig.js';
+import { SUPABASE_URL } from '../../src/services/supabaseConfig.js';
 
 export function createDetailsView({
 	container,
