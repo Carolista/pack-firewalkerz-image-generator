@@ -90,6 +90,7 @@ export function createCatalogView({
 			button.type = 'button';
 			button.title = `${BUTTON_ACTIONS[action].label}: ${element.name}`;
 			button.innerHTML = `<i class="${BUTTON_ACTIONS[action].faClasses}"></i>`;
+            if (action === 'delete') button.classList.add("delete");
 			button.addEventListener('click', () => {
 				if (action === 'delete') requestElementDeletion(element);
 				else
