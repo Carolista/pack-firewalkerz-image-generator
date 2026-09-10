@@ -42,6 +42,18 @@ function parseImagePath(imagePath, folderPrefix) {
 	};
 }
 
+// Reads the filename/extension inputs (only present/editable when no image is stored yet) and composes a candidate filename.
+function readComposedFilename(row) {
+	const filenameInput = row.querySelector('.variant-image-filename');
+	const extInput = row.querySelector('.variant-image-ext');
+	const base = slugify(filenameInput?.value || '');
+	const ext = (extInput?.value || 'jpg')
+		.trim()
+		.toLowerCase()
+		.replace(/^\.+/, '');
+	return { base, ext, filename: base ? `${base}.${ext}` : '' };
+}
+
 export function createFormView({
 	formContainer,
 	formHeading,
@@ -292,16 +304,10 @@ export function createFormView({
 				return;
 			}
 			if (!filenameInput) return;
-			const cleanName = slugify(filenameInput.value);
-			const cleanExt = (extInput?.value || 'jpg')
-				.trim()
-				.toLowerCase()
-				.replace(/^\.+/, '');
-			if (cleanName) {
-				hiddenImageInput.value = `${folderPrefix}${cleanName}.${cleanExt}`;
-			} else {
-				hiddenImageInput.value = '';
-			}
+			const { filename } = readComposedFilename(row);
+			hiddenImageInput.value = filename
+				? `${folderPrefix}${filename}`
+				: '';
 		}
 
 		const updatePreview = () => {
@@ -551,20 +557,14 @@ export function createFormView({
 				// Reusing existing image path on regenerate / replace
 				continue;
 			}
-			const filenameInput = row.querySelector('.variant-image-filename');
-			const extInput = row.querySelector('.variant-image-ext');
-			const base = slugify(filenameInput?.value || '');
-			const ext = (extInput?.value || 'jpg')
-				.trim()
-				.toLowerCase()
-				.replace(/^\.+/, '');
+			const { base, filename: candidateFilename } =
+				readComposedFilename(row);
 			if (!base) {
 				return setStatus(
 					formStatus,
 					`Enter a filename for the ${row.querySelector('.variant-name').value.trim()} variant's image.`,
 				);
 			}
-			const candidateFilename = `${base}.${ext}`;
 			const existingNames = await listFolderCached();
 			const conflict = existingNames.some(
 				existing =>
@@ -604,17 +604,8 @@ export function createFormView({
 					if (previousImage) {
 						imagePath = previousImage;
 					} else {
-						const filenameInput = row.querySelector(
-							'.variant-image-filename',
-						);
-						const extInput =
-							row.querySelector('.variant-image-ext');
-						const base = slugify(filenameInput?.value || '');
-						const ext = (extInput?.value || 'jpg')
-							.trim()
-							.toLowerCase()
-							.replace(/^\.+/, '');
-						imagePath = `${folderPrefix}${base}.${ext}`;
+						const { filename } = readComposedFilename(row);
+						imagePath = `${folderPrefix}${filename}`;
 					}
 					await storageService.uploadImage(
 						imagePath,

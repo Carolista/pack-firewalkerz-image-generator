@@ -1,7 +1,7 @@
 @import url('../global.css');
 
 :root {
-	--admin-midnight: rgb(9, 27, 44) a;
+	--admin-midnight: rgb(9, 27, 44);
 	--admin-ink: #18324a;
 	--admin-dark-blue: #144261;
 	--admin-blue: #2d668d;
@@ -44,6 +44,15 @@ select {
 
 button {
 	color: white;
+	background: var(--admin-blue);
+}
+
+button:hover {
+	background: var(--admin-bright-blue);
+}
+
+button:active {
+	background: var(--admin-dark-blue);
 }
 
 button.cancel,
@@ -292,18 +301,6 @@ textarea.variant-desc {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-}
-
-button {
-	background: var(--admin-blue);
-}
-
-button:hover {
-	background: var(--admin-bright-blue);
-}
-
-button:active {
-	background: var(--admin-dark-blue);
 }
 
 .header-actions,

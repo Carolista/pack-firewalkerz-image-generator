@@ -52,11 +52,6 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 				`${ELEMENTS_URL}?element_type=eq.${encodeURIComponent(category)}&select=*,game_element_variants(*)&order=name.asc`,
 			);
 		},
-		getElement(id) {
-			return request(
-				`${ELEMENTS_URL}?id=eq.${encodeURIComponent(id)}&select=*,game_element_variants(*)`,
-			);
-		},
 		getElementBySlug(slug) {
 			return request(
 				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*)`,
