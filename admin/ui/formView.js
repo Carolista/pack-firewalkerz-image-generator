@@ -202,9 +202,10 @@ export function createFormView({
 				${imageFieldHtml}
 				<input type="hidden" class="variant-image" value="${existingImage}" />
 				<div class="variant-image-actions">
-					<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Reference Image</button>
-					<label class="variant-image-upload-label"><i class="fa-solid fa-upload"></i> Upload Image<input type="file" class="variant-image-upload" accept="image/*" hidden /></label>
-					<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download Current Image</button>
+					<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
+					<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
+					<input type="file" class="variant-image-upload" accept="image/*" hidden />
+					<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
 				</div>
 				<p class="generate-status status"></p>
 				<div class="admin-image-preview" aria-label="Image preview"></div>
@@ -305,8 +306,13 @@ export function createFormView({
 		const generateBtn = row.querySelector('.generate-reference-btn');
 		const generateStatusEl = row.querySelector('.generate-status');
 		const downloadBtn = row.querySelector('.variant-image-download-btn');
+		const uploadBtn = row.querySelector('.variant-image-upload-btn');
 		const uploadInput = row.querySelector('.variant-image-upload');
 		refreshImageControls(row);
+
+		uploadBtn.addEventListener('click', () => {
+			uploadInput.click();
+		});
 
 		generateBtn.addEventListener('click', async () => {
 			if (generationInFlight) return;
@@ -427,7 +433,7 @@ export function createFormView({
 			row.dataset.originalImage || row._pendingImageBlob,
 		);
 		row.querySelector('.generate-reference-btn').innerHTML =
-			`<i class="fa-solid fa-wand-magic-sparkles"></i> ${hasImage ? 'Regenerate' : 'Generate'} Reference Image`;
+			`<i class="fa-solid fa-wand-magic-sparkles"></i> ${hasImage ? 'Regenerate' : 'Generate'}`;
 		row.querySelector('.variant-image-download-btn').disabled =
 			!row.dataset.originalImage;
 	}
@@ -444,14 +450,9 @@ export function createFormView({
 		generationInFlight = busy;
 		formSaveBtn.disabled = busy;
 		for (const btn of variantFormRows.querySelectorAll(
-			'.generate-reference-btn',
+			'.generate-reference-btn, .variant-image-upload-btn',
 		)) {
 			btn.disabled = busy;
-		}
-		for (const input of variantFormRows.querySelectorAll(
-			'.variant-image-upload',
-		)) {
-			input.disabled = busy;
 		}
 	}
 

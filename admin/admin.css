@@ -202,33 +202,13 @@ h3.variant-heading {
 	margin-top: 0.5rem;
 }
 
-.variant-image-actions button,
-.variant-image-upload-label {
+.variant-image-actions button {
 	flex: 1;
 	min-width: 9rem;
 }
 
-.variant-image-upload-label {
-	align-items: center;
-	background: var(--admin-blue);
-	border-radius: var(--border-radius-form-elements);
-	color: white;
-	cursor: pointer;
-	display: flex;
-	font-family: var(--font-card-heading);
-	font-size: 0.9rem;
-	gap: 0.4rem;
-	justify-content: center;
-	padding: 0.75rem 1rem;
-	text-align: center;
-}
-
-.variant-image-upload-label:hover {
-	background: var(--admin-bright-blue);
-}
-
 .variant-image-download-btn:disabled,
-.variant-image-upload-label:has(input:disabled) {
+.variant-image-upload-btn:disabled {
 	background: var(--admin-light);
 	color: var(--admin-ink);
 	cursor: not-allowed;
