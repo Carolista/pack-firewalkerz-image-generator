@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Pack Firewalkerz :: Admin</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&family=Sono:wght,MONO@200..800,1&family=Trade+Winds&display=swap"
+			rel="stylesheet"
+		/>
+		<link href="../global.css" rel="stylesheet" />
+		<link href="admin.css" rel="stylesheet" />
+		<script
+			src="https://kit.fontawesome.com/679a59d672.js"
+			crossorigin="anonymous"
+		></script>
+		<script src="admin.js" type="module" defer></script>
+	</head>
+	<body>
+		<header class="admin-header">
+			<div>
+				<h1>Pack Firewalkerz</h1>
+			</div>
+			<div class="header-actions">
+				<a href="../" target="_blank" rel="noreferrer"
+					><button
+						type="button"
+						title="Open Image Generator Tool in a new tab"
+					>
+						Image Generator
+						<i
+							class="fa-solid fa-arrow-up-right-from-square"
+						></i></button
+				></a>
+				<button
+					id="signOutBtn"
+					type="button"
+					title="Sign out of the Admin Portal"
+					hidden
+				>
+					Sign Out <i class="fa-solid fa-right-from-bracket"></i>
+				</button>
+			</div>
+		</header>
+
+		<main>
+			<section id="loginPanel" class="panel login-panel">
+				<h2 class="modal-heading">Sign in</h2>
+				<form id="loginForm">
+					<label>
+						Email
+						<input
+							id="emailInput"
+							type="email"
+							autocomplete="username"
+							required
+						/>
+					</label>
+					<label>
+						Password
+						<input
+							id="passwordInput"
+							type="password"
+							autocomplete="current-password"
+							required
+						/>
+					</label>
+					<button type="submit">Sign in</button>
+					<p id="loginStatus" class="status" role="status"></p>
+				</form>
+			</section>
+
+			<section id="catalogPanel" hidden>
+				<h2>ADMIN PORTAL</h2>
+				<nav
+					id="categoryTabs"
+					class="tabs"
+					aria-label="Catalog categories"
+				></nav>
+				<div class="result-container">
+					<div class="catalog-toolbar">
+						<div>
+							<div
+								id="catalogStatus"
+								class="status"
+								role="status"
+							></div>
+						</div>
+						<button id="addElementBtn" type="button"></button>
+					</div>
+					<div id="elementList" class="element-list"></div>
+				</div>
+			</section>
+
+			<section id="detailsContainer" hidden>
+				<button id="detailsBackBtn" type="button" class="back-button">
+					<i class="fa-solid fa-square-arrow-left"></i>
+					Back to Catalog
+				</button>
+				<div id="detailsPanel" class="panel">
+					<div id="detailsHeader">
+						<h2 id="detailsName"></h2>
+						<div
+							id="detailsStatus"
+							class="status"
+							role="status"
+						></div>
+					</div>
+					<div id="detailsContent"></div>
+				</div>
+			</section>
+
+			<section id="formContainer" hidden>
+				<form id="elementForm">
+					<div class="form-header">
+						<button
+							id="formBackBtn"
+							type="button"
+							class="back-button cancel"
+						>
+							<i class="fa-solid fa-square-arrow-left"></i>
+							Back to catalog
+						</button>
+						<h2 id="formHeading">Add new element</h2>
+					</div>
+					<div id="formPanel" class="panel">
+						<label>
+							Category*
+							<select id="formCategory" required></select>
+						</label>
+						<label>
+							Name *
+							<input id="formName" required />
+						</label>
+						<label>
+							Slug*
+							<input
+								id="formSlug"
+								required
+								pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+							/>
+						</label>
+						<div>
+							<div class="form-section-heading">
+								<h3 class="variant-heading">Variants</h3>
+								<button id="addVariantBtn" type="button">
+									<i class="fa-solid fa-square-plus"></i>
+									Add variant
+								</button>
+							</div>
+							<div id="variantFormRows"></div>
+						</div>
+					</div>
+					<div class="form-actions">
+						<button id="formCancelBtn" type="button" class="cancel">
+							<i class="fa-solid fa-square-xmark"></i> Cancel
+						</button>
+						<button id="formSaveBtn" type="submit">
+							<i class="fa-solid fa-floppy-disk"></i> Save
+						</button>
+						<p id="formStatus" class="status" role="status"></p>
+					</div>
+				</form>
+			</section>
+
+			<div id="reauthModalOverlay" class="modal-overlay" hidden>
+				<div class="modal">
+					<h2 class="modal-heading">Session expired</h2>
+					<p>Please sign in again to continue.</p>
+					<form id="reauthForm">
+						<label>
+							Email
+							<input
+								id="reauthEmailInput"
+								type="email"
+								autocomplete="username"
+								required
+							/>
+						</label>
+						<label>
+							Password
+							<input
+								id="reauthPasswordInput"
+								type="password"
+								autocomplete="current-password"
+								required
+							/>
+						</label>
+						<button type="submit">Sign in</button>
+						<p id="reauthStatus" class="status" role="status"></p>
+					</form>
+				</div>
+			</div>
+
+			<div id="confirmModalOverlay" class="modal-overlay" hidden>
+				<div class="modal">
+					<h2 id="confirmModalHeading" class="modal-heading">
+						Confirm deletion
+					</h2>
+					<p id="confirmModalMessage"></p>
+					<div class="confirm-actions">
+						<button id="confirmModalCancelBtn" type="button">
+							Cancel
+						</button>
+						<button
+							id="confirmModalExtraBtn"
+							type="button"
+							hidden
+						></button>
+						<button
+							id="confirmModalConfirmBtn"
+							type="button"
+							class="delete"
+						>
+							Delete
+						</button>
+					</div>
+				</div>
+			</div>
+		</main>
+	</body>
+</html>

@@ -3,7 +3,13 @@ import test from 'node:test';
 
 import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
-import { buildPrompt } from '../src/prompt.js';
+import {
+	NO_BORDER_INSTRUCTION,
+	buildPrompt,
+	buildReferenceImagePrompt,
+	isLocationReferenceMode,
+	isReferenceModeLocation,
+} from '../src/prompt.js';
 import { getElements, getVariantById } from '../src/services/catalog.js';
 
 test('normalizes and validates the catalog', () => {
@@ -12,7 +18,7 @@ test('normalizes and validates the catalog', () => {
 	assert.equal(catalog.characters.length, 3);
 	assert.equal(catalog.npcs.length, 3);
 	assert.equal(catalog.enemies.length, 3);
-	assert.equal(catalog.locations.length, 3);
+	assert.equal(catalog.locations.length, 4);
 
 	for (const elements of Object.values(catalog)) {
 		for (const element of elements) {
@@ -267,4 +273,215 @@ test('renders the selected location variant in the prompt', () => {
 		prompt,
 		/Environment\/Setting: Appalachian Woods \(Nighttime\): A dark forest/,
 	);
+});
+
+test('includes Neutral Void location in the catalog', () => {
+	const catalog = assertCatalog(normalizeCatalog(DATA));
+	const neutralVoid = catalog.locations.find(
+		loc => loc.slug === 'neutral-void',
+	);
+
+	assert.ok(neutralVoid, 'Neutral Void location should exist');
+	assert.equal(neutralVoid.name, 'Neutral Void');
+	assert.equal(neutralVoid.variants.length, 1);
+	assert.equal(neutralVoid.variants[0].variantName, 'default');
+	assert.match(
+		neutralVoid.variants[0].variantDesc,
+		/neutral void.*generic background.*render the individual form/i,
+	);
+});
+
+test('detects reference mode for Neutral Void location', () => {
+	const neutralVoidLocation = {
+		elementId: 'test-id',
+		elementName: 'Neutral Void',
+		slug: 'neutral-void',
+		variantName: 'default',
+		variantDesc: 'A neutral void...',
+	};
+
+	assert.ok(isReferenceModeLocation(neutralVoidLocation));
+});
+
+test('does not detect reference mode for normal locations', () => {
+	const normalLocation = {
+		elementId: 'test-id',
+		elementName: 'Appalachian Woods',
+		slug: 'appalachianWoods',
+		variantName: 'Nighttime',
+		variantDesc: 'A dark forest...',
+	};
+
+	assert.ok(!isReferenceModeLocation(normalLocation));
+});
+
+test('renders reference mode prompt with no entities', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Neutral Void',
+			variantName: 'default',
+			variantDesc:
+				"A neutral void to be used as a generic background for reference images with PCs, NPCs, and enemies. Keep this exact background and render the individual form of the character, NPC, or enemy in the foreground based on the variant's description.",
+			slug: 'neutral-void',
+		},
+		scene: 'A warrior in full plate armor, standing at attention.',
+	});
+
+	assert.match(prompt, /render exactly one individual/i);
+	assert.match(prompt, /A warrior in full plate armor/);
+	assert.match(prompt, /Keep the Neutral Void background unchanged/i);
+	assert.match(prompt, /Do not modify or replace the background/);
+});
+
+test('renders normal prompt with Neutral Void and existing entities', () => {
+	const prompt = buildPrompt({
+		characters: [
+			{
+				elementName: 'River-That-Remembers',
+				variantName: 'Crinos (Werewolf)',
+				variantDesc: 'A large werewolf form...',
+			},
+		],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Neutral Void',
+			variantName: 'default',
+			variantDesc: 'A neutral void...',
+			slug: 'neutral-void',
+		},
+		scene: 'Standing in the void.',
+	});
+
+	// With entities, should use normal mode even with Neutral Void
+	assert.match(prompt, /Character: River-That-Remembers/);
+	assert.match(prompt, /Environment\/Setting: Neutral Void:/);
+	assert.match(prompt, /Action\/Scene: Standing in the void/);
+});
+
+test('detects location reference mode', () => {
+	const locationRefMode = {
+		elementId: 'custom-location-reference',
+		elementName: 'Custom location (reference)',
+		variantName: 'reference',
+		variantDesc: 'A mystical forest temple...',
+	};
+
+	assert.ok(isLocationReferenceMode(locationRefMode));
+});
+
+test('does not detect location reference mode for normal locations', () => {
+	const normalLocation = {
+		elementId: 'appalachian-id',
+		elementName: 'Appalachian Woods',
+		variantName: 'Daytime',
+		variantDesc: 'A misty forest...',
+		slug: 'appalachianWoods',
+	};
+
+	assert.ok(!isLocationReferenceMode(normalLocation));
+});
+
+test('renders location reference mode prompt', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementId: 'custom-location-reference',
+			elementName: 'Custom location (reference)',
+			variantName: 'reference',
+			variantDesc:
+				'A misty old-growth forest surrounding a stone chapel and a cold mountain stream.',
+		},
+		locationDesc:
+			'A misty old-growth forest surrounding a stone chapel and a cold mountain stream.',
+		scene: '',
+	});
+
+	assert.match(
+		prompt,
+		/Detailed, atmospheric, painterly digital illustration/,
+	);
+	assert.match(
+		prompt,
+		/faithfully render all details it describes, whether natural, architectural, cultural, or civilized/,
+	);
+	assert.match(
+		prompt,
+		/Do not add unrelated subjects, creatures, themes, or visual motifs/,
+	);
+	assert.ok(!prompt.includes('World of Darkness'));
+	assert.ok(!prompt.includes('fantasy'));
+	assert.match(
+		prompt,
+		/Location: A misty old-growth forest surrounding a stone chapel and a cold mountain stream/,
+	);
+	assert.ok(!prompt.includes('Render exactly one individual'));
+	assert.ok(!prompt.includes('Action\/Scene'));
+	assert.ok(!prompt.includes('Environment\/Setting'));
+});
+
+test('buildReferenceImagePrompt renders a location-only prompt for the location category', () => {
+	const prompt = buildReferenceImagePrompt({
+		category: 'location',
+		name: 'Sunken Chapel',
+		description: 'A flooded stone chapel with moss-covered pews.',
+	});
+
+	assert.match(
+		prompt,
+		/Detailed, atmospheric, painterly digital illustration/,
+	);
+	assert.match(
+		prompt,
+		/Location: A flooded stone chapel with moss-covered pews/,
+	);
+	assert.ok(!prompt.includes('World of Darkness'));
+	assert.ok(!prompt.includes('Sunken Chapel'));
+});
+
+test('buildReferenceImagePrompt renders a subject prompt for character/npc/enemy categories', () => {
+	const prompt = buildReferenceImagePrompt({
+		category: 'character',
+		name: 'River-That-Remembers',
+		description: 'A large werewolf form with silver-tipped fur.',
+	});
+
+	assert.match(
+		prompt,
+		/Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style/,
+	);
+	assert.match(
+		prompt,
+		/River-That-Remembers: A large werewolf form with silver-tipped fur/,
+	);
+	assert.match(prompt, /plain, neutral, unobtrusive background/);
+});
+
+test('prompts include edge-to-edge no-border instruction', () => {
+	const standardPrompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		locationDesc: 'Forest',
+		scene: 'A wolf runs.',
+	});
+	const locationRefPrompt = buildReferenceImagePrompt({
+		category: 'location',
+		name: 'Grove',
+		description: 'A serene grove.',
+	});
+	const entityRefPrompt = buildReferenceImagePrompt({
+		category: 'enemy',
+		name: 'Bane',
+		description: 'A toxic spirit.',
+	});
+
+	assert.ok(standardPrompt.includes(NO_BORDER_INSTRUCTION));
+	assert.ok(locationRefPrompt.includes(NO_BORDER_INSTRUCTION));
+	assert.ok(entityRefPrompt.includes(NO_BORDER_INSTRUCTION));
 });

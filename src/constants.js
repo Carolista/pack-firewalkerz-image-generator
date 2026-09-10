@@ -1,4 +1,5 @@
 export const OTHER_LOCATION_KEY = 'other';
+export const CUSTOM_LOCATION_REFERENCE_KEY = 'custom-location-reference';
 
 export const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
 export const NPC_ROWS_STORAGE_KEY = 'ww20NPCRows';

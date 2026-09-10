@@ -17,7 +17,7 @@
 		"url": "git+https://github.com/Carolista/pack-firewalkerz-image-generator.git"
 	},
 	"keywords": [],
-	"author": "",
+	"author": "Caroline R. Jones",
 	"license": "ISC",
 	"type": "module",
 	"engines": {

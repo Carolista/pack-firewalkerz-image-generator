@@ -1,6 +1,9 @@
 /* 
-    Background photo of glowing moon courtesy of Grigoriy
+    Background photo of yellow glowing moon courtesy of Grigoriy
     https://www.pexels.com/@grigoriy-3808567/ 
+
+    Background photo of blue glowing moon courtesy of Ugur Tandogan
+    https://www.pexels.com/@ugurtandogan/ 
 */
 
 :root {
@@ -9,6 +12,9 @@
 	--cream-translucent: #fdf0d980;
 	--dark-gray: #504e4b;
 	--gray: #bdbbb8;
+	--red: #992a0b;
+	--red-light: #b13412;
+	--red-dark: #802107;
 	--light-gray: #dcd9d5;
 	--font-regular: 'Libertinus Sans', sans-serif;
 	--font-title: 'Trade Winds', fantasy;
@@ -17,19 +23,50 @@
 	--font-label: 'Libertinus Sans', serif;
 	--font-mono: 'Lilex', monospace;
 	--border-radius-form-elements: 2px;
+	--form-control-height: 2.5rem;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+[hidden] {
+	display: none !important;
+}
+
+html {
+	background-color: #111;
+	min-height: 100%;
+	overscroll-behavior: none;
+}
+
+html::before {
+	content: '';
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100svh;
+	background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
+	background-position: center center;
+	background-size: cover;
+	background-repeat: no-repeat;
+
+	z-index: -1;
+	will-change: transform;
+	pointer-events: none;
 }
 
 body {
-	background-image: url(./assets/ui/glowing-moon-behind-clouds.jpg);
-	background-position: center;
-	background-attachment: fixed;
-	background-size: cover;
+	position: relative;
+	background: transparent;
 	font-family: var(--font-regular);
 	font-weight: 400;
 	font-size: 20px;
 	max-width: 800px;
-	margin: 2rem auto;
-	padding: 0 1rem;
+	margin: 0 auto;
+	padding: 1rem;
+	z-index: 1;
 }
 
 h1 {
@@ -53,6 +90,10 @@ h3 {
 	font-size: 1.6rem;
 	text-transform: uppercase;
 	margin: 0 0 1rem;
+}
+
+.back-button {
+	margin-bottom: 0.5rem;
 }
 
 .card {
@@ -101,15 +142,19 @@ h3 {
 	background: none;
 	font-size: 1.2rem;
 	cursor: pointer;
+	height: auto;
+	width: auto;
 }
 
 label {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
 	font-family: var(--font-label);
 	font-size: 1.2rem;
 	font-style: italic;
 	font-weight: 600;
-	margin-bottom: 0.3rem;
+	margin-bottom: 0.5rem;
 }
 
 .field-hint {
@@ -128,14 +173,20 @@ input {
 	font-size: 1rem;
 	background-color: var(--cream-pale);
 	width: 100%;
-	padding: 0.5rem;
 	outline: none;
 	border: none;
 	border-radius: var(--border-radius-form-elements);
 	box-sizing: border-box;
 }
 
+select,
+input:not([type='checkbox']):not([type='radio']):not([type='file']) {
+	height: var(--form-control-height);
+	padding: 0 0.6rem;
+}
+
 textarea {
+	padding: 0.6rem;
 	resize: vertical;
 	min-height: 100px;
 	max-height: 400px;
@@ -152,10 +203,16 @@ button {
 	font-size: 0.9rem;
 	font-weight: 400;
 	text-transform: capitalize;
-	padding: 0.75rem 1.5rem;
+	height: var(--form-control-height);
+	padding: 0 1rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
 	outline: none;
 	border: none;
 	border-radius: var(--border-radius-form-elements);
+	box-sizing: border-box;
 	cursor: pointer;
 }
 
@@ -259,6 +316,7 @@ button {
 .character-row .removeRowBtn,
 .npc-row .removeRowBtn,
 .enemy-row .removeRowBtn {
+	font-size: 1.2rem;
 	grid-column: 2;
 	grid-row: 2;
 	align-self: stretch;
@@ -312,11 +370,6 @@ footer {
 }
 
 @media (max-width: 600px) {
-	body {
-		background-attachment: scroll;
-		margin-top: 1rem;
-	}
-
 	#generateBtn,
 	#resetBtn {
 		display: block;

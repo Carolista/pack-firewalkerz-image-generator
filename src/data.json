@@ -307,6 +307,20 @@
 					"image": ""
 				}
 			]
+		},
+		{
+			"id": "8f2c1d4a-9e3b-4f5c-a1d2-e3f4g5h6i7j8",
+			"elementType": "location",
+			"name": "Neutral Void",
+			"slug": "neutral-void",
+			"variants": [
+				{
+					"variantId": "a9b8c7d6-e5f4-4g3h-i2j1-k0l9m8n7o6p5",
+					"variantName": "default",
+					"variantDesc": "A neutral void to be used as a generic background for reference images with PCs, NPCs, and enemies. Keep this exact background and render the individual form of the character, NPC, or enemy in the foreground based on the variant's description.",
+					"image": ""
+				}
+			]
 		}
 	]
 }

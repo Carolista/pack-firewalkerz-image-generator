@@ -1,4 +1,9 @@
-import { buildPrompt } from './src/prompt.js';
+import { CUSTOM_LOCATION_REFERENCE_KEY } from './src/constants.js';
+import {
+	buildPrompt,
+	isLocationReferenceMode,
+	isReferenceModeLocation,
+} from './src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
 	isNetworkError,
@@ -49,9 +54,11 @@ let generationInProgress = false;
 const statusText = document.getElementById('statusText');
 const generateBtn = document.getElementById('generateBtn');
 const shareBtn = document.getElementById('shareBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 const resetBtn = document.getElementById('resetBtn');
 const retryBtn = document.getElementById('retryBtn');
 const sceneText = document.getElementById('sceneText');
+const locationSelect = document.getElementById('locationSelect');
 
 const generationControls = { generateBtn, retryBtn };
 
@@ -90,11 +97,13 @@ initGenerationOutput({
 	image: document.getElementById('outputImg'),
 	placeholder: document.getElementById('imagePlaceholder'),
 	shareBtn,
+	downloadBtn,
 	retryBtn,
 });
 
 generateBtn.addEventListener('click', generateSceneImage);
 shareBtn.addEventListener('click', shareImage);
+downloadBtn.addEventListener('click', downloadImage);
 resetBtn.addEventListener('click', resetScene);
 retryBtn.addEventListener('click', generateSceneImage);
 
@@ -110,37 +119,54 @@ async function generateSceneImage() {
 	setGenerationBusy(generationControls, true);
 
 	try {
-		if (
-			!hasAtLeastOneCharacterRow() &&
-			!hasAtLeastOneNPCRow() &&
-			!hasAtLeastOneEnemyRow()
-		) {
-			await showAlert(
-				'Please add at least one character, NPC, or enemy.',
-			);
-			return;
-		}
-
 		const location = getLocationSelectionDetails();
 		if (!location) {
 			await showAlert('Please describe the custom setting.');
 			return;
 		}
 
-		const scene = sceneText.value.trim();
-		if (!scene) {
-			await showAlert('Please describe the scene action.');
+		const isLocationRef =
+			locationSelect.value === CUSTOM_LOCATION_REFERENCE_KEY ||
+			isLocationReferenceMode(location);
+		const isNeutralVoidRef = isReferenceModeLocation(location);
+
+		const hasEntities =
+			hasAtLeastOneCharacterRow() ||
+			hasAtLeastOneNPCRow() ||
+			hasAtLeastOneEnemyRow();
+
+		// Location reference mode and Neutral Void reference mode allow no entities
+		if (!hasEntities && !isLocationRef && !isNeutralVoidRef) {
+			await showAlert(
+				'Please add at least one character, NPC, or enemy.',
+			);
 			return;
 		}
 
-		const characters = getCharacterSelections();
-		const npcs = getNPCSelections();
-		const enemies = getEnemySelections();
+		const scene = sceneText.value.trim();
+
+		// Location reference mode doesn't use scene, but Neutral Void does
+		if (!isLocationRef && !scene) {
+			const sceneLabel = isNeutralVoidRef
+				? 'Please describe the new character, NPC, or enemy.'
+				: 'Please describe the scene action.';
+			await showAlert(sceneLabel);
+			return;
+		}
+
+		// In reference modes, ignore any saved entities and use empty arrays
+		const characters =
+			isLocationRef || isNeutralVoidRef ? [] : getCharacterSelections();
+		const npcs =
+			isLocationRef || isNeutralVoidRef ? [] : getNPCSelections();
+		const enemies =
+			isLocationRef || isNeutralVoidRef ? [] : getEnemySelections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
 			enemies,
 			location,
+			locationDesc: isLocationRef ? location.variantDesc : undefined,
 			scene,
 		});
 		const referenceImages = await loadReferenceImages([
@@ -184,4 +210,16 @@ async function shareImage() {
 		title: 'Pack Firewalkerz Scene',
 		text: "Look at what happened in tonight's session!",
 	});
+}
+
+function downloadImage() {
+	if (!generatedBlob) return;
+	const url = URL.createObjectURL(generatedBlob);
+	const a = document.createElement('a');
+	a.href = url;
+	a.download = 'pack-firewalkerz-scene.jpg';
+	document.body.appendChild(a);
+	a.click();
+	document.body.removeChild(a);
+	URL.revokeObjectURL(url);
 }

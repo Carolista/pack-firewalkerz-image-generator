@@ -10,8 +10,11 @@
 			href="https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&family=Lilex:ital,wght@0,100..700;1,100..700&family=New+Amsterdam&family=Sono:wght,MONO@200..800,1&family=Trade+Winds&display=swap"
 			rel="stylesheet"
 		/>
-
-		<link href="styles.css" rel="stylesheet" />
+		<link href="global.css" rel="stylesheet" />
+		<script
+			src="https://kit.fontawesome.com/679a59d672.js"
+			crossorigin="anonymous"
+		></script>
 		<script src="script.js" type="module" defer></script>
 	</head>
 	<body>
@@ -20,28 +23,6 @@
 			<h2>Image Generator</h2>
 		</header>
 		<main>
-			<div class="card">
-				<h3>Player Characters</h3>
-				<div id="characterRows"></div>
-				<button id="addCharacterBtn" type="button">
-					Add another character
-				</button>
-			</div>
-			<div class="card">
-				<h3>Non-Player Characters</h3>
-				<div id="npcRows"></div>
-				<button id="addNPCBtn" type="button">Add another NPC</button>
-			</div>
-			<div class="card">
-				<h3>Enemies</h3>
-				<p class="field-hint">
-					Note: The same type of enemy can be added more than once.
-				</p>
-				<div id="enemyRows"></div>
-				<button id="addEnemyBtn" type="button">
-					Add another enemy
-				</button>
-			</div>
 			<div class="card">
 				<h3>Setting</h3>
 				<div class="field">
@@ -61,9 +42,35 @@
 					></textarea>
 				</div>
 			</div>
-			<div class="card">
-				<h3>Scene Activity</h3>
+			<div id="characterCard" class="card">
+				<h3>Player Characters</h3>
+				<div id="characterRows"></div>
+				<button id="addCharacterBtn" type="button">
+					<i class="fa-solid fa-circle-plus"></i>
+					Add another character
+				</button>
+			</div>
+			<div id="npcCard" class="card">
+				<h3>Non-Player Characters</h3>
+				<div id="npcRows"></div>
+				<button id="addNPCBtn" type="button">
+					<i class="fa-solid fa-circle-plus"></i> Add another NPC
+				</button>
+			</div>
+			<div id="enemyCard" class="card">
+				<h3>Enemies</h3>
 				<p class="field-hint">
+					Note: The same type of enemy can be added more than once.
+				</p>
+				<div id="enemyRows"></div>
+				<button id="addEnemyBtn" type="button">
+					<i class="fa-solid fa-circle-plus"></i>
+					Add another enemy
+				</button>
+			</div>
+			<div class="card">
+				<h3 id="sceneHeading">Scene Activity</h3>
+				<p id="sceneHint" class="field-hint">
 					Describe actions, facial expressions, placement of
 					characters within the setting, any items or props present,
 					etc.
@@ -74,14 +81,22 @@
 						placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."
 					></textarea>
 				</div>
-				<button id="generateBtn">Generate Image</button>
-				<button id="resetBtn" type="button">Reset Scene</button>
+			</div>
+
+			<div class="card">
+				<button id="generateBtn">
+					<i class="fa-solid fa-image"></i> Generate Image
+				</button>
+				<button id="resetBtn" type="button">
+					<i class="fa-solid fa-rotate-left"></i> Reset Scene
+				</button>
 			</div>
 
 			<div class="card">
 				<h3>IMAGE</h3>
 				<div id="statusText">Waiting for prompt...</div>
 				<button id="retryBtn" type="button" style="display: none">
+					<i class="fa-solid fa-rotate-left"></i>
 					Retry
 				</button>
 				<div id="imagePlaceholder" class="image-placeholder" hidden>
@@ -90,7 +105,12 @@
 				<img id="outputImg" alt="Generated Scene" />
 				<div style="margin-top: 0.5rem">
 					<button id="shareBtn" style="display: none">
+						<i class="fa-solid fa-share"></i>
 						Share to Device
+					</button>
+					<button id="downloadBtn" style="display: none">
+						<i class="fa-solid fa-down-to-line"></i>
+						Download JPEG
 					</button>
 				</div>
 			</div>

@@ -1,4 +1,8 @@
-import { OTHER_LOCATION_KEY } from '../constants.js';
+import {
+	CUSTOM_LOCATION_REFERENCE_KEY,
+	OTHER_LOCATION_KEY,
+} from '../constants.js';
+import { NEUTRAL_VOID_SLUG, isLocationReferenceMode } from '../prompt.js';
 import { getElements, getVariantById } from '../services/catalog.js';
 import {
 	getLocationSelection,
@@ -15,6 +19,8 @@ let variantSelectEl;
 let descEl;
 let otherTextEl;
 let restoredVariantId;
+let sceneHeadingEl;
+let sceneHintEl;
 
 export function initSettingField({
 	selectEl: select,
@@ -28,20 +34,25 @@ export function initSettingField({
 	variantSelectEl = variantSelect;
 	descEl = desc;
 	otherTextEl = otherText;
+	sceneHeadingEl = document.getElementById('sceneHeading');
+	sceneHintEl = document.getElementById('sceneHint');
 	locations = getElements('location');
 
 	populateLocationSelect();
 	restoreLocationSelection();
 	restoreOtherLocationText();
 	updateLocationDisplay();
+	updateSceneUI();
 
 	selectEl.addEventListener('change', () => {
 		persistLocationSelection();
 		updateLocationDisplay();
+		updateSceneUI();
 	});
 	variantSelectEl.addEventListener('change', () => {
 		persistLocationSelection();
 		updateLocationDisplay();
+		updateSceneUI();
 	});
 	otherTextEl.addEventListener('input', persistOtherLocationText);
 }
@@ -57,11 +68,27 @@ export function getLocationSelectionDetails() {
 			? {
 					elementId: OTHER_LOCATION_KEY,
 					elementType: 'location',
-					elementName: 'Custom location',
+					elementName: 'Custom Location',
 					variantId: OTHER_LOCATION_KEY,
 					variantName: 'default',
 					variantDesc,
 					image: '',
+					slug: null,
+				}
+			: null;
+	}
+	if (selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY) {
+		const variantDesc = otherTextEl.value.trim();
+		return variantDesc
+			? {
+					elementId: CUSTOM_LOCATION_REFERENCE_KEY,
+					elementType: 'location',
+					elementName: 'Custom Location (for reference images)',
+					variantId: CUSTOM_LOCATION_REFERENCE_KEY,
+					variantName: 'reference',
+					variantDesc,
+					image: '',
+					slug: null,
 				}
 			: null;
 	}
@@ -76,6 +103,7 @@ export function getLocationSelectionDetails() {
 				variantName: variant.variantName,
 				variantDesc: variant.variantDesc,
 				image: variant.image,
+				slug: location.slug,
 			}
 		: null;
 }
@@ -85,9 +113,26 @@ function getLocation(elementId) {
 }
 
 function populateLocationSelect() {
-	for (const location of locations) {
-		selectEl.add(new Option(location.name, location.id));
+	// Add Neutral Void first if it exists
+	const neutralVoid = locations.find(loc => loc.slug === NEUTRAL_VOID_SLUG);
+	if (neutralVoid) {
+		selectEl.add(new Option(neutralVoid.name, neutralVoid.id));
 	}
+
+	selectEl.add(
+		new Option(
+			'Custom Location (for reference images)',
+			CUSTOM_LOCATION_REFERENCE_KEY,
+		),
+	);
+
+	// Add remaining locations (excluding Neutral Void)
+	for (const location of locations) {
+		if (location.slug !== NEUTRAL_VOID_SLUG) {
+			selectEl.add(new Option(location.name, location.id));
+		}
+	}
+
 	selectEl.add(new Option('Other (describe below)', OTHER_LOCATION_KEY));
 }
 
@@ -104,10 +149,13 @@ function updateVariantSelect(location, presetVariantId) {
 
 function updateLocationDisplay() {
 	const isOther = selectEl.value === OTHER_LOCATION_KEY;
-	descEl.hidden = isOther;
-	otherTextEl.hidden = !isOther;
+	const isCustomReference = selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY;
+	const usesTextarea = isOther || isCustomReference;
+
+	descEl.hidden = usesTextarea;
+	otherTextEl.hidden = !usesTextarea;
 	variantFieldEl.hidden = true;
-	if (isOther) return;
+	if (usesTextarea) return;
 
 	const location = getLocation(selectEl.value);
 	if (!location) return;
@@ -133,6 +181,10 @@ function persistLocationSelection() {
 		setLocationSelection(OTHER_LOCATION_KEY);
 		return;
 	}
+	if (selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY) {
+		setLocationSelection(CUSTOM_LOCATION_REFERENCE_KEY);
+		return;
+	}
 	setLocationSelection({
 		elementId: selectEl.value,
 		variantId: variantSelectEl.value,
@@ -146,4 +198,45 @@ function restoreOtherLocationText() {
 
 function persistOtherLocationText() {
 	setOtherLocationText(otherTextEl.value);
+}
+
+function updateSceneUI() {
+	const location = getLocationSelectionDetails();
+	const isNeutralVoidReference = location?.slug === NEUTRAL_VOID_SLUG;
+	const isLocationReference =
+		selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY ||
+		isLocationReferenceMode(location);
+
+	const characterCard = document.getElementById('characterCard');
+	const npcCard = document.getElementById('npcCard');
+	const enemyCard = document.getElementById('enemyCard');
+	const sceneCard = document
+		.querySelector('[id="sceneHeading"]')
+		?.closest('.card');
+
+	if (isNeutralVoidReference) {
+		sceneHeadingEl.textContent = 'Reference Subject';
+		sceneHintEl.textContent =
+			'Describe the new character, NPC, or enemy to be rendered as a reference image against the Neutral Void background.';
+		characterCard.style.display = 'none';
+		npcCard.style.display = 'none';
+		enemyCard.style.display = 'none';
+		sceneCard.style.display = 'block';
+	} else if (isLocationReference) {
+		sceneHeadingEl.textContent = 'Location Reference';
+		sceneHintEl.textContent =
+			'Describe the location to be rendered as a reference image.';
+		characterCard.style.display = 'none';
+		npcCard.style.display = 'none';
+		enemyCard.style.display = 'none';
+		sceneCard.style.display = 'none';
+	} else {
+		sceneHeadingEl.textContent = 'Scene Activity';
+		sceneHintEl.textContent =
+			'Describe actions, facial expressions, placement of characters within the setting, any items or props present, etc.';
+		characterCard.style.display = 'block';
+		npcCard.style.display = 'block';
+		enemyCard.style.display = 'block';
+		if (sceneCard) sceneCard.style.display = 'block';
+	}
 }
