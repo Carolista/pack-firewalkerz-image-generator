@@ -426,9 +426,9 @@ button:active {
 		width: 100%;
 	}
 
-    .element-actions {
-        justify-content: flex-end;
-    }
+	.element-actions {
+		justify-content: flex-end;
+	}
 
 	.form-actions {
 		gap: 0.5rem;

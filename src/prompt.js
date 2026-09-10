@@ -26,7 +26,7 @@ Location: ${description}`;
 	return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
 Render exactly one individual character, NPC, or enemy in the foreground as follows:
 ${name}: ${description}
-Set against a plain, neutral, unobtrusive background so the subject is the sole focus. Do not add any other subjects, props, or scenery.
+If a Neutral Void reference image is provided below, keep that exact background unchanged and do not modify or replace it. Otherwise, set the subject against a plain, neutral, unobtrusive background so the subject is the sole focus. Do not add any other subjects, props, or scenery.
 ${NO_BORDER_INSTRUCTION}`;
 }
 

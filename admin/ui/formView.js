@@ -1,5 +1,11 @@
-import { buildReferenceImagePrompt } from '../../src/prompt.js';
-import { generateImageWithNetworkRetry } from '../../src/services/api.js';
+import {
+	NEUTRAL_VOID_SLUG,
+	buildReferenceImagePrompt,
+} from '../../src/prompt.js';
+import {
+	generateImageWithNetworkRetry,
+	loadReferenceImages,
+} from '../../src/services/api.js';
 import {
 	CATEGORY_FOLDERS,
 	getPublicImageUrl,
@@ -60,6 +66,31 @@ export function createFormView({
 	let generationInFlight = false;
 	let autoSyncSlug = true;
 	let autoSyncFirstFilename = true;
+	let neutralVoidReferenceImages;
+
+	// Entity reference generation reuses the Neutral Void background, same as the public generator.
+	async function getNeutralVoidReferenceImages() {
+		if (neutralVoidReferenceImages === undefined) {
+			try {
+				const [neutralVoid] =
+					await dataClient.getElementBySlug(NEUTRAL_VOID_SLUG);
+				const variant = neutralVoid?.game_element_variants?.[0];
+				neutralVoidReferenceImages = variant?.image
+					? await loadReferenceImages([
+							{
+								elementType: 'location',
+								elementName: neutralVoid.name,
+								variantName: variant.variant_name,
+								image: variant.image,
+							},
+						])
+					: [];
+			} catch {
+				neutralVoidReferenceImages = [];
+			}
+		}
+		return neutralVoidReferenceImages;
+	}
 
 	formName.addEventListener('input', () => {
 		if (autoSyncSlug) {
@@ -335,9 +366,13 @@ export function createFormView({
 					name: row.querySelector('.variant-name').value.trim(),
 					description: desc,
 				});
+				const referenceImages =
+					formCategory.value === 'location'
+						? []
+						: await getNeutralVoidReferenceImages();
 				const result = await generateImageWithNetworkRetry({
 					prompt,
-					referenceImages: [],
+					referenceImages,
 					onRetry: () => {
 						generateStatusEl.textContent =
 							'Connection issue, retrying...';
