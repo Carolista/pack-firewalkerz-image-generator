@@ -14,10 +14,13 @@ const imageVersions = new Map();
 export function getPublicImageUrl(path) {
 	if (!path) return '';
 	if (path.startsWith('http://') || path.startsWith('https://')) return path;
-	const version = imageVersions.get(path);
+	// Ensure the path always starts with a leading slash for clean joining with PUBLIC_URL_BASE
+	const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+	const version =
+		imageVersions.get(path) ?? imageVersions.get(normalizedPath);
 	return version
-		? `${PUBLIC_URL_BASE}${path}?v=${version}`
-		: `${PUBLIC_URL_BASE}${path}`;
+		? `${PUBLIC_URL_BASE}${normalizedPath}?v=${version}`
+		: `${PUBLIC_URL_BASE}${normalizedPath}`;
 }
 
 export const CATEGORY_FOLDERS = {
