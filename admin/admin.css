@@ -1,4 +1,4 @@
-@import url('../styles.css');
+@import url('../global.css');
 
 :root {
 	--admin-ink: #18324a;
@@ -81,6 +81,10 @@ h3.variant-heading {
 	margin: 1.5rem 0 0;
 }
 
+textarea.variant-desc {
+	min-height: 200px;
+}
+
 .panel,
 .element-card {
 	background: var(--admin-surface);
@@ -106,32 +110,52 @@ h3.variant-heading {
 }
 
 .variant-form-row {
-	grid-template-columns: 2fr 1fr;
+	grid-template-columns: 1fr;
+}
+
+.variant-info-col,
+.variant-image-col {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.variant-meta-row {
+	display: flex;
+	gap: 0.5rem;
+	align-items: flex-end;
+}
+
+.variant-meta-row label {
+	margin-bottom: 0;
 }
 
 .variant-name-field {
-	grid-column: 1;
+	flex: 1;
 }
 
 .variant-sort-field {
-	grid-column: 2;
+	width: 5.5rem;
 }
 
-.variant-desc-field {
-	grid-column: 1;
-}
-
-.variant-image-field {
-	grid-column: 2;
+.delete-variant-btn {
+	padding: 0;
+	aspect-ratio: 1;
+	height: var(--form-control-height);
+	width: var(--form-control-height);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .delete-variant {
-	grid-column: 2;
-	justify-self: end;
 	background-color: transparent;
 	color: var(--red);
 	font-size: 1.1rem;
 	padding: 0;
+	height: auto;
+	width: auto;
 }
 
 .delete-variant:hover {
@@ -168,19 +192,16 @@ h3.variant-heading {
 	gap: 0.4rem;
 }
 
-.variant-image-stored-row {
-	display: flex;
-	align-items: center;
-	padding: 0.5rem;
-	background: var(--admin-pale);
-	border-radius: var(--border-radius-form-elements);
-}
-
 .stored-image-path {
 	color: var(--admin-ink);
 	font-family: var(--font-mono);
-	font-size: 0.95rem;
+	font-size: 1rem;
+	font-style: normal;
+	font-weight: 400;
 	word-break: break-all;
+	min-height: var(--form-control-height);
+	display: flex;
+	align-items: center;
 }
 
 .variant-image-folder-prefix,
@@ -405,22 +426,6 @@ button:active {
 		width: 100%;
 	}
 
-	.variant-form-row {
-		grid-template-columns: 1fr;
-	}
-
-	.variant-name-field,
-	.variant-sort-field,
-	.variant-desc-field,
-	.variant-image-field,
-	.delete-variant {
-		grid-column: 1;
-	}
-
-	.delete-variant {
-		justify-self: center;
-	}
-
 	.form-actions {
 		gap: 0.5rem;
 		justify-content: stretch;
@@ -462,5 +467,10 @@ button:active {
 
 	#formPanel > div {
 		grid-column: 1 / -1;
+	}
+
+	.variant-form-row {
+		grid-template-columns: 1.2fr 1fr;
+		gap: 1.5rem;
 	}
 }

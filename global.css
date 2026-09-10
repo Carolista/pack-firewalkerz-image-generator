@@ -23,6 +23,7 @@
 	--font-label: 'Libertinus Sans', serif;
 	--font-mono: 'Lilex', monospace;
 	--border-radius-form-elements: 2px;
+	--form-control-height: 2.5rem;
 }
 
 * {
@@ -137,15 +138,19 @@ h3 {
 	background: none;
 	font-size: 1.2rem;
 	cursor: pointer;
+	height: auto;
+	width: auto;
 }
 
 label {
-	display: block;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
 	font-family: var(--font-label);
 	font-size: 1.2rem;
 	font-style: italic;
 	font-weight: 600;
-	margin-bottom: 0.3rem;
+	margin-bottom: 0.5rem;
 }
 
 .field-hint {
@@ -164,14 +169,20 @@ input {
 	font-size: 1rem;
 	background-color: var(--cream-pale);
 	width: 100%;
-	padding: 0.5rem;
 	outline: none;
 	border: none;
 	border-radius: var(--border-radius-form-elements);
 	box-sizing: border-box;
 }
 
+select,
+input:not([type='checkbox']):not([type='radio']):not([type='file']) {
+	height: var(--form-control-height);
+	padding: 0 0.6rem;
+}
+
 textarea {
+	padding: 0.6rem;
 	resize: vertical;
 	min-height: 100px;
 	max-height: 400px;
@@ -188,10 +199,16 @@ button {
 	font-size: 0.9rem;
 	font-weight: 400;
 	text-transform: capitalize;
-	padding: 0.75rem 1rem;
+	height: var(--form-control-height);
+	padding: 0 1rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.4rem;
 	outline: none;
 	border: none;
 	border-radius: var(--border-radius-form-elements);
+	box-sizing: border-box;
 	cursor: pointer;
 }
 

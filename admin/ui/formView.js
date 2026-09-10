@@ -178,9 +178,7 @@ export function createFormView({
 		const imageFieldHtml = hasStoredImage
 			? `
 				<label class="variant-image-filename-label">Image Path
-					<div class="variant-image-stored-row">
-						<span class="stored-image-path">${existingImage}</span>
-					</div>
+					<span class="stored-image-path">${existingImage}</span>
 				</label>
 			`
 			: `
@@ -195,24 +193,30 @@ export function createFormView({
 			`;
 
 		row.innerHTML = `
-			<label class="variant-name-field">Variant Name*<input class="variant-name" required value="${defaultName}" /></label>
-			<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
-			<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
-			<div class="variant-image-field">
-				${imageFieldHtml}
-				<input type="hidden" class="variant-image" value="${existingImage}" />
-				<div class="variant-image-actions">
-					<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
-					<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
-					<input type="file" class="variant-image-upload" accept="image/*" hidden />
-					<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
+			<div class="variant-info-col">
+				<div class="variant-meta-row">
+					<label class="variant-name-field">Variant Name*<input class="variant-name" required value="${defaultName}" /></label>
+					<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
+					<button class="delete-variant-btn delete" type="button" title="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
-				<p class="generate-status status"></p>
-				<div class="admin-image-preview" aria-label="Image preview"></div>
+				<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			</div>
-			<button class="delete-variant" type="button"><i class="fa-solid fa-square-minus"></i> Delete variant</button>
+			<div class="variant-image-col">
+				<div class="variant-image-field">
+					${imageFieldHtml}
+					<input type="hidden" class="variant-image" value="${existingImage}" />
+					<div class="variant-image-actions">
+						<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
+						<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
+						<input type="file" class="variant-image-upload" accept="image/*" hidden />
+						<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
+					</div>
+					<p class="generate-status status"></p>
+					<div class="admin-image-preview" aria-label="Image preview"></div>
+				</div>
+			</div>
 		`;
-		row.querySelector('.delete-variant').addEventListener(
+		row.querySelector('.delete-variant-btn').addEventListener(
 			'click',
 			async () => {
 				if (row.dataset.variantId) {
