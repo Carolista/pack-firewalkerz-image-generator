@@ -1,10 +1,11 @@
-import { SUPABASE_URL } from '../../src/services/supabaseConfig.js';
+import { getPublicImageUrl } from '../services/storageService.js';
 
 export function createDetailsView({
 	container,
 	content,
 	status,
 	dataClient,
+	storageService,
 	modals,
 }) {
 	const view = {
@@ -53,7 +54,7 @@ export function createDetailsView({
 			article.append(text);
 			if (variant.image) {
 				const image = document.createElement('img');
-				image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${variant.image}`;
+				image.src = getPublicImageUrl(variant.image);
 				image.alt = `${element.name}, ${variant.variant_name}`;
 				article.prepend(image);
 			}
@@ -71,6 +72,7 @@ export function createDetailsView({
 		try {
 			modals.setConfirmBusy(true);
 			await dataClient.deleteVariant(variant.id);
+			if (variant.image) await storageService.deleteImage(variant.image);
 			await view.load({ slug: element.slug });
 		} catch (error) {
 			setStatus(status, error.message);

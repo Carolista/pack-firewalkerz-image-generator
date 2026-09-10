@@ -1,6 +1,7 @@
 import { getRoute, navigateTo } from './routing.js';
 import { createAdminDataClient } from './services/adminData.js';
 import { createAuthClient } from './services/auth.js';
+import { createStorageService } from './services/storageService.js';
 import { createCatalogView } from './ui/catalogView.js';
 import { createDetailsView } from './ui/detailsView.js';
 import { createFormView } from './ui/formView.js';
@@ -45,6 +46,10 @@ const dataClient = createAdminDataClient(
 	() => authClient.getSession(),
 	() => authClient.reauthenticate(),
 );
+const storageService = createStorageService(
+	() => authClient.getSession(),
+	() => authClient.reauthenticate(),
+);
 
 const loginPanel = document.getElementById('loginPanel');
 const catalogPanel = document.getElementById('catalogPanel');
@@ -73,6 +78,7 @@ const confirmModalOverlay = document.getElementById('confirmModalOverlay');
 const confirmModalHeading = document.getElementById('confirmModalHeading');
 const confirmModalMessage = document.getElementById('confirmModalMessage');
 const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
+const confirmModalExtraBtn = document.getElementById('confirmModalExtraBtn');
 const confirmModalConfirmBtn = document.getElementById(
 	'confirmModalConfirmBtn',
 );
@@ -85,6 +91,7 @@ const modals = createModalController({
 	confirmHeading: confirmModalHeading,
 	confirmMessage: confirmModalMessage,
 	confirmCancelBtn: confirmModalCancelBtn,
+	confirmExtraBtn: confirmModalExtraBtn,
 	confirmConfirmBtn: confirmModalConfirmBtn,
 	onReauthenticate: reauthenticate,
 });
@@ -96,9 +103,11 @@ const formView = createFormView({
 	formName,
 	formSlug,
 	formStatus,
+	formSaveBtn: document.getElementById('formSaveBtn'),
 	variantFormRows,
 	addVariantBtn: document.getElementById('addVariantBtn'),
 	dataClient,
+	storageService,
 	modals,
 	navigateTo,
 	getRoute,
@@ -112,6 +121,7 @@ const catalogView = createCatalogView({
 	elementList,
 	addElementBtn,
 	dataClient,
+	storageService,
 	modals,
 	navigateTo,
 	getActiveCategory: () => activeCategory,
@@ -124,6 +134,7 @@ const detailsView = createDetailsView({
 	content: detailsContent,
 	status: catalogStatus,
 	dataClient,
+	storageService,
 	modals,
 });
 loginForm.addEventListener('submit', signIn);

@@ -1,4 +1,4 @@
-import { SUPABASE_URL } from '../../src/services/supabaseConfig.js';
+import { getPublicImageUrl } from '../services/storageService.js';
 
 const BUTTON_ACTIONS = {
 	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },
@@ -14,6 +14,7 @@ export function createCatalogView({
 	elementList,
 	addElementBtn,
 	dataClient,
+	storageService,
 	modals,
 	navigateTo,
 	getActiveCategory,
@@ -103,7 +104,7 @@ export function createCatalogView({
 		article.append(copy, actions);
 		if (firstVariant?.image) {
 			const image = document.createElement('img');
-			image.src = `${SUPABASE_URL}/storage/v1/object/public/rpg-generator-reference-images/${firstVariant.image}`;
+			image.src = getPublicImageUrl(firstVariant.image);
 			image.alt = `${element.name} reference image`;
 			article.prepend(image);
 		}
@@ -119,7 +120,12 @@ export function createCatalogView({
 		if (!confirmed) return;
 		setStatus(catalogStatus, 'Deleting...');
 		try {
+			const imagePaths = (element.game_element_variants ?? [])
+				.map(variant => variant.image)
+				.filter(Boolean);
 			await dataClient.deleteElement(element.id);
+			if (imagePaths.length)
+				await storageService.deleteImages(imagePaths);
 			await view.loadElements();
 		} catch (error) {
 			setStatus(catalogStatus, error.message);

@@ -10,6 +10,21 @@ export function isLocationReferenceMode(location) {
 	return location?.elementId === CUSTOM_LOCATION_REFERENCE_KEY;
 }
 
+// Standalone reference-image prompt for admin variant creation, independent of the row-based generator flow.
+export function buildReferenceImagePrompt({ category, name, description }) {
+	if (category === 'location') {
+		return `Detailed, atmospheric, painterly digital illustration.
+Use the location description as the sole direction for the subject matter and faithfully render all details it describes, whether natural, architectural, cultural, or civilized.
+Do not add unrelated subjects, creatures, themes, or visual motifs that are not present in the location description.
+Location: ${description}`;
+	}
+
+	return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
+Render exactly one individual character, NPC, or enemy in the foreground as follows:
+${name}: ${description}
+Set against a plain, neutral, unobtrusive background so the subject is the sole focus. Do not add any other subjects, props, or scenery.`;
+}
+
 export function buildPrompt({
 	characters,
 	npcs,

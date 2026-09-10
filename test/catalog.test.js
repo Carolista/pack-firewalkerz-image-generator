@@ -5,6 +5,7 @@ import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
 import {
 	buildPrompt,
+	buildReferenceImagePrompt,
 	isLocationReferenceMode,
 	isReferenceModeLocation,
 } from '../src/prompt.js';
@@ -421,4 +422,41 @@ test('renders location reference mode prompt', () => {
 	assert.ok(!prompt.includes('Render exactly one individual'));
 	assert.ok(!prompt.includes('Action\/Scene'));
 	assert.ok(!prompt.includes('Environment\/Setting'));
+});
+
+test('buildReferenceImagePrompt renders a location-only prompt for the location category', () => {
+	const prompt = buildReferenceImagePrompt({
+		category: 'location',
+		name: 'Sunken Chapel',
+		description: 'A flooded stone chapel with moss-covered pews.',
+	});
+
+	assert.match(
+		prompt,
+		/Detailed, atmospheric, painterly digital illustration/,
+	);
+	assert.match(
+		prompt,
+		/Location: A flooded stone chapel with moss-covered pews/,
+	);
+	assert.ok(!prompt.includes('World of Darkness'));
+	assert.ok(!prompt.includes('Sunken Chapel'));
+});
+
+test('buildReferenceImagePrompt renders a subject prompt for character/npc/enemy categories', () => {
+	const prompt = buildReferenceImagePrompt({
+		category: 'character',
+		name: 'River-That-Remembers',
+		description: 'A large werewolf form with silver-tipped fur.',
+	});
+
+	assert.match(
+		prompt,
+		/Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style/,
+	);
+	assert.match(
+		prompt,
+		/River-That-Remembers: A large werewolf form with silver-tipped fur/,
+	);
+	assert.match(prompt, /plain, neutral, unobtrusive background/);
 });

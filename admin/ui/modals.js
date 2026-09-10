@@ -6,10 +6,12 @@ export function createModalController({
 	confirmHeading,
 	confirmMessage,
 	confirmCancelBtn,
+	confirmExtraBtn,
 	confirmConfirmBtn,
 	onReauthenticate,
 }) {
 	let confirmResolver;
+	let extraHandler;
 
 	reauthForm.addEventListener('submit', onReauthenticate);
 	confirmCancelBtn.addEventListener('click', () =>
@@ -18,6 +20,8 @@ export function createModalController({
 	confirmConfirmBtn.addEventListener('click', () =>
 		resolveConfirmation(true),
 	);
+	// Runs the caller's callback without resolving, so Cancel/Confirm remain available afterward.
+	confirmExtraBtn.addEventListener('click', () => extraHandler?.());
 
 	return {
 		showReauthentication() {
@@ -29,12 +33,20 @@ export function createModalController({
 		showConfirmation(
 			heading,
 			message,
-			{ cancelLabel = 'Cancel', confirmLabel = 'Delete' } = {},
+			{
+				cancelLabel = 'Cancel',
+				confirmLabel = 'Delete',
+				extraLabel,
+				onExtra,
+			} = {},
 		) {
 			confirmHeading.textContent = heading;
 			confirmMessage.textContent = message;
 			confirmCancelBtn.textContent = cancelLabel;
 			confirmConfirmBtn.textContent = confirmLabel;
+			extraHandler = extraLabel ? onExtra : null;
+			confirmExtraBtn.hidden = !extraLabel;
+			confirmExtraBtn.textContent = extraLabel ?? '';
 			confirmOverlay.hidden = false;
 			return new Promise(resolve => {
 				confirmResolver = resolve;
@@ -53,5 +65,6 @@ export function createModalController({
 		confirmOverlay.hidden = true;
 		confirmResolver?.(value);
 		confirmResolver = null;
+		extraHandler = null;
 	}
 }
