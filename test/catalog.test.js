@@ -4,6 +4,7 @@ import test from 'node:test';
 import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
 import {
+	NO_BORDER_INSTRUCTION,
 	buildPrompt,
 	buildReferenceImagePrompt,
 	isLocationReferenceMode,
@@ -459,4 +460,28 @@ test('buildReferenceImagePrompt renders a subject prompt for character/npc/enemy
 		/River-That-Remembers: A large werewolf form with silver-tipped fur/,
 	);
 	assert.match(prompt, /plain, neutral, unobtrusive background/);
+});
+
+test('prompts include edge-to-edge no-border instruction', () => {
+	const standardPrompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		locationDesc: 'Forest',
+		scene: 'A wolf runs.',
+	});
+	const locationRefPrompt = buildReferenceImagePrompt({
+		category: 'location',
+		name: 'Grove',
+		description: 'A serene grove.',
+	});
+	const entityRefPrompt = buildReferenceImagePrompt({
+		category: 'enemy',
+		name: 'Bane',
+		description: 'A toxic spirit.',
+	});
+
+	assert.ok(standardPrompt.includes(NO_BORDER_INSTRUCTION));
+	assert.ok(locationRefPrompt.includes(NO_BORDER_INSTRUCTION));
+	assert.ok(entityRefPrompt.includes(NO_BORDER_INSTRUCTION));
 });
