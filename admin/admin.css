@@ -1,10 +1,12 @@
 @import url('../global.css');
 
 :root {
+	--admin-midnight:rgb(9, 27, 44)a;
 	--admin-ink: #18324a;
 	--admin-dark-blue: #144261;
 	--admin-blue: #2d668d;
 	--admin-bright-blue: #3080b5;
+	--admin-light-blue: #79b1d6;
 	--admin-pale: #eef5f8;
 	--admin-light: #cfdde3;
 	--admin-line: #b8cad4;
@@ -16,7 +18,7 @@ html::before {
 }
 
 body {
-	color: var(--admin-ink);
+	color: var(--admin-midnight);
 	max-width: 1080px;
 }
 
@@ -70,7 +72,7 @@ h2 {
 
 h3 {
 	font-weight: 400;
-	color: var(--admin-dark-blue);
+	color: var(--admin-ink);
 }
 
 h2.modal-heading {
@@ -398,7 +400,7 @@ button:active {
 }
 
 .status {
-	color: var(--admin-bright-blue);
+	color: var(--admin-light-blue);
 	text-transform: capitalize;
 	min-height: 1.5rem;
 	margin: 0;
