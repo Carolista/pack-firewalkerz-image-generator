@@ -186,6 +186,31 @@ textarea.variant-desc {
 	color: var(--red-dark);
 }
 
+.variant-detail-actions {
+	display: flex;
+	gap: 1rem;
+	margin-top: 0.5rem;
+}
+
+.edit-variant {
+	background-color: transparent;
+	color: var(--admin-blue);
+	font-size: 1.1rem;
+	padding: 0;
+	height: auto;
+	width: auto;
+}
+
+.edit-variant:hover {
+	background-color: transparent;
+	color: var(--admin-bright-blue);
+}
+
+.edit-variant:active {
+	background-color: transparent;
+	color: var(--admin-dark-blue);
+}
+
 .admin-image-preview {
 	align-items: center;
 	aspect-ratio: 1;
