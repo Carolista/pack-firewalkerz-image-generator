@@ -316,12 +316,12 @@ button {
 .character-row .removeRowBtn,
 .npc-row .removeRowBtn,
 .enemy-row .removeRowBtn {
-	font-size: 1.2rem;
-	grid-column: 2;
-	grid-row: 2;
-	align-self: stretch;
-	padding: 0;
-	aspect-ratio: 1;
+    font-size: 1.2rem;
+    grid-column: 2;
+    grid-row: 2;
+    height: var(--form-control-height);
+    width: var(--form-control-height);
+    padding: 0;
 }
 
 #addCharacterBtn[hidden] {
