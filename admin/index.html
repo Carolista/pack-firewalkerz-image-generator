@@ -166,8 +166,15 @@
 			</section>
 
 			<div id="reauthModalOverlay" class="modal-overlay" hidden>
-				<div class="modal">
-					<h2 class="modal-heading">Session expired</h2>
+				<div
+					class="modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="reauthModalHeading"
+				>
+					<h2 id="reauthModalHeading" class="modal-heading">
+						Session expired
+					</h2>
 					<p>Please sign in again to continue.</p>
 					<form id="reauthForm">
 						<label>
@@ -195,7 +202,13 @@
 			</div>
 
 			<div id="confirmModalOverlay" class="modal-overlay" hidden>
-				<div class="modal">
+				<div
+					class="modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="confirmModalHeading"
+					aria-describedby="confirmModalMessage"
+				>
 					<h2 id="confirmModalHeading" class="modal-heading">
 						Confirm deletion
 					</h2>

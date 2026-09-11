@@ -89,6 +89,7 @@ export function createCatalogView({
 			const button = document.createElement('button');
 			button.type = 'button';
 			button.title = `${BUTTON_ACTIONS[action].label}: ${element.name}`;
+			button.setAttribute('aria-label', button.title);
 			button.innerHTML = `<i class="${BUTTON_ACTIONS[action].faClasses}"></i>`;
 			if (action === 'delete') button.classList.add('delete');
 			button.addEventListener('click', () => {

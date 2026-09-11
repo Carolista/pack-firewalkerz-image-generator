@@ -24,6 +24,7 @@
 	--font-mono: 'Lilex', monospace;
 	--border-radius-form-elements: 2px;
 	--form-control-height: 2.5rem;
+	--focus-color: #ffd166;
 }
 
 * {
@@ -216,6 +217,15 @@ button {
 	cursor: pointer;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+	outline: 3px solid var(--focus-color);
+	outline-offset: 2px;
+}
+
 #statusText {
 	font-style: italic;
 }
@@ -251,6 +261,12 @@ button {
 	border-top-color: transparent;
 	border-radius: 50%;
 	animation: spin 0.9s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.image-spinner {
+		animation: none;
+	}
 }
 
 @keyframes spin {
