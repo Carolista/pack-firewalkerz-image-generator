@@ -113,20 +113,7 @@ function getLocation(elementId) {
 }
 
 function populateLocationSelect() {
-	// Add Neutral Void first if it exists
-	const neutralVoid = locations.find(loc => loc.slug === NEUTRAL_VOID_SLUG);
-	if (neutralVoid) {
-		selectEl.add(new Option(neutralVoid.name, neutralVoid.id));
-	}
-
-	selectEl.add(
-		new Option(
-			'Custom Location (for reference images)',
-			CUSTOM_LOCATION_REFERENCE_KEY,
-		),
-	);
-
-	// Add remaining locations (excluding Neutral Void)
+	// Neutral Void and the custom reference-image option are admin-only; excluded from the public dropdown.
 	for (const location of locations) {
 		if (location.slug !== NEUTRAL_VOID_SLUG) {
 			selectEl.add(new Option(location.name, location.id));
