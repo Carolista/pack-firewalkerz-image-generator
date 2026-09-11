@@ -43,10 +43,10 @@ select {
 }
 
 #tagline {
-    color: var(--admin-light);
-    font-family: var(--font-mono);
-    font-weight: 200;
-    font-size: 1.4rem;
+	color: var(--admin-light);
+	font-family: var(--font-mono);
+	font-weight: 200;
+	font-size: 1.4rem;
 }
 
 button {
