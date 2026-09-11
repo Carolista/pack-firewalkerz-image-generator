@@ -6,6 +6,7 @@ import {
 	generateImageWithNetworkRetry,
 	loadReferenceImages,
 } from '../../src/services/api.js';
+import { takePendingVariantId } from '../services/pendingScroll.js';
 import {
 	CATEGORY_FOLDERS,
 	getPublicImageUrl,
@@ -174,6 +175,17 @@ export function createFormView({
 				))
 					addVariantFormRow(variant);
 				setInitialSnapshot();
+				const pendingVariantId = takePendingVariantId();
+				if (pendingVariantId) {
+					variantFormRows
+						.querySelector(
+							`[data-variant-id="${pendingVariantId}"]`,
+						)
+						?.scrollIntoView({
+							behavior: 'smooth',
+							block: 'start',
+						});
+				}
 			} catch (error) {
 				setStatus(formStatus, error.message);
 			}

@@ -136,6 +136,7 @@ const detailsView = createDetailsView({
 	dataClient,
 	storageService,
 	modals,
+	navigateTo,
 });
 loginForm.addEventListener('submit', signIn);
 signOutBtn.addEventListener('click', signOut);

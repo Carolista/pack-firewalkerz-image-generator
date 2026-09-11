@@ -1,3 +1,4 @@
+import { setPendingVariantId } from '../services/pendingScroll.js';
 import { getPublicImageUrl } from '../services/storageService.js';
 
 export function createDetailsView({
@@ -7,6 +8,7 @@ export function createDetailsView({
 	dataClient,
 	storageService,
 	modals,
+	navigateTo,
 }) {
 	const view = {
 		async load(route) {
@@ -42,6 +44,21 @@ export function createDetailsView({
 			const description = document.createElement('p');
 			description.textContent = variant.variant_desc;
 			text.append(description);
+			const actions = document.createElement('div');
+			actions.className = 'variant-detail-actions';
+			const editButton = document.createElement('button');
+			editButton.type = 'button';
+			editButton.className = 'edit-variant';
+			editButton.innerHTML =
+				'<i class="fa-solid fa-pen-to-square"></i> Edit Variant';
+			editButton.addEventListener('click', () => {
+				setPendingVariantId(variant.id);
+				navigateTo({
+					name: 'edit',
+					category: element.element_type,
+					slug: element.slug,
+				});
+			});
 			const deleteButton = document.createElement('button');
 			deleteButton.type = 'button';
 			deleteButton.className = 'delete-variant';
@@ -50,7 +67,8 @@ export function createDetailsView({
 			deleteButton.addEventListener('click', () =>
 				deleteVariant(element, variant),
 			);
-			text.append(deleteButton);
+			actions.append(editButton, deleteButton);
+			text.append(actions);
 			article.append(text);
 			if (variant.image) {
 				const image = document.createElement('img');
