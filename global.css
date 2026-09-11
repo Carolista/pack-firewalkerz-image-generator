@@ -369,14 +369,15 @@ footer {
 	}
 }
 
-@media (max-width: 600px) {
-	#generateBtn,
-	#resetBtn {
-		display: block;
-		width: 100%;
-	}
+.image-actions {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.5rem;
+	margin-top: 0.75rem;
+}
 
-	#generateBtn {
-		margin-bottom: 0.75rem;
+@media (min-width: 801px) {
+	.image-actions {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
 	}
 }
