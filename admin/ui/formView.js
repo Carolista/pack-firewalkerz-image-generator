@@ -228,9 +228,9 @@ export function createFormView({
 				<label class="variant-image-filename-label">Image Filename
 					<div class="variant-image-filename-row">
 						<span class="variant-image-folder-prefix">${folderPrefix}</span>
-						<input class="variant-image-filename" placeholder="e.g. river-crinos" value="${existingFilename}" />
+						<input class="variant-image-filename" placeholder="e.g. river-crinos" value="${existingFilename}" aria-label="Filename" />
 						<span class="variant-image-dot">.</span>
-						<input class="variant-image-ext" placeholder="jpg" value="${existingExt}" />
+						<input class="variant-image-ext" placeholder="jpg" value="${existingExt}" aria-label="Extension" />
 					</div>
 				</label>
 			`;
@@ -240,7 +240,7 @@ export function createFormView({
 				<div class="variant-meta-row">
 					<label class="variant-name-field">Variant Name*<input class="variant-name" required value="${defaultName}" /></label>
 					<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
-					<button class="delete-variant-btn delete" type="button" title="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
+					<button class="delete-variant-btn delete" type="button" title="Delete variant" aria-label="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
 				<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			</div>

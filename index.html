@@ -113,7 +113,12 @@
 			</div>
 
 			<div id="alertModalOverlay" class="modal-overlay" hidden>
-				<div class="modal">
+				<div
+					class="modal"
+					role="alertdialog"
+					aria-modal="true"
+					aria-describedby="alertModalMessage"
+				>
 					<button
 						id="alertModalCloseBtn"
 						class="modal-close"

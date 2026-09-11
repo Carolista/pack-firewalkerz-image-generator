@@ -13,6 +13,7 @@ export function initVariantRows({
 	entityArticle,
 	showVariantWhenSingleVariant = false,
 }) {
+	let rowIdCounter = 0;
 	const getElement = id => elements.find(element => element.id === id);
 
 	function getAvailableIds(excludeSelect) {
@@ -56,6 +57,8 @@ export function initVariantRows({
 		label.textContent = 'Variant';
 		const select = document.createElement('select');
 		select.className = variantSelectClassName;
+		select.id = `${elementSelect.id}-variant`;
+		label.htmlFor = select.id;
 		select.addEventListener('change', persistRows);
 		field.replaceChildren(label, select);
 		for (const variant of element.variants) {
@@ -78,6 +81,8 @@ export function initVariantRows({
 		label.textContent = entityLabel;
 		const select = document.createElement('select');
 		select.className = elementSelectClassName;
+		select.id = `${elementSelectClassName}-${rowIdCounter++}`;
+		label.htmlFor = select.id;
 		const availableIds = getAvailableIds(select);
 		for (const id of availableIds) {
 			select.add(new Option(getElement(id).name, id));
@@ -95,6 +100,7 @@ export function initVariantRows({
 		const removeBtn = document.createElement('button');
 		removeBtn.type = 'button';
 		removeBtn.className = 'removeRowBtn';
+		removeBtn.setAttribute('aria-label', `Remove ${entityLabel}`);
 		removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 		removeBtn.addEventListener('click', () => {
 			row.remove();

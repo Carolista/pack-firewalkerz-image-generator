@@ -1,6 +1,11 @@
+import { focusFirst, trapFocus } from './focusTrap.js';
+
 let overlayEl;
+let modalEl;
 let messageEl;
 let resolveShown;
+let releaseFocusTrap;
+let previouslyFocusedEl;
 
 export function initAlertModal({
 	overlay,
@@ -9,10 +14,14 @@ export function initAlertModal({
 	okBtn,
 }) {
 	overlayEl = overlay;
+	modalEl = overlay.querySelector('.modal') ?? overlay;
 	messageEl = message;
 
 	const dismiss = () => {
 		overlayEl.hidden = true;
+		releaseFocusTrap?.();
+		releaseFocusTrap = null;
+		previouslyFocusedEl?.focus();
 		resolveShown?.();
 		resolveShown = null;
 	};
@@ -29,7 +38,10 @@ export function initAlertModal({
 
 export function showAlert(message) {
 	messageEl.textContent = message;
+	previouslyFocusedEl = document.activeElement;
 	overlayEl.hidden = false;
+	releaseFocusTrap = trapFocus(modalEl);
+	focusFirst(modalEl);
 	return new Promise(resolve => {
 		resolveShown = resolve;
 	});
