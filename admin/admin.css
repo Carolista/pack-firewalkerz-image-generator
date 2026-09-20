@@ -445,6 +445,12 @@ textarea.variant-desc {
 	color: var(--admin-ink);
 }
 
+.edit-button-group {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
 @media (max-width: 600px) {
 	.catalog-toolbar,
 	.element-card {
@@ -462,20 +468,31 @@ textarea.variant-desc {
 	}
 
 	.form-actions {
+		align-items: stretch;
+		flex-direction: column;
 		gap: 0.5rem;
-		justify-content: stretch;
-		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+
+	.form-actions > div {
+		width: 100%;
+	}
+
+	.form-actions > div:last-child {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
 	.form-actions button {
-		flex: 1;
-		width: auto;
+		flex: none;
+		width: 100%;
 	}
 
 	.form-actions .status {
-		flex-basis: 100%;
+		order: initial;
 		margin-right: 0;
-		order: 3;
+		width: 100%;
 	}
 }
 
