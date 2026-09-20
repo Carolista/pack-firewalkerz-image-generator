@@ -329,6 +329,18 @@ a:focus-visible {
 	grid-row: 4;
 }
 
+.remove-row-btn {
+    background-color: var(--red);
+}
+
+.remove-row-btn:hover {
+    background-color: var(--red-light);
+} 
+
+.remove-row-btn:active {
+    background-color: var(--red-dark);
+}
+
 .character-row .remove-row-btn,
 .npc-row .remove-row-btn,
 .enemy-row .remove-row-btn {
