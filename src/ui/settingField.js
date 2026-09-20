@@ -18,6 +18,8 @@ let variantFieldEl;
 let variantSelectEl;
 let descEl;
 let otherTextEl;
+let previewBtnEl;
+let onPreview;
 let restoredVariantId;
 let sceneHeadingEl;
 let sceneHintEl;
@@ -28,14 +30,18 @@ export function initSettingField({
 	variantSelectEl: variantSelect,
 	descEl: desc,
 	otherTextEl: otherText,
+	previewBtn,
+	onPreview: preview,
 }) {
 	selectEl = select;
 	variantFieldEl = variantField;
 	variantSelectEl = variantSelect;
 	descEl = desc;
 	otherTextEl = otherText;
-	sceneHeadingEl = document.getElementById('sceneHeading');
-	sceneHintEl = document.getElementById('sceneHint');
+	previewBtnEl = previewBtn;
+	onPreview = preview;
+	sceneHeadingEl = document.getElementById('scene-heading');
+	sceneHintEl = document.getElementById('scene-hint');
 	locations = getElements('location');
 
 	populateLocationSelect();
@@ -55,6 +61,10 @@ export function initSettingField({
 		updateSceneUI();
 	});
 	otherTextEl.addEventListener('input', persistOtherLocationText);
+	previewBtnEl.addEventListener('click', () => {
+		const location = getLocation(selectEl.value);
+		if (location) onPreview?.(location, previewBtnEl);
+	});
 }
 
 export function getLocationDescription() {
@@ -139,6 +149,7 @@ function updateLocationDisplay() {
 	const isCustomReference = selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY;
 	const usesTextarea = isOther || isCustomReference;
 
+	previewBtnEl.hidden = usesTextarea;
 	descEl.hidden = usesTextarea;
 	otherTextEl.hidden = !usesTextarea;
 	variantFieldEl.hidden = true;
@@ -146,6 +157,7 @@ function updateLocationDisplay() {
 
 	const location = getLocation(selectEl.value);
 	if (!location) return;
+	previewBtnEl.setAttribute('aria-label', `Preview ${location.name}`);
 	updateVariantSelect(location, restoredVariantId ?? variantSelectEl.value);
 	restoredVariantId = undefined;
 	descEl.textContent = getLocationDescription() ?? '';
@@ -194,11 +206,11 @@ function updateSceneUI() {
 		selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY ||
 		isLocationReferenceMode(location);
 
-	const characterCard = document.getElementById('characterCard');
-	const npcCard = document.getElementById('npcCard');
-	const enemyCard = document.getElementById('enemyCard');
+	const characterCard = document.getElementById('character-card');
+	const npcCard = document.getElementById('npc-card');
+	const enemyCard = document.getElementById('enemy-card');
 	const sceneCard = document
-		.querySelector('[id="sceneHeading"]')
+		.querySelector('[id="scene-heading"]')
 		?.closest('.card');
 
 	if (isNeutralVoidReference) {

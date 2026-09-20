@@ -5,20 +5,21 @@ import { initVariantRows } from './variantRows.js';
 
 let controller;
 
-export function initEnemyRows({ container, addBtn }) {
+export function initEnemyRows({ container, addBtn, onPreview }) {
 	controller = initVariantRows({
 		container,
 		addBtn,
 		elements: getElements('enemy'),
 		rowClassName: 'enemy-row',
-		elementSelectClassName: 'enemyRowSelect',
-		variantSelectClassName: 'enemyVariantRowSelect',
+		elementSelectClassName: 'enemy-row-select',
+		variantSelectClassName: 'enemy-variant-row-select',
 		maxRows: MAX_ENEMY_ROWS,
 		allowDuplicates: true,
 		getStoredRows: getEnemyRows,
 		setStoredRows: setEnemyRows,
 		entityLabel: 'Enemy',
 		entityArticle: 'an',
+		onPreview,
 	});
 }
 

@@ -51,36 +51,38 @@ const storageService = createStorageService(
 	() => authClient.reauthenticate(),
 );
 
-const loginPanel = document.getElementById('loginPanel');
-const catalogPanel = document.getElementById('catalogPanel');
-const detailsContainer = document.getElementById('detailsContainer');
-const detailsContent = document.getElementById('detailsContent');
-const detailsBackBtn = document.getElementById('detailsBackBtn');
-const formContainer = document.getElementById('formContainer');
-const formHeading = document.getElementById('formHeading');
-const elementForm = document.getElementById('elementForm');
-const formCategory = document.getElementById('formCategory');
-const formName = document.getElementById('formName');
-const formSlug = document.getElementById('formSlug');
-const formStatus = document.getElementById('formStatus');
-const variantFormRows = document.getElementById('variantFormRows');
-const loginForm = document.getElementById('loginForm');
-const loginStatus = document.getElementById('loginStatus');
-const catalogStatus = document.getElementById('catalogStatus');
-const categoryTabs = document.getElementById('categoryTabs');
-const elementList = document.getElementById('elementList');
-const signOutBtn = document.getElementById('signOutBtn');
-const addElementBtn = document.getElementById('addElementBtn');
-const reauthModalOverlay = document.getElementById('reauthModalOverlay');
-const reauthForm = document.getElementById('reauthForm');
-const reauthStatus = document.getElementById('reauthStatus');
-const confirmModalOverlay = document.getElementById('confirmModalOverlay');
-const confirmModalHeading = document.getElementById('confirmModalHeading');
-const confirmModalMessage = document.getElementById('confirmModalMessage');
-const confirmModalCancelBtn = document.getElementById('confirmModalCancelBtn');
-const confirmModalExtraBtn = document.getElementById('confirmModalExtraBtn');
+const loginPanel = document.getElementById('login-panel');
+const catalogPanel = document.getElementById('catalog-panel');
+const detailsContainer = document.getElementById('details-container');
+const detailsContent = document.getElementById('details-content');
+const detailsBackBtn = document.getElementById('details-back-btn');
+const formContainer = document.getElementById('form-container');
+const formHeading = document.getElementById('form-heading');
+const elementForm = document.getElementById('element-form');
+const formCategory = document.getElementById('form-category');
+const formName = document.getElementById('form-name');
+const formSlug = document.getElementById('form-slug');
+const formStatus = document.getElementById('form-status');
+const variantFormRows = document.getElementById('variant-form-rows');
+const loginForm = document.getElementById('login-form');
+const loginStatus = document.getElementById('login-status');
+const catalogStatus = document.getElementById('catalog-status');
+const categoryTabs = document.getElementById('category-tabs');
+const elementList = document.getElementById('element-list');
+const signOutBtn = document.getElementById('sign-out-btn');
+const addElementBtn = document.getElementById('add-element-btn');
+const reauthModalOverlay = document.getElementById('reauth-modal-overlay');
+const reauthForm = document.getElementById('reauth-form');
+const reauthStatus = document.getElementById('reauth-status');
+const confirmModalOverlay = document.getElementById('confirm-modal-overlay');
+const confirmModalHeading = document.getElementById('confirm-modal-heading');
+const confirmModalMessage = document.getElementById('confirm-modal-message');
+const confirmModalCancelBtn = document.getElementById(
+	'confirm-modal-cancel-btn',
+);
+const confirmModalExtraBtn = document.getElementById('confirm-modal-extra-btn');
 const confirmModalConfirmBtn = document.getElementById(
-	'confirmModalConfirmBtn',
+	'confirm-modal-confirm-btn',
 );
 
 const modals = createModalController({
@@ -103,9 +105,9 @@ const formView = createFormView({
 	formName,
 	formSlug,
 	formStatus,
-	formSaveBtn: document.getElementById('formSaveBtn'),
+	formSaveBtn: document.getElementById('form-save-btn'),
 	variantFormRows,
-	addVariantBtn: document.getElementById('addVariantBtn'),
+	addVariantBtn: document.getElementById('add-variant-btn'),
 	dataClient,
 	storageService,
 	modals,
@@ -116,7 +118,7 @@ const formView = createFormView({
 const catalogView = createCatalogView({
 	categories: CATEGORIES,
 	categoryTabs,
-	categoryHeading: document.querySelector('#catalogPanel > h2'),
+	categoryHeading: document.querySelector('#catalog-panel > h2'),
 	catalogStatus,
 	elementList,
 	addElementBtn,
@@ -146,10 +148,10 @@ addElementBtn.addEventListener('click', () => {
 detailsBackBtn.addEventListener('click', () => {
 	navigateTo({ name: 'view', category: activeCategory });
 });
-document.getElementById('formBackBtn').addEventListener('click', () => {
+document.getElementById('form-back-btn').addEventListener('click', () => {
 	formView.requestNavigation();
 });
-document.getElementById('formCancelBtn').addEventListener('click', () => {
+document.getElementById('form-cancel-btn').addEventListener('click', () => {
 	formView.requestNavigation();
 });
 window.addEventListener('hashchange', renderShell);
@@ -161,8 +163,8 @@ async function signIn(event) {
 	setStatus(loginStatus, 'Signing in...');
 	try {
 		await authClient.signIn(
-			document.getElementById('emailInput').value,
-			document.getElementById('passwordInput').value,
+			document.getElementById('email-input').value,
+			document.getElementById('password-input').value,
 		);
 		setStatus(loginStatus, '');
 		await renderShell();
@@ -181,8 +183,8 @@ async function reauthenticate(event) {
 	setStatus(status, 'Signing in...');
 	try {
 		await authClient.completeReauthentication(
-			document.getElementById('reauthEmailInput').value,
-			document.getElementById('reauthPasswordInput').value,
+			document.getElementById('reauth-email-input').value,
+			document.getElementById('reauth-password-input').value,
 		);
 		modals.completeReauthentication();
 		setStatus(status, '');

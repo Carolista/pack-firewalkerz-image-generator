@@ -4,19 +4,20 @@ import { initVariantRows } from './variantRows.js';
 
 let controller;
 
-export function initCharacterRows({ container, addBtn }) {
+export function initCharacterRows({ container, addBtn, onPreview }) {
 	controller = initVariantRows({
 		container,
 		addBtn,
 		elements: getElements('character'),
 		rowClassName: 'character-row',
-		elementSelectClassName: 'charRowSelect',
-		variantSelectClassName: 'variantRowSelect',
+		elementSelectClassName: 'char-row-select',
+		variantSelectClassName: 'variant-row-select',
 		allowDuplicates: false,
 		getStoredRows: getCharacterRows,
 		setStoredRows: setCharacterRows,
 		entityLabel: 'Character',
 		entityArticle: 'a',
+		onPreview,
 		showVariantWhenSingleVariant: true,
 	});
 }

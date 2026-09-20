@@ -11,6 +11,7 @@ export function initVariantRows({
 	setStoredRows,
 	entityLabel,
 	entityArticle,
+	onPreview,
 	showVariantWhenSingleVariant = false,
 }) {
 	let rowIdCounter = 0;
@@ -44,7 +45,7 @@ export function initVariantRows({
 	}
 
 	function populateVariantField(elementSelect, row, presetVariantId) {
-		const existing = row.querySelector('.variantField');
+		const existing = row.querySelector('.variant-field');
 		const element = getElement(elementSelect.value);
 		if (!showVariantWhenSingleVariant && element.variants.length <= 1) {
 			existing?.remove();
@@ -52,7 +53,7 @@ export function initVariantRows({
 		}
 
 		const field = existing ?? document.createElement('div');
-		field.className = 'field variantField';
+		field.className = 'field variant-field';
 		const label = document.createElement('label');
 		label.textContent = 'Variant';
 		const select = document.createElement('select');
@@ -66,7 +67,7 @@ export function initVariantRows({
 		}
 		if (presetVariantId) select.value = presetVariantId;
 		if (!existing) {
-			const removeBtn = row.querySelector('.removeRowBtn');
+			const removeBtn = row.querySelector('.remove-row-btn');
 			if (removeBtn) row.insertBefore(field, removeBtn);
 			else row.append(field);
 		}
@@ -97,9 +98,18 @@ export function initVariantRows({
 			persistRows();
 		});
 
+		const previewBtn = document.createElement('button');
+		previewBtn.type = 'button';
+		previewBtn.className = 'preview-row-btn';
+		previewBtn.setAttribute('aria-label', `Preview ${entityLabel}`);
+		previewBtn.innerHTML = '<i class="fa-regular fa-eye"></i>';
+		previewBtn.addEventListener('click', () => {
+			onPreview?.(getElement(select.value), previewBtn);
+		});
+
 		const removeBtn = document.createElement('button');
 		removeBtn.type = 'button';
-		removeBtn.className = 'removeRowBtn';
+		removeBtn.className = 'remove-row-btn';
 		removeBtn.setAttribute('aria-label', `Remove ${entityLabel}`);
 		removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 		removeBtn.addEventListener('click', () => {
@@ -108,7 +118,7 @@ export function initVariantRows({
 			updateAddButtonState();
 			persistRows();
 		});
-		row.append(removeBtn);
+		row.append(previewBtn, removeBtn);
 		container.append(row);
 	}
 

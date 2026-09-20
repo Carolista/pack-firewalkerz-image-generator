@@ -121,7 +121,7 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
-#elementForm,
+#element-form,
 .variant-form-row {
 	display: grid;
 	gap: 1rem;
@@ -320,15 +320,15 @@ textarea.variant-desc {
 	padding-top: 1rem;
 }
 
-#formPanel {
+#form-panel {
 	margin-top: 0;
 }
 
-#detailsPanel {
+#details-panel {
 	margin-top: 2rem;
 }
 
-#detailsHeader {
+#details-header {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -441,7 +441,7 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
-#detailsStatus {
+#details-status {
 	color: var(--admin-ink);
 }
 
@@ -507,17 +507,17 @@ textarea.variant-desc {
 }
 
 @media (min-width: 1001px) {
-	#formPanel {
+	#form-panel {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
 
-	#formPanel > label {
+	#form-panel > label {
 		margin-bottom: 0;
 	}
 
-	#formPanel > div {
+	#form-panel > div {
 		grid-column: 1 / -1;
 	}
 

@@ -226,11 +226,11 @@ a:focus-visible {
 	outline-offset: 2px;
 }
 
-#statusText {
+#status-text {
 	font-style: italic;
 }
 
-#outputImg {
+#output-img {
 	width: 100%;
 	max-width: 100%;
 	margin-top: 1rem;
@@ -279,7 +279,7 @@ a:focus-visible {
 .npc-row,
 .enemy-row {
 	display: grid;
-	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-columns: minmax(0, 1fr) auto auto;
 	column-gap: 0.5rem;
 	margin-bottom: 1rem;
 }
@@ -329,10 +329,20 @@ a:focus-visible {
 	grid-row: 4;
 }
 
-.character-row .removeRowBtn,
-.npc-row .removeRowBtn,
-.enemy-row .removeRowBtn {
+.character-row .remove-row-btn,
+.npc-row .remove-row-btn,
+.enemy-row .remove-row-btn {
 	font-size: 1.2rem;
+	grid-column: 3;
+	grid-row: 2;
+	height: var(--form-control-height);
+	width: var(--form-control-height);
+	padding: 0;
+}
+
+.character-row .preview-row-btn,
+.npc-row .preview-row-btn,
+.enemy-row .preview-row-btn {
 	grid-column: 2;
 	grid-row: 2;
 	height: var(--form-control-height);
@@ -340,12 +350,28 @@ a:focus-visible {
 	padding: 0;
 }
 
-#addCharacterBtn[hidden] {
+.location-select-row {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.location-select-row select {
+	min-width: 0;
+}
+
+#location-preview-btn {
+	height: var(--form-control-height);
+	width: var(--form-control-height);
+	padding: 0;
+	flex: 0 0 var(--form-control-height);
+}
+
+#add-character-btn[hidden] {
 	display: none;
 }
 
-#addNPCBtn[hidden],
-#addEnemyBtn[hidden] {
+#add-npc-btn[hidden],
+#add-enemy-btn[hidden] {
 	display: none;
 }
 
@@ -360,7 +386,7 @@ footer {
 	.character-row,
 	.npc-row,
 	.enemy-row {
-		grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+		grid-template-columns: repeat(2, minmax(0, 1fr)) auto auto;
 	}
 
 	.character-row .field:nth-child(2) label,
@@ -378,10 +404,64 @@ footer {
 		grid-row: 2;
 	}
 
-	.character-row .removeRowBtn,
-	.npc-row .removeRowBtn,
-	.enemy-row .removeRowBtn {
+	.character-row .remove-row-btn,
+	.npc-row .remove-row-btn,
+	.enemy-row .remove-row-btn {
+		grid-column: 4;
+	}
+
+	.character-row .preview-row-btn,
+	.npc-row .preview-row-btn,
+	.enemy-row .preview-row-btn {
 		grid-column: 3;
+	}
+}
+
+.catalog-preview-modal {
+	width: min(100%, 760px);
+	max-height: min(90svh, 760px);
+	overflow-y: auto;
+}
+
+.catalog-preview-modal h2 {
+	color: var(--dark-gray);
+	margin: 0 2rem 1rem 0;
+}
+
+.catalog-preview-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.catalog-preview-tile {
+	margin: 0;
+}
+
+.catalog-preview-image {
+	aspect-ratio: 1;
+	background: var(--light-gray);
+	overflow: hidden;
+	width: 100%;
+}
+
+.catalog-preview-image img {
+	display: block;
+	height: 100%;
+	object-fit: contain;
+	width: 100%;
+}
+
+.catalog-preview-tile figcaption {
+	font-family: var(--font-card-heading);
+	font-size: 1rem;
+	margin-top: 0.4rem;
+	text-align: center;
+}
+
+@media (max-width: 480px) {
+	.catalog-preview-grid {
+		grid-template-columns: 1fr;
 	}
 }
 

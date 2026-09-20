@@ -3,6 +3,7 @@
 ## Architecture
 
 - Use native ES modules throughout. Keep browser code in `script.js` and `src/`.
+- Use kebab-case for all DOM-facing HTML IDs and classes, including dynamically generated `className` and `id` values and their CSS/selector references. Preserve camelCase for JavaScript identifiers and external data, API, database, and storage keys.
 - Keep the product RPG-system agnostic. Campaign- and world-specific content belongs in user- or tenant-owned data, not in application logic or branding.
 - `script.js` owns top-level DOM references, application orchestration, workflow policy, prompt assembly, image generation, modal decisions, sharing, reset behavior, and `generatedBlob`.
 - `src/ui/` owns component-specific DOM queries, rendering, and event wiring. UI modules should not own global workflow policy.
