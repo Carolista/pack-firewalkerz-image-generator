@@ -235,6 +235,16 @@ a:focus-visible {
 	outline-offset: 2px;
 }
 
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+	background-color: var(--light-gray);
+	color: var(--dark-gray);
+	cursor: not-allowed;
+	opacity: 0.7;
+}
+
 #status-text {
 	font-style: italic;
 }

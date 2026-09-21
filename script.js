@@ -66,6 +66,20 @@ const locationSelect = document.getElementById('location-select');
 
 const generationControls = { generateBtn, retryBtn };
 
+function getGenerationControls() {
+	return [
+		resetBtn,
+		locationSelect,
+		document.getElementById('location-preview-btn'),
+		document.getElementById('location-variant-select'),
+		document.getElementById('other-location-text'),
+		document.getElementById('scene-text'),
+		...document.querySelectorAll(
+			'#character-card button, #character-card select, #npc-card button, #npc-card select, #enemy-card button, #enemy-card select',
+		),
+	];
+}
+
 initCharacterRows({
 	container: document.getElementById('character-rows'),
 	addBtn: document.getElementById('add-character-btn'),
@@ -132,7 +146,10 @@ function resetScene() {
 async function generateSceneImage() {
 	if (generationInProgress) return;
 	generationInProgress = true;
-	setGenerationBusy(generationControls, true);
+	setGenerationBusy(
+		{ ...generationControls, controls: getGenerationControls() },
+		true,
+	);
 
 	try {
 		const location = getLocationSelectionDetails();
@@ -208,7 +225,10 @@ async function generateSceneImage() {
 		}
 	} finally {
 		generationInProgress = false;
-		setGenerationBusy(generationControls, false);
+		setGenerationBusy(
+			{ ...generationControls, controls: getGenerationControls() },
+			false,
+		);
 	}
 }
 

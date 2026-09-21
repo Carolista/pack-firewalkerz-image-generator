@@ -160,6 +160,8 @@ renderShell();
 
 async function signIn(event) {
 	event.preventDefault();
+	const submitBtn = loginForm.querySelector('button[type="submit"]');
+	submitBtn.disabled = true;
 	setStatus(loginStatus, 'Signing in...');
 	try {
 		await authClient.signIn(
@@ -170,6 +172,8 @@ async function signIn(event) {
 		await renderShell();
 	} catch (error) {
 		setStatus(loginStatus, error.message);
+	} finally {
+		submitBtn.disabled = false;
 	}
 }
 
@@ -180,6 +184,10 @@ function showReauthenticationModal() {
 async function reauthenticate(event) {
 	event.preventDefault();
 	const status = modals.getReauthenticationStatusElement();
+	const submitBtn = document
+		.getElementById('reauth-form')
+		.querySelector('button[type="submit"]');
+	submitBtn.disabled = true;
 	setStatus(status, 'Signing in...');
 	try {
 		await authClient.completeReauthentication(
@@ -190,12 +198,19 @@ async function reauthenticate(event) {
 		setStatus(status, '');
 	} catch (error) {
 		setStatus(status, error.message);
+	} finally {
+		submitBtn.disabled = false;
 	}
 }
 
 async function signOut() {
-	await authClient.signOut();
-	renderShell();
+	signOutBtn.disabled = true;
+	try {
+		await authClient.signOut();
+		renderShell();
+	} finally {
+		signOutBtn.disabled = false;
+	}
 }
 
 async function renderShell() {

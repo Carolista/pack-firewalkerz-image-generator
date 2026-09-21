@@ -77,6 +77,7 @@ export function createFormView({
 	let deletedVariants = [];
 	let initialSnapshot = '';
 	let generationInFlight = false;
+	let saveInFlight = false;
 	let autoSyncSlug = true;
 	let autoSyncFirstFilename = true;
 	let neutralVoidReferenceImages;
@@ -532,17 +533,27 @@ export function createFormView({
 
 	function setGenerationBusy(busy) {
 		generationInFlight = busy;
-		formSaveBtn.disabled = busy;
-		for (const btn of variantFormRows.querySelectorAll(
-			'.generate-reference-btn, .variant-image-upload-btn',
+		setFormBusy(busy);
+	}
+
+	function setFormBusy(busy) {
+		for (const control of formContainer.querySelectorAll(
+			'button, input, select, textarea',
 		)) {
-			btn.disabled = busy;
+			control.disabled = busy;
+		}
+		if (!busy) {
+			for (const row of variantFormRows.querySelectorAll(
+				'.variant-form-row',
+			)) {
+				refreshImageControls(row);
+			}
 		}
 	}
 
 	async function save(event) {
 		event.preventDefault();
-		if (generationInFlight) return;
+		if (generationInFlight || saveInFlight) return;
 		setStatus(formStatus, 'Saving...');
 		const route = getRoute();
 		const rows = [...variantFormRows.querySelectorAll('.variant-form-row')];
@@ -565,131 +576,138 @@ export function createFormView({
 				formStatus,
 				'When an element has multiple variants, none can be named "default". Please rename variants to descriptive names.',
 			);
-
-		const slug = formSlug.value.trim();
-		const [existingBySlug] = await dataClient
-			.getElementBySlug(slug)
-			.catch(() => []);
-		if (existingBySlug && existingBySlug.id !== elementId) {
-			return setStatus(
-				formStatus,
-				'That slug is already in use by another element.',
-			);
-		}
-
-		const folder = CATEGORY_FOLDERS[formCategory.value];
-		const folderPrefix = `/${folder}/`;
-		const folderListingCache = new Map();
-		const listFolderCached = async () => {
-			if (!folderListingCache.has(folder)) {
-				folderListingCache.set(
-					folder,
-					await storageService.listFolder(folder),
-				);
-			}
-			return folderListingCache.get(folder);
-		};
-		for (const row of rows) {
-			if (!row._pendingImageBlob) continue;
-			const originalImage = row.dataset.originalImage || '';
-			if (originalImage) {
-				// Reusing existing image path on regenerate / replace
-				continue;
-			}
-			const { base, filename: candidateFilename } =
-				readComposedFilename(row);
-			if (!base) {
-				return setStatus(
-					formStatus,
-					`Enter a filename for the ${row.querySelector('.variant-name').value.trim()} variant's image.`,
-				);
-			}
-			const existingNames = await listFolderCached();
-			const conflict = existingNames.some(
-				existing =>
-					existing.toLowerCase() === candidateFilename.toLowerCase(),
-			);
-			if (conflict) {
-				return setStatus(
-					formStatus,
-					`An image named "${candidateFilename}" already exists in ${folderPrefix}. Choose a different filename.`,
-				);
-			}
-		}
-
+		saveInFlight = true;
+		setFormBusy(true);
 		try {
-			// Keyed on elementId, not route.name: a retry after a partial failure
-			// (element created, variant/image write failed) must update, not duplicate.
-			if (!elementId) {
-				const [created] = await dataClient.createElement({
-					element_type: formCategory.value,
-					name: formName.value.trim(),
-					slug,
-				});
-				elementId = created.id;
-			} else {
-				await dataClient.updateElement(elementId, {
-					element_type: formCategory.value,
-					name: formName.value.trim(),
-					slug,
-				});
+			const slug = formSlug.value.trim();
+			const [existingBySlug] = await dataClient
+				.getElementBySlug(slug)
+				.catch(() => []);
+			if (existingBySlug && existingBySlug.id !== elementId) {
+				return setStatus(
+					formStatus,
+					'That slug is already in use by another element.',
+				);
 			}
-			for (const row of rows) {
-				const previousImage = row.dataset.originalImage || '';
-				let imagePath = row
-					.querySelector('.variant-image')
-					.value.trim();
-				if (row._pendingImageBlob) {
-					if (previousImage) {
-						imagePath = previousImage;
-					} else {
-						const { filename } = readComposedFilename(row);
-						imagePath = `${folderPrefix}${filename}`;
-					}
-					await storageService.uploadImage(
-						imagePath,
-						row._pendingImageBlob,
+
+			const folder = CATEGORY_FOLDERS[formCategory.value];
+			const folderPrefix = `/${folder}/`;
+			const folderListingCache = new Map();
+			const listFolderCached = async () => {
+				if (!folderListingCache.has(folder)) {
+					folderListingCache.set(
+						folder,
+						await storageService.listFolder(folder),
 					);
 				}
-				const payload = {
-					element_id: elementId,
-					variant_name: row
-						.querySelector('.variant-name')
-						.value.trim(),
-					variant_desc: row
-						.querySelector('.variant-desc')
-						.value.trim(),
-					sort_order:
-						Number(row.querySelector('.variant-sort').value) ||
-						null,
-					image: imagePath,
-				};
-				const id = row.dataset.variantId;
-				if (id) await dataClient.updateVariant(id, payload);
-				else await dataClient.createVariant(payload);
+				return folderListingCache.get(folder);
+			};
+			for (const row of rows) {
+				if (!row._pendingImageBlob) continue;
+				const originalImage = row.dataset.originalImage || '';
+				if (originalImage) {
+					// Reusing existing image path on regenerate / replace
+					continue;
+				}
+				const { base, filename: candidateFilename } =
+					readComposedFilename(row);
+				if (!base) {
+					return setStatus(
+						formStatus,
+						`Enter a filename for the ${row.querySelector('.variant-name').value.trim()} variant's image.`,
+					);
+				}
+				const existingNames = await listFolderCached();
+				const conflict = existingNames.some(
+					existing =>
+						existing.toLowerCase() ===
+						candidateFilename.toLowerCase(),
+				);
+				if (conflict) {
+					return setStatus(
+						formStatus,
+						`An image named "${candidateFilename}" already exists in ${folderPrefix}. Choose a different filename.`,
+					);
+				}
+			}
 
-				if (
-					row._pendingImageBlob &&
-					previousImage &&
-					previousImage !== imagePath
-				) {
-					await storageService.deleteImage(previousImage);
+			try {
+				// Keyed on elementId, not route.name: a retry after a partial failure
+				// (element created, variant/image write failed) must update, not duplicate.
+				if (!elementId) {
+					const [created] = await dataClient.createElement({
+						element_type: formCategory.value,
+						name: formName.value.trim(),
+						slug,
+					});
+					elementId = created.id;
+				} else {
+					await dataClient.updateElement(elementId, {
+						element_type: formCategory.value,
+						name: formName.value.trim(),
+						slug,
+					});
 				}
-				if (row._pendingImageBlob) {
-					row.dataset.originalImage = imagePath;
-					releasePendingImage(row);
-					refreshImageControls(row);
+				for (const row of rows) {
+					const previousImage = row.dataset.originalImage || '';
+					let imagePath = row
+						.querySelector('.variant-image')
+						.value.trim();
+					if (row._pendingImageBlob) {
+						if (previousImage) {
+							imagePath = previousImage;
+						} else {
+							const { filename } = readComposedFilename(row);
+							imagePath = `${folderPrefix}${filename}`;
+						}
+						await storageService.uploadImage(
+							imagePath,
+							row._pendingImageBlob,
+						);
+					}
+					const payload = {
+						element_id: elementId,
+						variant_name: row
+							.querySelector('.variant-name')
+							.value.trim(),
+						variant_desc: row
+							.querySelector('.variant-desc')
+							.value.trim(),
+						sort_order:
+							Number(row.querySelector('.variant-sort').value) ||
+							null,
+						image: imagePath,
+					};
+					const id = row.dataset.variantId;
+					if (id) await dataClient.updateVariant(id, payload);
+					else await dataClient.createVariant(payload);
+
+					if (
+						row._pendingImageBlob &&
+						previousImage &&
+						previousImage !== imagePath
+					) {
+						await storageService.deleteImage(previousImage);
+					}
+					if (row._pendingImageBlob) {
+						row.dataset.originalImage = imagePath;
+						releasePendingImage(row);
+						refreshImageControls(row);
+					}
 				}
+				for (const { id, image } of deletedVariants) {
+					await dataClient.deleteVariant(id);
+					if (image) await storageService.deleteImage(image);
+				}
+				deletedVariants = [];
+				setStatus(formStatus, '');
+				navigateTo({ name: 'view', category: formCategory.value });
+			} catch (error) {
+				setStatus(formStatus, error.message);
 			}
-			for (const { id, image } of deletedVariants) {
-				await dataClient.deleteVariant(id);
-				if (image) await storageService.deleteImage(image);
-			}
-			deletedVariants = [];
-			setStatus(formStatus, '');
-			navigateTo({ name: 'view', category: formCategory.value });
-		} catch (error) {
-			setStatus(formStatus, error.message);
+		} finally {
+			saveInFlight = false;
+			setFormBusy(false);
 		}
 	}
 
