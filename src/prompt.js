@@ -94,6 +94,6 @@ ${NO_BORDER_INSTRUCTION}`;
 ${entityBlocks}
 Environment/Setting: ${locationLabel}: ${resolvedLocation.variantDesc}. 
 Action/Scene: ${scene}
-If reference photos are provided below, use them only for each character's appearance and likeness. Do not copy a reference photo's pose, expression, camera angle, or background — pose and compose every character according to the Action/Scene description above.
+If reference photos are provided below, use them only for each character's appearance and likeness. Do not copy a reference photo's pose, expression, camera angle, or background — pose and compose every character according to the Action/Scene description above. Make sure   characters don't look out of proportion to the elements in the setting behind them. Keep everything in natural perspective.
 ${NO_BORDER_INSTRUCTION}`;
 }
