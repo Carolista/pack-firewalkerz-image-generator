@@ -157,7 +157,9 @@ function updateLocationDisplay() {
 
 	const location = getLocation(selectEl.value);
 	if (!location) return;
-	previewBtnEl.setAttribute('aria-label', `Preview ${location.name}`);
+	const previewLabel = `Preview ${location.name}`;
+	previewBtnEl.setAttribute('aria-label', previewLabel);
+	previewBtnEl.title = previewLabel;
 	updateVariantSelect(location, restoredVariantId ?? variantSelectEl.value);
 	restoredVariantId = undefined;
 	descEl.textContent = getLocationDescription() ?? '';

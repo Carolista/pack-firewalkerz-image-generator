@@ -28,7 +28,9 @@ export function createCatalogView({
 				button.type = 'button';
 				button.className =
 					category === getActiveCategory() ? 'tab active' : 'tab';
-				button.title = `View all ${categories[category].shortPlural}`;
+				const tabLabel = `View all ${categories[category].shortPlural}`;
+				button.title = tabLabel;
+				button.setAttribute('aria-label', tabLabel);
 				const icon = document.createElement('i');
 				icon.className = categories[category].faClasses;
 				const label =
