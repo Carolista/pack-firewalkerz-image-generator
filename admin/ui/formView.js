@@ -260,14 +260,20 @@ export function createFormView({
 				<div class="variant-image-field">
 					${imageFieldHtml}
 					<input type="hidden" class="variant-image" value="${existingImage}" />
+					<p class="generate-status status"></p>
 					<div class="variant-image-actions">
 						<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
 						<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
 						<input type="file" class="variant-image-upload" accept="image/*" hidden />
 						<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
 					</div>
-					<p class="generate-status status"></p>
-					<div class="admin-image-preview" aria-label="Image preview"></div>
+					<div class="admin-image-preview" aria-label="Image preview">
+						<span
+							class="image-spinner admin-image-spinner"
+							aria-label="Generating image"
+							hidden
+						></span>
+					</div>
 				</div>
 			</div>
 		`;
@@ -305,6 +311,7 @@ export function createFormView({
 		const extInput = row.querySelector('.variant-image-ext');
 		const hiddenImageInput = row.querySelector('.variant-image');
 		const imagePreview = row.querySelector('.admin-image-preview');
+		const imageSpinner = row.querySelector('.admin-image-spinner');
 
 		function updateHiddenPath() {
 			if (hasStoredImage && !row._pendingImageBlob) {
@@ -324,6 +331,7 @@ export function createFormView({
 
 		const updatePreview = () => {
 			imagePreview.replaceChildren();
+			imageSpinner.hidden = true;
 			if (row._pendingImageObjectUrl) {
 				const image = document.createElement('img');
 				image.src = row._pendingImageObjectUrl;
@@ -332,11 +340,28 @@ export function createFormView({
 				return;
 			}
 			const value = hiddenImageInput.value.trim();
-			if (!value) return;
+			if (!value) {
+				showCategoryIcon();
+				return;
+			}
 			const image = document.createElement('img');
 			image.src = getPublicImageUrl(value);
 			image.alt = 'Variant preview';
+			image.addEventListener('error', showCategoryIcon, { once: true });
 			imagePreview.append(image);
+		};
+
+		const showCategoryIcon = () => {
+			imagePreview.replaceChildren();
+			const icon = document.createElement('i');
+			icon.className = categories[formCategory.value].faClasses;
+			icon.setAttribute('aria-hidden', 'true');
+			imagePreview.append(icon);
+		};
+
+		const showGeneratingPreview = () => {
+			imagePreview.replaceChildren(imageSpinner);
+			imageSpinner.hidden = false;
 		};
 
 		if (filenameInput) {
@@ -378,6 +403,7 @@ export function createFormView({
 			if (!proceed) return;
 			setGenerationBusy(true);
 			generateStatusEl.textContent = 'Generating...';
+			showGeneratingPreview();
 			try {
 				const prompt = buildReferenceImagePrompt({
 					category: formCategory.value,
@@ -411,12 +437,13 @@ export function createFormView({
 				updateHiddenPath();
 
 				generateStatusEl.textContent =
-					'Preview ready. It will upload when you Save.';
+					'Preview ready. It will upload when you save.';
 				updatePreview();
 				refreshImageControls(row);
 			} catch (error) {
 				generateStatusEl.textContent = error.message;
 			} finally {
+				updatePreview();
 				setGenerationBusy(false);
 			}
 		});
@@ -447,7 +474,7 @@ export function createFormView({
 			updateHiddenPath();
 
 			generateStatusEl.textContent =
-				'Preview ready. It will upload when you Save.';
+				'Preview ready. It will upload when you save.';
 			updatePreview();
 			refreshImageControls(row);
 		});
