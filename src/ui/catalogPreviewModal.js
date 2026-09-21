@@ -15,7 +15,7 @@ export function initCatalogPreviewModal({ overlay, closeBtn, heading, grid }) {
 	gridEl = grid;
 
 	const dismiss = () => {
-        document.body.classList.remove('modal-open');
+		document.body.classList.remove('modal-open');
 		overlayEl.hidden = true;
 		releaseFocusTrap?.();
 		releaseFocusTrap = null;
@@ -40,7 +40,7 @@ export function showCatalogPreview(element, trigger = document.activeElement) {
 		...element.variants.map(variant => createVariantTile(element, variant)),
 	);
 	previouslyFocusedEl = trigger;
-    document.body.classList.add('modal-open');
+	document.body.classList.add('modal-open');
 	overlayEl.hidden = false;
 	releaseFocusTrap = trapFocus(modalEl);
 	focusFirst(modalEl);
