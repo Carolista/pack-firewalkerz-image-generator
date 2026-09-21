@@ -105,10 +105,18 @@ export function createCatalogView({
 		}
 		article.append(copy, actions);
 		if (firstVariant?.image) {
+			const imageLink = document.createElement('a');
+			imageLink.className = 'element-image-link';
+			imageLink.href = `#/details/${getActiveCategory()}/${encodeURIComponent(element.slug)}`;
+			imageLink.setAttribute(
+				'aria-label',
+				`View details for ${element.name}`,
+			);
 			const image = document.createElement('img');
 			image.src = getPublicImageUrl(firstVariant.image);
 			image.alt = `${element.name} reference image`;
-			article.prepend(image);
+			imageLink.append(image);
+			article.prepend(imageLink);
 		}
 		return article;
 	}

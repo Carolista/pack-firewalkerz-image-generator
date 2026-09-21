@@ -297,8 +297,8 @@ textarea.variant-desc {
 }
 
 .generate-status {
-    color: var(--admin-ink) !important;
-    text-transform: none;
+	color: var(--admin-ink) !important;
+	text-transform: none;
 	font-size: 1.1rem;
 }
 
@@ -410,11 +410,26 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
+.element-image-link {
+	border-radius: var(--border-radius-form-elements);
+	display: block;
+	flex-shrink: 0;
+	height: 7rem;
+	width: 7rem;
+}
+
+.element-image-link:focus-visible {
+	outline: 3px solid var(--focus-color);
+	outline-offset: 2px;
+}
+
 .element-card img {
 	aspect-ratio: 1;
 	border-radius: var(--border-radius-form-elements);
-	max-width: 7rem;
+	display: block;
+	max-width: 100%;
 	object-fit: cover;
+	width: 100%;
 }
 
 .element-copy {
@@ -479,6 +494,12 @@ textarea.variant-desc {
 	}
 
 	.element-card img {
+		max-width: 100%;
+		width: 100%;
+	}
+
+	.element-image-link {
+		height: auto;
 		max-width: 100%;
 		width: 100%;
 	}
