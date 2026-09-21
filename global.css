@@ -70,6 +70,10 @@ body {
 	z-index: 1;
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
 h1 {
 	color: var(--cream);
 	font-family: var(--font-title);
@@ -119,6 +123,8 @@ h3 {
 	padding: 1rem;
 	box-sizing: border-box;
 	z-index: 1000;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .modal-overlay[hidden] {
@@ -126,11 +132,14 @@ h3 {
 }
 
 .modal {
+	position: relative;
 	background-color: #fff;
+	width: min(100%, 400px);
+    max-height: calc(100dvh - 5rem);
 	padding: 1.5rem;
 	border-radius: var(--border-radius-form-elements);
-	width: min(100%, 400px);
-	position: relative;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .modal-close {
@@ -431,8 +440,8 @@ footer {
 
 .catalog-preview-modal {
 	width: min(100%, 760px);
-	max-height: min(90svh, 760px);
-	overflow-y: auto;
+	/* max-height: min(90svh, 760px); */
+	/* overflow-y: auto; */
 }
 
 .catalog-preview-modal h2 {
