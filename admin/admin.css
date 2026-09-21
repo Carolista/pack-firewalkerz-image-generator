@@ -504,6 +504,13 @@ textarea.variant-desc {
 	.variant-detail {
 		flex-direction: column;
 	}
+	#details-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	#details-status {
+		margin-bottom: 10px;
+	}
 }
 
 @media (min-width: 1001px) {

@@ -330,15 +330,15 @@ a:focus-visible {
 }
 
 .remove-row-btn {
-    background-color: var(--red);
+	background-color: var(--red);
 }
 
 .remove-row-btn:hover {
-    background-color: var(--red-light);
-} 
+	background-color: var(--red-light);
+}
 
 .remove-row-btn:active {
-    background-color: var(--red-dark);
+	background-color: var(--red-dark);
 }
 
 .character-row .remove-row-btn,
