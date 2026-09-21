@@ -36,7 +36,7 @@
 						></i></button
 				></a>
 				<button
-					id="signOutBtn"
+					id="sign-out-btn"
 					type="button"
 					title="Sign out of the Admin Portal"
 					hidden
@@ -47,13 +47,13 @@
 		</header>
 
 		<main>
-			<section id="loginPanel" class="panel login-panel">
+			<section id="login-panel" class="panel login-panel">
 				<h2 class="modal-heading">Sign in</h2>
-				<form id="loginForm">
+				<form id="login-form">
 					<label>
 						Email
 						<input
-							id="emailInput"
+							id="email-input"
 							type="email"
 							autocomplete="username"
 							required
@@ -62,7 +62,7 @@
 					<label>
 						Password
 						<input
-							id="passwordInput"
+							id="password-input"
 							type="password"
 							autocomplete="current-password"
 							required
@@ -71,14 +71,14 @@
 					<button type="submit">
 						Sign in <i class="fa-solid fa-right-to-bracket"></i>
 					</button>
-					<p id="loginStatus" class="status" role="status"></p>
+					<p id="login-status" class="status" role="status"></p>
 				</form>
 			</section>
 
-			<section id="catalogPanel" hidden>
+			<section id="catalog-panel" hidden>
 				<h2>ADMIN PORTAL</h2>
 				<nav
-					id="categoryTabs"
+					id="category-tabs"
 					class="tabs"
 					aria-label="Catalog categories"
 				></nav>
@@ -86,61 +86,61 @@
 					<div class="catalog-toolbar">
 						<div>
 							<div
-								id="catalogStatus"
+								id="catalog-status"
 								class="status"
 								role="status"
 							></div>
 						</div>
-						<button id="addElementBtn" type="button"></button>
+						<button id="add-element-btn" type="button"></button>
 					</div>
-					<div id="elementList" class="element-list"></div>
+					<div id="element-list" class="element-list"></div>
 				</div>
 			</section>
 
-			<section id="detailsContainer" hidden>
-				<button id="detailsBackBtn" type="button" class="back-button">
+			<section id="details-container" hidden>
+				<button id="details-back-btn" type="button" class="back-button">
 					<i class="fa-solid fa-square-arrow-left"></i>
 					Back to Catalog
 				</button>
-				<div id="detailsPanel" class="panel">
-					<div id="detailsHeader">
-						<h2 id="detailsName"></h2>
+				<div id="details-panel" class="panel">
+					<div id="details-header">
+						<h2 id="details-name"></h2>
 						<div
-							id="detailsStatus"
+							id="details-status"
 							class="status"
 							role="status"
 						></div>
 					</div>
-					<div id="detailsContent"></div>
+					<div id="details-content"></div>
 				</div>
 			</section>
 
-			<section id="formContainer" hidden>
-				<form id="elementForm">
+			<section id="form-container" hidden>
+				<form id="element-form">
 					<div class="form-header">
 						<button
-							id="formBackBtn"
+							id="form-back-btn"
 							type="button"
 							class="back-button cancel"
 						>
 							<i class="fa-solid fa-square-arrow-left"></i>
 							Back to catalog
 						</button>
-						<h2 id="formHeading">Add new element</h2>
+						<h2 id="form-heading">Add new element</h2>
 					</div>
-					<div id="formPanel" class="panel">
+					<div id="form-panel" class="panel">
 						<label>
 							Category*
-							<select id="formCategory" required></select>
+							<select id="form-category" required></select>
 						</label>
 						<label>
 							Name *
-							<input id="formName" required />
+							<input id="form-name" required />
 						</label>
 						<label>
 							Slug*
 							<input
-								id="formSlug"
+								id="form-slug"
 								required
 								pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
 							/>
@@ -148,42 +148,54 @@
 						<div>
 							<div class="form-section-heading">
 								<h3 class="variant-heading">Variants</h3>
-								<button id="addVariantBtn" type="button">
-									<i class="fa-solid fa-square-plus"></i>
-									Add variant
-								</button>
 							</div>
-							<div id="variantFormRows"></div>
+							<div id="variant-form-rows"></div>
 						</div>
 					</div>
-					<div class="form-actions">
-						<button id="formCancelBtn" type="button" class="cancel">
-							<i class="fa-solid fa-square-xmark"></i> Cancel
+					<div class="edit-button-group form-actions">
+						<button id="add-variant-btn" type="button">
+							<i class="fa-solid fa-square-plus"></i>
+							Add variant
 						</button>
-						<button id="formSaveBtn" type="submit">
-							<i class="fa-solid fa-floppy-disk"></i> Save
-						</button>
-						<p id="formStatus" class="status" role="status"></p>
+						<div>
+							<p
+								id="form-status"
+								class="status"
+								role="status"
+							></p>
+						</div>
+						<div>
+							<button
+								id="form-cancel-btn"
+								type="button"
+								class="cancel"
+							>
+								<i class="fa-solid fa-square-xmark"></i> Cancel
+							</button>
+							<button id="form-save-btn" type="submit">
+								<i class="fa-solid fa-floppy-disk"></i> Save
+							</button>
+						</div>
 					</div>
 				</form>
 			</section>
 
-			<div id="reauthModalOverlay" class="modal-overlay" hidden>
+			<div id="reauth-modal-overlay" class="modal-overlay" hidden>
 				<div
 					class="modal"
 					role="dialog"
 					aria-modal="true"
-					aria-labelledby="reauthModalHeading"
+					aria-labelledby="reauth-modal-heading"
 				>
-					<h2 id="reauthModalHeading" class="modal-heading">
+					<h2 id="reauth-modal-heading" class="modal-heading">
 						Session expired
 					</h2>
 					<p>Please sign in again to continue.</p>
-					<form id="reauthForm">
+					<form id="reauth-form">
 						<label>
 							Email
 							<input
-								id="reauthEmailInput"
+								id="reauth-email-input"
 								type="email"
 								autocomplete="username"
 								required
@@ -192,7 +204,7 @@
 						<label>
 							Password
 							<input
-								id="reauthPasswordInput"
+								id="reauth-password-input"
 								type="password"
 								autocomplete="current-password"
 								required
@@ -202,34 +214,34 @@
 							Sign In
 							<i class="fa-solid fa-right-to-bracket"></i>
 						</button>
-						<p id="reauthStatus" class="status" role="status"></p>
+						<p id="reauth-status" class="status" role="status"></p>
 					</form>
 				</div>
 			</div>
 
-			<div id="confirmModalOverlay" class="modal-overlay" hidden>
+			<div id="confirm-modal-overlay" class="modal-overlay" hidden>
 				<div
 					class="modal"
 					role="dialog"
 					aria-modal="true"
-					aria-labelledby="confirmModalHeading"
-					aria-describedby="confirmModalMessage"
+					aria-labelledby="confirm-modal-heading"
+					aria-describedby="confirm-modal-message"
 				>
-					<h2 id="confirmModalHeading" class="modal-heading">
+					<h2 id="confirm-modal-heading" class="modal-heading">
 						Confirm deletion
 					</h2>
-					<p id="confirmModalMessage"></p>
+					<p id="confirm-modal-message"></p>
 					<div class="confirm-actions">
-						<button id="confirmModalCancelBtn" type="button">
+						<button id="confirm-modal-cancel-btn" type="button">
 							Cancel
 						</button>
 						<button
-							id="confirmModalExtraBtn"
+							id="confirm-modal-extra-btn"
 							type="button"
 							hidden
 						></button>
 						<button
-							id="confirmModalConfirmBtn"
+							id="confirm-modal-confirm-btn"
 							type="button"
 							class="delete"
 						>

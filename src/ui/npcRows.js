@@ -5,20 +5,21 @@ import { initVariantRows } from './variantRows.js';
 
 let controller;
 
-export function initNPCRows({ container, addBtn }) {
+export function initNPCRows({ container, addBtn, onPreview }) {
 	controller = initVariantRows({
 		container,
 		addBtn,
 		elements: getElements('npc'),
 		rowClassName: 'npc-row',
-		elementSelectClassName: 'npcRowSelect',
-		variantSelectClassName: 'npcVariantRowSelect',
+		elementSelectClassName: 'npc-row-select',
+		variantSelectClassName: 'npc-variant-row-select',
 		maxRows: MAX_NPC_ROWS,
 		allowDuplicates: false,
 		getStoredRows: getNPCRows,
 		setStoredRows: setNPCRows,
 		entityLabel: 'NPC',
 		entityArticle: 'an',
+		onPreview,
 	});
 }
 

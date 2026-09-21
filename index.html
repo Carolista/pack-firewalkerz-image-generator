@@ -26,58 +26,68 @@
 			<div class="card">
 				<h3>Setting</h3>
 				<div class="field">
-					<label for="locationSelect">Location</label>
-					<select id="locationSelect"></select>
+					<label for="location-select">Location</label>
+					<div class="location-select-row">
+						<select id="location-select"></select>
+						<button
+							id="location-preview-btn"
+							type="button"
+							aria-label="Preview location"
+							hidden
+						>
+							<i class="fa-regular fa-eye" aria-hidden="true"></i>
+						</button>
+					</div>
 				</div>
-				<div class="field" id="locationVariantField" hidden>
-					<label for="locationVariantSelect">Variant</label>
-					<select id="locationVariantSelect"></select>
+				<div class="field" id="location-variant-field" hidden>
+					<label for="location-variant-select">Variant</label>
+					<select id="location-variant-select"></select>
 				</div>
 				<div class="field">
-					<p id="locationDescText"></p>
+					<p id="location-desc-text"></p>
 					<textarea
-						id="otherLocationText"
+						id="other-location-text"
 						placeholder="Describe the custom location/setting"
 						hidden
 					></textarea>
 				</div>
 			</div>
-			<div id="characterCard" class="card">
+			<div id="character-card" class="card">
 				<h3>Player Characters</h3>
-				<div id="characterRows"></div>
-				<button id="addCharacterBtn" type="button">
+				<div id="character-rows"></div>
+				<button id="add-character-btn" type="button">
 					<i class="fa-solid fa-circle-plus"></i>
 					Add another character
 				</button>
 			</div>
-			<div id="npcCard" class="card">
+			<div id="npc-card" class="card">
 				<h3>Non-Player Characters</h3>
-				<div id="npcRows"></div>
-				<button id="addNPCBtn" type="button">
+				<div id="npc-rows"></div>
+				<button id="add-npc-btn" type="button">
 					<i class="fa-solid fa-circle-plus"></i> Add another NPC
 				</button>
 			</div>
-			<div id="enemyCard" class="card">
+			<div id="enemy-card" class="card">
 				<h3>Enemies</h3>
 				<p class="field-hint">
 					Note: The same type of enemy can be added more than once.
 				</p>
-				<div id="enemyRows"></div>
-				<button id="addEnemyBtn" type="button">
+				<div id="enemy-rows"></div>
+				<button id="add-enemy-btn" type="button">
 					<i class="fa-solid fa-circle-plus"></i>
 					Add another enemy
 				</button>
 			</div>
 			<div class="card">
-				<h3 id="sceneHeading">Scene Activity</h3>
-				<p id="sceneHint" class="field-hint">
+				<h3 id="scene-heading">Scene Activity</h3>
+				<p id="scene-hint" class="field-hint">
 					Describe actions, facial expressions, placement of
 					characters within the setting, any items or props present,
 					etc.
 				</p>
 				<div class="field">
 					<textarea
-						id="sceneText"
+						id="scene-text"
 						placeholder="e.g., Dmitri is standing on a dumpster, trying to press tiny buttons on an iPhone to take a photo while still in Crinos form, looking deeply frustrated."
 					></textarea>
 				</div>
@@ -85,50 +95,73 @@
 
 			<div class="card">
 				<h3>IMAGE</h3>
-				<div id="statusText">Waiting for prompt...</div>
-				<button id="retryBtn" type="button" style="display: none">
+				<div id="status-text">Waiting for prompt...</div>
+				<button id="retry-btn" type="button" style="display: none">
 					<i class="fa-solid fa-rotate-left"></i>
 					Retry
 				</button>
-				<div id="imagePlaceholder" class="image-placeholder" hidden>
+				<div id="image-placeholder" class="image-placeholder" hidden>
 					<span class="image-spinner" aria-hidden="true"></span>
 				</div>
-				<img id="outputImg" alt="Generated Scene" />
+				<img id="output-img" alt="Generated Scene" />
 				<div class="image-actions">
-					<button id="generateBtn">
+					<button id="generate-btn">
 						<i class="fa-solid fa-image"></i> Generate Image
 					</button>
-					<button id="resetBtn" type="button">
+					<button id="reset-btn" type="button">
 						<i class="fa-solid fa-rotate-left"></i> Reset Scene
 					</button>
-					<button id="shareBtn" style="display: none">
+					<button id="share-btn" style="display: none">
 						<i class="fa-solid fa-share"></i>
 						Share to Device
 					</button>
-					<button id="downloadBtn" style="display: none">
+					<button id="download-btn" style="display: none">
 						<i class="fa-solid fa-down-to-line"></i>
 						Download JPEG
 					</button>
 				</div>
 			</div>
 
-			<div id="alertModalOverlay" class="modal-overlay" hidden>
+			<div id="alert-modal-overlay" class="modal-overlay" hidden>
 				<div
 					class="modal"
 					role="alertdialog"
 					aria-modal="true"
-					aria-describedby="alertModalMessage"
+					aria-describedby="alert-modal-message"
 				>
 					<button
-						id="alertModalCloseBtn"
+						id="alert-modal-close-btn"
 						class="modal-close"
 						type="button"
 						aria-label="Close"
 					>
 						✕
 					</button>
-					<p id="alertModalMessage"></p>
-					<button id="alertModalOkBtn" type="button">OK</button>
+					<p id="alert-modal-message"></p>
+					<button id="alert-modal-ok-btn" type="button">OK</button>
+				</div>
+			</div>
+
+			<div id="catalog-preview-overlay" class="modal-overlay" hidden>
+				<div
+					class="modal catalog-preview-modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="catalog-preview-heading"
+				>
+					<button
+						id="catalog-preview-close-btn"
+						class="modal-close"
+						type="button"
+						aria-label="Close preview"
+					>
+						✕
+					</button>
+					<h2 id="catalog-preview-heading"></h2>
+					<div
+						id="catalog-preview-grid"
+						class="catalog-preview-grid"
+					></div>
 				</div>
 			</div>
 		</main>

@@ -14,7 +14,7 @@ function delay(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function resolveReferenceImageUrl(image) {
+export function resolveReferenceImageUrl(image) {
 	if (image.startsWith('http://') || image.startsWith('https://')) {
 		return image;
 	}

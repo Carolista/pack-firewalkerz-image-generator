@@ -14,6 +14,10 @@ import { shareFile } from './src/services/share.js';
 import { initAlertModal, showAlert } from './src/ui/alertModal.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
 import {
+	initCatalogPreviewModal,
+	showCatalogPreview,
+} from './src/ui/catalogPreviewModal.js';
+import {
 	getCharacterSelections,
 	hasAtLeastOneRow as hasAtLeastOneCharacterRow,
 	initCharacterRows,
@@ -51,51 +55,63 @@ year.innerText =
 let generatedBlob = null;
 let generationInProgress = false;
 
-const statusText = document.getElementById('statusText');
-const generateBtn = document.getElementById('generateBtn');
-const shareBtn = document.getElementById('shareBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const resetBtn = document.getElementById('resetBtn');
-const retryBtn = document.getElementById('retryBtn');
-const sceneText = document.getElementById('sceneText');
-const locationSelect = document.getElementById('locationSelect');
+const statusText = document.getElementById('status-text');
+const generateBtn = document.getElementById('generate-btn');
+const shareBtn = document.getElementById('share-btn');
+const downloadBtn = document.getElementById('download-btn');
+const resetBtn = document.getElementById('reset-btn');
+const retryBtn = document.getElementById('retry-btn');
+const sceneText = document.getElementById('scene-text');
+const locationSelect = document.getElementById('location-select');
 
 const generationControls = { generateBtn, retryBtn };
 
 initCharacterRows({
-	container: document.getElementById('characterRows'),
-	addBtn: document.getElementById('addCharacterBtn'),
+	container: document.getElementById('character-rows'),
+	addBtn: document.getElementById('add-character-btn'),
+	onPreview: showCatalogPreview,
 });
 
 initNPCRows({
-	container: document.getElementById('npcRows'),
-	addBtn: document.getElementById('addNPCBtn'),
+	container: document.getElementById('npc-rows'),
+	addBtn: document.getElementById('add-npc-btn'),
+	onPreview: showCatalogPreview,
 });
 
 initEnemyRows({
-	container: document.getElementById('enemyRows'),
-	addBtn: document.getElementById('addEnemyBtn'),
+	container: document.getElementById('enemy-rows'),
+	addBtn: document.getElementById('add-enemy-btn'),
+	onPreview: showCatalogPreview,
 });
 
 initSettingField({
-	selectEl: document.getElementById('locationSelect'),
-	variantFieldEl: document.getElementById('locationVariantField'),
-	variantSelectEl: document.getElementById('locationVariantSelect'),
-	descEl: document.getElementById('locationDescText'),
-	otherTextEl: document.getElementById('otherLocationText'),
+	selectEl: document.getElementById('location-select'),
+	variantFieldEl: document.getElementById('location-variant-field'),
+	variantSelectEl: document.getElementById('location-variant-select'),
+	descEl: document.getElementById('location-desc-text'),
+	otherTextEl: document.getElementById('other-location-text'),
+	previewBtn: document.getElementById('location-preview-btn'),
+	onPreview: showCatalogPreview,
+});
+
+initCatalogPreviewModal({
+	overlay: document.getElementById('catalog-preview-overlay'),
+	closeBtn: document.getElementById('catalog-preview-close-btn'),
+	heading: document.getElementById('catalog-preview-heading'),
+	grid: document.getElementById('catalog-preview-grid'),
 });
 
 initAlertModal({
-	overlay: document.getElementById('alertModalOverlay'),
-	closeBtn: document.getElementById('alertModalCloseBtn'),
-	messageEl: document.getElementById('alertModalMessage'),
-	okBtn: document.getElementById('alertModalOkBtn'),
+	overlay: document.getElementById('alert-modal-overlay'),
+	closeBtn: document.getElementById('alert-modal-close-btn'),
+	messageEl: document.getElementById('alert-modal-message'),
+	okBtn: document.getElementById('alert-modal-ok-btn'),
 });
 
 initGenerationOutput({
 	status: statusText,
-	image: document.getElementById('outputImg'),
-	placeholder: document.getElementById('imagePlaceholder'),
+	image: document.getElementById('output-img'),
+	placeholder: document.getElementById('image-placeholder'),
 	shareBtn,
 	downloadBtn,
 	retryBtn,

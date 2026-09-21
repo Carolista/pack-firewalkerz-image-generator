@@ -26,8 +26,8 @@ export function createDetailsView({
 	};
 
 	function renderElement(element) {
-		const detailsName = document.getElementById('detailsName');
-		const detailsStatus = document.getElementById('detailsStatus');
+		const detailsName = document.getElementById('details-name');
+		const detailsStatus = document.getElementById('details-status');
 		detailsName.textContent = element.name;
 		const variantCount = element.game_element_variants?.length ?? 0;
 		detailsStatus.textContent = `${variantCount} variant${variantCount !== 1 ? 's' : ''}`;

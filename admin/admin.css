@@ -121,7 +121,7 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
-#elementForm,
+#element-form,
 .variant-form-row {
 	display: grid;
 	gap: 1rem;
@@ -320,15 +320,15 @@ textarea.variant-desc {
 	padding-top: 1rem;
 }
 
-#formPanel {
+#form-panel {
 	margin-top: 0;
 }
 
-#detailsPanel {
+#details-panel {
 	margin-top: 2rem;
 }
 
-#detailsHeader {
+#details-header {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
@@ -441,8 +441,14 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
-#detailsStatus {
+#details-status {
 	color: var(--admin-ink);
+}
+
+.edit-button-group {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 @media (max-width: 600px) {
@@ -462,20 +468,31 @@ textarea.variant-desc {
 	}
 
 	.form-actions {
+		align-items: stretch;
+		flex-direction: column;
 		gap: 0.5rem;
-		justify-content: stretch;
-		flex-wrap: wrap;
+		justify-content: flex-start;
+	}
+
+	.form-actions > div {
+		width: 100%;
+	}
+
+	.form-actions > div:last-child {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
 
 	.form-actions button {
-		flex: 1;
-		width: auto;
+		flex: none;
+		width: 100%;
 	}
 
 	.form-actions .status {
-		flex-basis: 100%;
+		order: initial;
 		margin-right: 0;
-		order: 3;
+		width: 100%;
 	}
 }
 
@@ -487,20 +504,27 @@ textarea.variant-desc {
 	.variant-detail {
 		flex-direction: column;
 	}
+	#details-header {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	#details-status {
+		margin-bottom: 10px;
+	}
 }
 
 @media (min-width: 1001px) {
-	#formPanel {
+	#form-panel {
 		display: grid;
 		grid-template-columns: repeat(3, minmax(0, 1fr));
 		gap: 1rem;
 	}
 
-	#formPanel > label {
+	#form-panel > label {
 		margin-bottom: 0;
 	}
 
-	#formPanel > div {
+	#form-panel > div {
 		grid-column: 1 / -1;
 	}
 

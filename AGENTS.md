@@ -3,6 +3,8 @@
 ## Architecture
 
 - Use native ES modules throughout. Keep browser code in `script.js` and `src/`.
+- Use kebab-case for all DOM-facing HTML IDs and classes, including dynamically generated `className` and `id` values and their CSS/selector references. Preserve camelCase for JavaScript identifiers and external data, API, database, and storage keys.
+- Keep the product RPG-system agnostic. Campaign- and world-specific content belongs in user- or tenant-owned data, not in application logic or branding.
 - `script.js` owns top-level DOM references, application orchestration, workflow policy, prompt assembly, image generation, modal decisions, sharing, reset behavior, and `generatedBlob`.
 - `src/ui/` owns component-specific DOM queries, rendering, and event wiring. UI modules should not own global workflow policy.
 - `src/services/` owns catalog/data access, storage, API/network access, and sharing integrations.
@@ -12,6 +14,7 @@
 - `src/prompt.js` must remain pure: prompt construction and related transformations may not read or mutate DOM, storage, network state, or global application state.
 - `server.js` owns backend/server concerns. Keep secrets, server-only behavior, and backend routing out of browser modules.
 - Keep state ownership explicit. Application workflow state belongs in `script.js`; component presentation state belongs in its UI module; persisted data belongs in `src/services/storage.js`; API transport belongs in `src/services/api.js`; sharing behavior belongs in `src/services/share.js`.
+- Treat users, campaigns/worlds, memberships, and roles as future first-class concepts. Keep ownership boundaries clear so tenant-scoped data can be introduced without rewriting catalog and UI contracts.
 
 ## Catalog And Data
 
@@ -23,6 +26,9 @@
 ## API And Workflow
 
 - The server owns the Gemini API key; browser code must never collect, persist, or transmit it.
+- Enforce image-generation rate limits, quotas, and usage accounting on the server; never trust browser-side limits for cost control.
+- Enforce tenant isolation server-side with Supabase Row Level Security; client-side filtering is not an authorization boundary.
+- Do not persist generated images by default unless retention, storage, access control, and cleanup costs are intentional.
 - A network request may retry at most once for a network failure.
 - Generation must guard against concurrent runs. Disable or otherwise block conflicting controls while a generation is active.
 - Restore controls, loading state, and other temporary workflow state in `finally`, including failure and cancellation paths.
@@ -60,3 +66,10 @@
 - Run `npm run format:check` after changes.
 - Manually verify affected browser flows, including persistence, validation, generation, error states, sharing, concurrency protection, and reset behavior.
 - For server changes, verify `/generate-image`, error propagation, network failures, and inline-image handling.
+- The user prefers to run linting, formatting checks, and unit tests locally after agent changes. Report the relevant commands, but do not run them unless explicitly requested.
+
+## Product Direction
+
+- The app began as a WW20 campaign tool but is intended to evolve into a system-agnostic RPG campaign/world tool.
+- Preserve current vanilla JavaScript architecture until a React/Vite migration is justified by multi-tenant, role-aware, or admin UI complexity.
+- Treat authentication, Supabase RLS, billing, quotas, abuse prevention, observability, and privacy/legal requirements as production concerns for a future public product.
