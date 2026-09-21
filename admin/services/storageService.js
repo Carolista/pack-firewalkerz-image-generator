@@ -88,7 +88,7 @@ export function createStorageService(getSession, onAuthExpired) {
 			return this.deleteImages([path]);
 		},
 		// Returns the filenames (not full paths) present directly under the given folder.
-		// Stored paths use a leading slash (e.g. "/npcs/guide-bot.jpg"), so the prefix must match that.
+		// Stored paths use a leading slash (e.g., "/npcs/guide-bot.jpg"), so the prefix must match that.
 		async listFolder(folder) {
 			const entries = await request(
 				`${STORAGE_URL}/object/list/${BUCKET}`,

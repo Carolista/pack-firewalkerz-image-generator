@@ -210,7 +210,7 @@ button {
 	background-color: var(--dark-gray);
 	color: var(--cream);
 	font-family: var(--font-card-heading);
-	font-size: 0.9rem;
+	font-size: 1rem;
 	font-weight: 400;
 	text-transform: capitalize;
 	height: var(--form-control-height);

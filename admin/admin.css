@@ -23,16 +23,10 @@ body {
 	max-width: 1080px;
 }
 
-button,
 input,
 select,
 textarea {
 	font-size: 1.1rem;
-}
-
-input,
-textarea,
-select {
 	background-color: var(--admin-pale);
 }
 

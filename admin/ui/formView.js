@@ -240,7 +240,7 @@ export function createFormView({
 				<label class="variant-image-filename-label">Image Filename
 					<div class="variant-image-filename-row">
 						<span class="variant-image-folder-prefix">${folderPrefix}</span>
-						<input class="variant-image-filename" placeholder="e.g. river-crinos" value="${existingFilename}" aria-label="Filename" />
+						<input class="variant-image-filename" placeholder="e.g., river-crinos" value="${existingFilename}" aria-label="Filename" />
 						<span class="variant-image-dot">.</span>
 						<input class="variant-image-ext" placeholder="jpg" value="${existingExt}" aria-label="Extension" />
 					</div>
