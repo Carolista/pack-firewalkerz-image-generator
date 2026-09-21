@@ -77,7 +77,7 @@ export function initVariantRows({
 		const row = document.createElement('div');
 		row.className = rowClassName;
 		const field = document.createElement('div');
-		field.className = 'field';
+		field.className = 'field element-field';
 		const label = document.createElement('label');
 		label.textContent = entityLabel;
 		const select = document.createElement('select');

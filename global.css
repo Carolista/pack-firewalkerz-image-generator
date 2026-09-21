@@ -71,7 +71,7 @@ body {
 }
 
 body.modal-open {
-    overflow: hidden;
+	overflow: hidden;
 }
 
 h1 {
@@ -123,8 +123,8 @@ h3 {
 	padding: 1rem;
 	box-sizing: border-box;
 	z-index: 1000;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .modal-overlay[hidden] {
@@ -135,11 +135,11 @@ h3 {
 	position: relative;
 	background-color: #fff;
 	width: min(100%, 400px);
-    max-height: calc(100dvh - 5rem);
+	max-height: calc(100dvh - 5rem);
 	padding: 1.5rem;
 	border-radius: var(--border-radius-form-elements);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .modal-close {
@@ -300,40 +300,40 @@ a:focus-visible {
 	padding-top: 0.5rem;
 }
 
-.character-row .field:first-child,
-.character-row .field:nth-child(2),
-.npc-row .field:first-child,
-.npc-row .field:nth-child(2),
-.enemy-row .field:first-child,
-.enemy-row .field:nth-child(2) {
+.character-row .element-field,
+.character-row .variant-field,
+.npc-row .element-field,
+.npc-row .variant-field,
+.enemy-row .element-field,
+.enemy-row .variant-field {
 	display: contents;
 }
 
-.character-row .field:first-child label,
-.npc-row .field:first-child label,
-.enemy-row .field:first-child label {
+.character-row .element-field label,
+.npc-row .element-field label,
+.enemy-row .element-field label {
 	grid-column: 1 / -1;
 	grid-row: 1;
 }
 
-.character-row .field:first-child select,
-.npc-row .field:first-child select,
-.enemy-row .field:first-child select {
+.character-row .element-field select,
+.npc-row .element-field select,
+.enemy-row .element-field select {
 	grid-column: 1;
 	grid-row: 2;
 }
 
-.character-row .field:nth-child(2) label,
-.npc-row .field:nth-child(2) label,
-.enemy-row .field:nth-child(2) label {
+.character-row .variant-field label,
+.npc-row .variant-field label,
+.enemy-row .variant-field label {
 	grid-column: 1 / -1;
 	grid-row: 3;
 	margin-top: 0.5rem;
 }
 
-.character-row .field:nth-child(2) select,
-.npc-row .field:nth-child(2) select,
-.enemy-row .field:nth-child(2) select {
+.character-row .variant-field select,
+.npc-row .variant-field select,
+.enemy-row .variant-field select {
 	grid-column: 1 / -1;
 	grid-row: 4;
 }
@@ -407,20 +407,36 @@ footer {
 	.character-row,
 	.npc-row,
 	.enemy-row {
-		grid-template-columns: repeat(2, minmax(0, 1fr)) auto auto;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
+		grid-template-rows: auto auto;
 	}
 
-	.character-row .field:nth-child(2) label,
-	.npc-row .field:nth-child(2) label,
-	.enemy-row .field:nth-child(2) label {
-		grid-column: 2 / -1;
+	.character-row .element-field label,
+	.npc-row .element-field label,
+	.enemy-row .element-field label {
+		grid-column: 1;
 		grid-row: 1;
 		margin-top: 0;
 	}
 
-	.character-row .field:nth-child(2) select,
-	.npc-row .field:nth-child(2) select,
-	.enemy-row .field:nth-child(2) select {
+	.character-row .element-field select,
+	.npc-row .element-field select,
+	.enemy-row .element-field select {
+		grid-column: 1;
+		grid-row: 2;
+	}
+
+	.character-row .variant-field label,
+	.npc-row .variant-field label,
+	.enemy-row .variant-field label {
+		grid-column: 2;
+		grid-row: 1;
+		margin-top: 0;
+	}
+
+	.character-row .variant-field select,
+	.npc-row .variant-field select,
+	.enemy-row .variant-field select {
 		grid-column: 2;
 		grid-row: 2;
 	}
@@ -429,12 +445,14 @@ footer {
 	.npc-row .remove-row-btn,
 	.enemy-row .remove-row-btn {
 		grid-column: 4;
+		grid-row: 2;
 	}
 
 	.character-row .preview-row-btn,
 	.npc-row .preview-row-btn,
 	.enemy-row .preview-row-btn {
 		grid-column: 3;
+		grid-row: 2;
 	}
 }
 
