@@ -77,7 +77,7 @@ export function initVariantRows({
 		const row = document.createElement('div');
 		row.className = rowClassName;
 		const field = document.createElement('div');
-		field.className = 'field';
+		field.className = 'field element-field';
 		const label = document.createElement('label');
 		label.textContent = entityLabel;
 		const select = document.createElement('select');
@@ -94,6 +94,7 @@ export function initVariantRows({
 		populateVariantField(select, row, presetVariantId);
 		select.addEventListener('change', () => {
 			populateVariantField(select, row);
+			updateActionLabels();
 			refreshElementOptions();
 			persistRows();
 		});
@@ -101,7 +102,6 @@ export function initVariantRows({
 		const previewBtn = document.createElement('button');
 		previewBtn.type = 'button';
 		previewBtn.className = 'preview-row-btn';
-		previewBtn.setAttribute('aria-label', `Preview ${entityLabel}`);
 		previewBtn.innerHTML = '<i class="fa-regular fa-eye"></i>';
 		previewBtn.addEventListener('click', () => {
 			onPreview?.(getElement(select.value), previewBtn);
@@ -110,7 +110,6 @@ export function initVariantRows({
 		const removeBtn = document.createElement('button');
 		removeBtn.type = 'button';
 		removeBtn.className = 'remove-row-btn';
-		removeBtn.setAttribute('aria-label', `Remove ${entityLabel}`);
 		removeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
 		removeBtn.addEventListener('click', () => {
 			row.remove();
@@ -120,6 +119,18 @@ export function initVariantRows({
 		});
 		row.append(previewBtn, removeBtn);
 		container.append(row);
+		updateActionLabels();
+
+		function updateActionLabels() {
+			const selectedElement = getElement(select.value);
+			const elementName = selectedElement?.name ?? entityLabel;
+			const previewLabel = `Preview ${elementName}`;
+			const removeLabel = `Remove ${elementName}`;
+			previewBtn.setAttribute('aria-label', previewLabel);
+			previewBtn.title = previewLabel;
+			removeBtn.setAttribute('aria-label', removeLabel);
+			removeBtn.title = removeLabel;
+		}
 	}
 
 	function updateAddButtonState() {

@@ -74,6 +74,8 @@ export function createModalController({
 		},
 		setConfirmBusy(isBusy) {
 			confirmConfirmBtn.disabled = isBusy;
+			confirmCancelBtn.disabled = isBusy;
+			confirmExtraBtn.disabled = isBusy;
 			confirmConfirmBtn.textContent = isBusy ? 'Deleting...' : 'Delete';
 		},
 		completeReauthentication() {

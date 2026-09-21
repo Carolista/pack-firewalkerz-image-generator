@@ -19,12 +19,14 @@ html::before {
 
 body {
 	color: var(--admin-midnight);
+	font-size: 22px;
 	max-width: 1080px;
 }
 
 input,
-textarea,
-select {
+select,
+textarea {
+	font-size: 1.1rem;
 	background-color: var(--admin-pale);
 }
 
@@ -222,11 +224,21 @@ textarea.variant-desc {
 	width: 100%;
 }
 
+.admin-image-spinner {
+	border-color: var(--admin-blue);
+	border-top-color: transparent;
+}
+
 .admin-image-preview img {
 	height: 100%;
 	max-width: 100%;
 	object-fit: contain;
 	width: 100%;
+}
+
+.admin-image-preview > i {
+	color: var(--admin-blue);
+	font-size: 2.5rem;
 }
 
 .variant-image-filename-row {
@@ -279,7 +291,9 @@ textarea.variant-desc {
 }
 
 .generate-status {
-	font-size: 0.9rem;
+	color: var(--admin-ink) !important;
+	text-transform: none;
+	font-size: 1.1rem;
 }
 
 .form-section-heading {
@@ -390,11 +404,26 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
+.element-image-link {
+	border-radius: var(--border-radius-form-elements);
+	display: block;
+	flex-shrink: 0;
+	height: 7rem;
+	width: 7rem;
+}
+
+.element-image-link:focus-visible {
+	outline: 3px solid var(--focus-color);
+	outline-offset: 2px;
+}
+
 .element-card img {
 	aspect-ratio: 1;
 	border-radius: var(--border-radius-form-elements);
-	max-width: 7rem;
+	display: block;
+	max-width: 100%;
 	object-fit: cover;
+	width: 100%;
 }
 
 .element-copy {
@@ -463,6 +492,12 @@ textarea.variant-desc {
 		width: 100%;
 	}
 
+	.element-image-link {
+		height: auto;
+		max-width: 100%;
+		width: 100%;
+	}
+
 	.element-actions {
 		justify-content: flex-end;
 	}
@@ -497,10 +532,6 @@ textarea.variant-desc {
 }
 
 @media (max-width: 800px) {
-	.admin-header {
-		align-items: stretch;
-		flex-direction: column;
-	}
 	.variant-detail {
 		flex-direction: column;
 	}
@@ -510,6 +541,13 @@ textarea.variant-desc {
 	}
 	#details-status {
 		margin-bottom: 10px;
+	}
+}
+
+@media (max-width: 1000px) {
+	.admin-header {
+		align-items: stretch;
+		flex-direction: column;
 	}
 }
 

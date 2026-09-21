@@ -77,6 +77,7 @@ export function createFormView({
 	let deletedVariants = [];
 	let initialSnapshot = '';
 	let generationInFlight = false;
+	let saveInFlight = false;
 	let autoSyncSlug = true;
 	let autoSyncFirstFilename = true;
 	let neutralVoidReferenceImages;
@@ -240,7 +241,7 @@ export function createFormView({
 				<label class="variant-image-filename-label">Image Filename
 					<div class="variant-image-filename-row">
 						<span class="variant-image-folder-prefix">${folderPrefix}</span>
-						<input class="variant-image-filename" placeholder="e.g. river-crinos" value="${existingFilename}" aria-label="Filename" />
+						<input class="variant-image-filename" placeholder="e.g., river-crinos" value="${existingFilename}" aria-label="Filename" />
 						<span class="variant-image-dot">.</span>
 						<input class="variant-image-ext" placeholder="jpg" value="${existingExt}" aria-label="Extension" />
 					</div>
@@ -260,14 +261,20 @@ export function createFormView({
 				<div class="variant-image-field">
 					${imageFieldHtml}
 					<input type="hidden" class="variant-image" value="${existingImage}" />
+					<p class="generate-status status"></p>
 					<div class="variant-image-actions">
 						<button class="generate-reference-btn" type="button"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate</button>
 						<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
 						<input type="file" class="variant-image-upload" accept="image/*" hidden />
 						<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
 					</div>
-					<p class="generate-status status"></p>
-					<div class="admin-image-preview" aria-label="Image preview"></div>
+					<div class="admin-image-preview" aria-label="Image preview">
+						<span
+							class="image-spinner admin-image-spinner"
+							aria-label="Generating image"
+							hidden
+						></span>
+					</div>
 				</div>
 			</div>
 		`;
@@ -305,6 +312,7 @@ export function createFormView({
 		const extInput = row.querySelector('.variant-image-ext');
 		const hiddenImageInput = row.querySelector('.variant-image');
 		const imagePreview = row.querySelector('.admin-image-preview');
+		const imageSpinner = row.querySelector('.admin-image-spinner');
 
 		function updateHiddenPath() {
 			if (hasStoredImage && !row._pendingImageBlob) {
@@ -324,6 +332,7 @@ export function createFormView({
 
 		const updatePreview = () => {
 			imagePreview.replaceChildren();
+			imageSpinner.hidden = true;
 			if (row._pendingImageObjectUrl) {
 				const image = document.createElement('img');
 				image.src = row._pendingImageObjectUrl;
@@ -332,11 +341,28 @@ export function createFormView({
 				return;
 			}
 			const value = hiddenImageInput.value.trim();
-			if (!value) return;
+			if (!value) {
+				showCategoryIcon();
+				return;
+			}
 			const image = document.createElement('img');
 			image.src = getPublicImageUrl(value);
 			image.alt = 'Variant preview';
+			image.addEventListener('error', showCategoryIcon, { once: true });
 			imagePreview.append(image);
+		};
+
+		const showCategoryIcon = () => {
+			imagePreview.replaceChildren();
+			const icon = document.createElement('i');
+			icon.className = categories[formCategory.value].faClasses;
+			icon.setAttribute('aria-hidden', 'true');
+			imagePreview.append(icon);
+		};
+
+		const showGeneratingPreview = () => {
+			imagePreview.replaceChildren(imageSpinner);
+			imageSpinner.hidden = false;
 		};
 
 		if (filenameInput) {
@@ -378,6 +404,7 @@ export function createFormView({
 			if (!proceed) return;
 			setGenerationBusy(true);
 			generateStatusEl.textContent = 'Generating...';
+			showGeneratingPreview();
 			try {
 				const prompt = buildReferenceImagePrompt({
 					category: formCategory.value,
@@ -411,12 +438,13 @@ export function createFormView({
 				updateHiddenPath();
 
 				generateStatusEl.textContent =
-					'Preview ready. It will upload when you Save.';
+					'Preview ready. It will upload when you save.';
 				updatePreview();
 				refreshImageControls(row);
 			} catch (error) {
 				generateStatusEl.textContent = error.message;
 			} finally {
+				updatePreview();
 				setGenerationBusy(false);
 			}
 		});
@@ -447,7 +475,7 @@ export function createFormView({
 			updateHiddenPath();
 
 			generateStatusEl.textContent =
-				'Preview ready. It will upload when you Save.';
+				'Preview ready. It will upload when you save.';
 			updatePreview();
 			refreshImageControls(row);
 		});
@@ -505,17 +533,27 @@ export function createFormView({
 
 	function setGenerationBusy(busy) {
 		generationInFlight = busy;
-		formSaveBtn.disabled = busy;
-		for (const btn of variantFormRows.querySelectorAll(
-			'.generate-reference-btn, .variant-image-upload-btn',
+		setFormBusy(busy);
+	}
+
+	function setFormBusy(busy) {
+		for (const control of formContainer.querySelectorAll(
+			'button, input, select, textarea',
 		)) {
-			btn.disabled = busy;
+			control.disabled = busy;
+		}
+		if (!busy) {
+			for (const row of variantFormRows.querySelectorAll(
+				'.variant-form-row',
+			)) {
+				refreshImageControls(row);
+			}
 		}
 	}
 
 	async function save(event) {
 		event.preventDefault();
-		if (generationInFlight) return;
+		if (generationInFlight || saveInFlight) return;
 		setStatus(formStatus, 'Saving...');
 		const route = getRoute();
 		const rows = [...variantFormRows.querySelectorAll('.variant-form-row')];
@@ -538,131 +576,138 @@ export function createFormView({
 				formStatus,
 				'When an element has multiple variants, none can be named "default". Please rename variants to descriptive names.',
 			);
-
-		const slug = formSlug.value.trim();
-		const [existingBySlug] = await dataClient
-			.getElementBySlug(slug)
-			.catch(() => []);
-		if (existingBySlug && existingBySlug.id !== elementId) {
-			return setStatus(
-				formStatus,
-				'That slug is already in use by another element.',
-			);
-		}
-
-		const folder = CATEGORY_FOLDERS[formCategory.value];
-		const folderPrefix = `/${folder}/`;
-		const folderListingCache = new Map();
-		const listFolderCached = async () => {
-			if (!folderListingCache.has(folder)) {
-				folderListingCache.set(
-					folder,
-					await storageService.listFolder(folder),
-				);
-			}
-			return folderListingCache.get(folder);
-		};
-		for (const row of rows) {
-			if (!row._pendingImageBlob) continue;
-			const originalImage = row.dataset.originalImage || '';
-			if (originalImage) {
-				// Reusing existing image path on regenerate / replace
-				continue;
-			}
-			const { base, filename: candidateFilename } =
-				readComposedFilename(row);
-			if (!base) {
-				return setStatus(
-					formStatus,
-					`Enter a filename for the ${row.querySelector('.variant-name').value.trim()} variant's image.`,
-				);
-			}
-			const existingNames = await listFolderCached();
-			const conflict = existingNames.some(
-				existing =>
-					existing.toLowerCase() === candidateFilename.toLowerCase(),
-			);
-			if (conflict) {
-				return setStatus(
-					formStatus,
-					`An image named "${candidateFilename}" already exists in ${folderPrefix}. Choose a different filename.`,
-				);
-			}
-		}
-
+		saveInFlight = true;
+		setFormBusy(true);
 		try {
-			// Keyed on elementId, not route.name: a retry after a partial failure
-			// (element created, variant/image write failed) must update, not duplicate.
-			if (!elementId) {
-				const [created] = await dataClient.createElement({
-					element_type: formCategory.value,
-					name: formName.value.trim(),
-					slug,
-				});
-				elementId = created.id;
-			} else {
-				await dataClient.updateElement(elementId, {
-					element_type: formCategory.value,
-					name: formName.value.trim(),
-					slug,
-				});
+			const slug = formSlug.value.trim();
+			const [existingBySlug] = await dataClient
+				.getElementBySlug(slug)
+				.catch(() => []);
+			if (existingBySlug && existingBySlug.id !== elementId) {
+				return setStatus(
+					formStatus,
+					'That slug is already in use by another element.',
+				);
 			}
-			for (const row of rows) {
-				const previousImage = row.dataset.originalImage || '';
-				let imagePath = row
-					.querySelector('.variant-image')
-					.value.trim();
-				if (row._pendingImageBlob) {
-					if (previousImage) {
-						imagePath = previousImage;
-					} else {
-						const { filename } = readComposedFilename(row);
-						imagePath = `${folderPrefix}${filename}`;
-					}
-					await storageService.uploadImage(
-						imagePath,
-						row._pendingImageBlob,
+
+			const folder = CATEGORY_FOLDERS[formCategory.value];
+			const folderPrefix = `/${folder}/`;
+			const folderListingCache = new Map();
+			const listFolderCached = async () => {
+				if (!folderListingCache.has(folder)) {
+					folderListingCache.set(
+						folder,
+						await storageService.listFolder(folder),
 					);
 				}
-				const payload = {
-					element_id: elementId,
-					variant_name: row
-						.querySelector('.variant-name')
-						.value.trim(),
-					variant_desc: row
-						.querySelector('.variant-desc')
-						.value.trim(),
-					sort_order:
-						Number(row.querySelector('.variant-sort').value) ||
-						null,
-					image: imagePath,
-				};
-				const id = row.dataset.variantId;
-				if (id) await dataClient.updateVariant(id, payload);
-				else await dataClient.createVariant(payload);
+				return folderListingCache.get(folder);
+			};
+			for (const row of rows) {
+				if (!row._pendingImageBlob) continue;
+				const originalImage = row.dataset.originalImage || '';
+				if (originalImage) {
+					// Reusing existing image path on regenerate / replace
+					continue;
+				}
+				const { base, filename: candidateFilename } =
+					readComposedFilename(row);
+				if (!base) {
+					return setStatus(
+						formStatus,
+						`Enter a filename for the ${row.querySelector('.variant-name').value.trim()} variant's image.`,
+					);
+				}
+				const existingNames = await listFolderCached();
+				const conflict = existingNames.some(
+					existing =>
+						existing.toLowerCase() ===
+						candidateFilename.toLowerCase(),
+				);
+				if (conflict) {
+					return setStatus(
+						formStatus,
+						`An image named "${candidateFilename}" already exists in ${folderPrefix}. Choose a different filename.`,
+					);
+				}
+			}
 
-				if (
-					row._pendingImageBlob &&
-					previousImage &&
-					previousImage !== imagePath
-				) {
-					await storageService.deleteImage(previousImage);
+			try {
+				// Keyed on elementId, not route.name: a retry after a partial failure
+				// (element created, variant/image write failed) must update, not duplicate.
+				if (!elementId) {
+					const [created] = await dataClient.createElement({
+						element_type: formCategory.value,
+						name: formName.value.trim(),
+						slug,
+					});
+					elementId = created.id;
+				} else {
+					await dataClient.updateElement(elementId, {
+						element_type: formCategory.value,
+						name: formName.value.trim(),
+						slug,
+					});
 				}
-				if (row._pendingImageBlob) {
-					row.dataset.originalImage = imagePath;
-					releasePendingImage(row);
-					refreshImageControls(row);
+				for (const row of rows) {
+					const previousImage = row.dataset.originalImage || '';
+					let imagePath = row
+						.querySelector('.variant-image')
+						.value.trim();
+					if (row._pendingImageBlob) {
+						if (previousImage) {
+							imagePath = previousImage;
+						} else {
+							const { filename } = readComposedFilename(row);
+							imagePath = `${folderPrefix}${filename}`;
+						}
+						await storageService.uploadImage(
+							imagePath,
+							row._pendingImageBlob,
+						);
+					}
+					const payload = {
+						element_id: elementId,
+						variant_name: row
+							.querySelector('.variant-name')
+							.value.trim(),
+						variant_desc: row
+							.querySelector('.variant-desc')
+							.value.trim(),
+						sort_order:
+							Number(row.querySelector('.variant-sort').value) ||
+							null,
+						image: imagePath,
+					};
+					const id = row.dataset.variantId;
+					if (id) await dataClient.updateVariant(id, payload);
+					else await dataClient.createVariant(payload);
+
+					if (
+						row._pendingImageBlob &&
+						previousImage &&
+						previousImage !== imagePath
+					) {
+						await storageService.deleteImage(previousImage);
+					}
+					if (row._pendingImageBlob) {
+						row.dataset.originalImage = imagePath;
+						releasePendingImage(row);
+						refreshImageControls(row);
+					}
 				}
+				for (const { id, image } of deletedVariants) {
+					await dataClient.deleteVariant(id);
+					if (image) await storageService.deleteImage(image);
+				}
+				deletedVariants = [];
+				setStatus(formStatus, '');
+				navigateTo({ name: 'view', category: formCategory.value });
+			} catch (error) {
+				setStatus(formStatus, error.message);
 			}
-			for (const { id, image } of deletedVariants) {
-				await dataClient.deleteVariant(id);
-				if (image) await storageService.deleteImage(image);
-			}
-			deletedVariants = [];
-			setStatus(formStatus, '');
-			navigateTo({ name: 'view', category: formCategory.value });
-		} catch (error) {
-			setStatus(formStatus, error.message);
+		} finally {
+			saveInFlight = false;
+			setFormBusy(false);
 		}
 	}
 
