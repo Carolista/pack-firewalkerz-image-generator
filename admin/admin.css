@@ -484,6 +484,21 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
+#confirm-modal-overlay .confirm-actions {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+#confirm-modal-extra-btn {
+	grid-column: 1 / -1;
+	order: -1;
+	/* Lets the long label wrap instead of overflowing on narrow screens. */
+	height: auto;
+	min-height: var(--form-control-height);
+	padding: 0.4rem 1rem;
+	text-align: center;
+}
+
 .crop-modal {
 	width: min(100%, 34rem);
 }

@@ -18,6 +18,7 @@ export function createModalController({
 		confirmOverlay.querySelector('.modal') ?? confirmOverlay;
 	let confirmResolver;
 	let extraHandler;
+	let extraUsed = false;
 	let releaseConfirmTrap;
 	let releaseReauthTrap;
 	let previouslyFocusedConfirmEl;
@@ -31,7 +32,16 @@ export function createModalController({
 		resolveConfirmation(true),
 	);
 	// Runs the caller's callback without resolving, so Cancel/Confirm remain available afterward.
-	confirmExtraBtn.addEventListener('click', () => extraHandler?.());
+	confirmExtraBtn.addEventListener('click', async () => {
+		extraUsed = true;
+		confirmExtraBtn.disabled = true;
+		try {
+			await extraHandler?.();
+		} catch {
+			extraUsed = false;
+			confirmExtraBtn.disabled = false;
+		}
+	});
 	document.addEventListener('keydown', e => {
 		if (e.key === 'Escape' && !confirmOverlay.hidden)
 			resolveConfirmation(false);
@@ -62,6 +72,8 @@ export function createModalController({
 			confirmCancelBtn.textContent = cancelLabel;
 			confirmConfirmBtn.textContent = confirmLabel;
 			extraHandler = extraLabel ? onExtra : null;
+			extraUsed = false;
+			confirmExtraBtn.disabled = false;
 			confirmExtraBtn.hidden = !extraLabel;
 			confirmExtraBtn.textContent = extraLabel ?? '';
 			previouslyFocusedConfirmEl = document.activeElement;
@@ -75,7 +87,7 @@ export function createModalController({
 		setConfirmBusy(isBusy) {
 			confirmConfirmBtn.disabled = isBusy;
 			confirmCancelBtn.disabled = isBusy;
-			confirmExtraBtn.disabled = isBusy;
+			confirmExtraBtn.disabled = isBusy || extraUsed;
 			confirmConfirmBtn.textContent = isBusy ? 'Deleting...' : 'Delete';
 		},
 		completeReauthentication() {
