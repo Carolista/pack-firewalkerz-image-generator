@@ -3,6 +3,7 @@ import { createAdminDataClient } from './services/adminData.js';
 import { createAuthClient } from './services/auth.js';
 import { createStorageService } from './services/storageService.js';
 import { createCatalogView } from './ui/catalogView.js';
+import { createCropModal } from './ui/cropModal.js';
 import { createDetailsView } from './ui/detailsView.js';
 import { createFormView } from './ui/formView.js';
 import { createModalController } from './ui/modals.js';
@@ -85,6 +86,17 @@ const confirmModalConfirmBtn = document.getElementById(
 	'confirm-modal-confirm-btn',
 );
 
+const cropModal = createCropModal({
+	overlay: document.getElementById('crop-modal-overlay'),
+	viewport: document.getElementById('crop-viewport'),
+	canvas: document.getElementById('crop-canvas'),
+	zoomInput: document.getElementById('crop-zoom'),
+	rotateBtn: document.getElementById('crop-rotate-btn'),
+	status: document.getElementById('crop-status'),
+	cancelBtn: document.getElementById('crop-cancel-btn'),
+	applyBtn: document.getElementById('crop-apply-btn'),
+});
+
 const modals = createModalController({
 	reauthOverlay: reauthModalOverlay,
 	reauthForm,
@@ -111,6 +123,7 @@ const formView = createFormView({
 	dataClient,
 	storageService,
 	modals,
+	cropModal,
 	navigateTo,
 	getRoute,
 	categories: CATEGORIES,

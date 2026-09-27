@@ -219,6 +219,71 @@
 				</div>
 			</div>
 
+			<div id="crop-modal-overlay" class="modal-overlay" hidden>
+				<div
+					class="modal crop-modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="crop-modal-heading"
+					aria-describedby="crop-modal-instructions"
+				>
+					<h2 id="crop-modal-heading" class="modal-heading">
+						Crop to a square
+					</h2>
+					<p id="crop-modal-instructions" class="crop-instructions">
+						Drag the image to reposition it, and use the zoom slider
+						or scroll to resize. With the crop area focused, the
+						arrow keys nudge the image, plus and minus zoom, and 0
+						resets everything.
+					</p>
+					<div
+						id="crop-viewport"
+						class="crop-viewport"
+						tabindex="0"
+						role="application"
+						aria-label="Crop area"
+						aria-describedby="crop-modal-instructions"
+					>
+						<canvas id="crop-canvas"></canvas>
+						<div class="crop-frame" aria-hidden="true"></div>
+					</div>
+					<label class="crop-zoom-label">
+						Zoom
+						<input
+							id="crop-zoom"
+							type="range"
+							min="1"
+							max="6"
+							step="0.01"
+							value="1"
+						/>
+					</label>
+					<div class="crop-tools">
+						<button
+							id="crop-rotate-btn"
+							type="button"
+							title="Rotate the image 90 degrees to the right"
+						>
+							<i class="fa-solid fa-rotate-right"></i> Rotate
+							Right
+						</button>
+					</div>
+					<p id="crop-status" class="status" role="status"></p>
+					<div class="confirm-actions">
+						<button
+							id="crop-cancel-btn"
+							type="button"
+							class="cancel"
+						>
+							<i class="fa-solid fa-square-xmark"></i> Cancel
+						</button>
+						<button id="crop-apply-btn" type="button">
+							<i class="fa-solid fa-crop-simple"></i> Apply Crop
+						</button>
+					</div>
+				</div>
+			</div>
+
 			<div id="confirm-modal-overlay" class="modal-overlay" hidden>
 				<div
 					class="modal"

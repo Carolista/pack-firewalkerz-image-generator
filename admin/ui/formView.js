@@ -69,6 +69,7 @@ export function createFormView({
 	dataClient,
 	storageService,
 	modals,
+	cropModal,
 	navigateTo,
 	categories,
 	getRoute,
@@ -455,21 +456,30 @@ export function createFormView({
 			if (!file) return;
 			const proceed = await confirmOverwriteIfNeeded(row);
 			if (!proceed) return;
+
+			let cropped;
+			try {
+				cropped = await cropModal.open(file);
+			} catch (error) {
+				generateStatusEl.textContent = error.message;
+				return;
+			}
+			if (!cropped) return;
+
 			releasePendingImage(row);
-			row._pendingImageBlob = file;
-			row._pendingImageObjectUrl = URL.createObjectURL(file);
+			row._pendingImageBlob = cropped;
+			row._pendingImageObjectUrl = URL.createObjectURL(cropped);
 
 			if (!hasStoredImage) {
 				const lastDot = file.name.lastIndexOf('.');
 				const base =
 					lastDot === -1 ? file.name : file.name.slice(0, lastDot);
-				const ext =
-					lastDot === -1 ? 'jpg' : file.name.slice(lastDot + 1);
 				if (filenameInput && !filenameInput.value.trim()) {
 					filenameInput.value = slugify(base);
 				}
 				if (extInput) {
-					extInput.value = ext.toLowerCase();
+					// Cropping re-encodes the file, so the extension follows the output blob.
+					extInput.value = extensionFromMime(cropped.type);
 				}
 			}
 			updateHiddenPath();

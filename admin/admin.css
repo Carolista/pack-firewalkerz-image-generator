@@ -482,6 +482,62 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
+.crop-modal {
+	width: min(100%, 34rem);
+}
+
+.crop-instructions {
+	color: var(--admin-ink);
+	font-size: 0.9rem;
+	margin: 0 0 1rem;
+}
+
+.crop-viewport {
+	aspect-ratio: 1 / 1;
+	background-color: var(--admin-line);
+	border-radius: var(--border-radius-form-elements);
+	cursor: grab;
+	margin: 0 auto;
+	overflow: hidden;
+	position: relative;
+	/* Stops the browser claiming drag/pinch gestures before the cropper sees them. */
+	touch-action: none;
+	width: min(100%, 24rem);
+}
+
+.crop-viewport.is-panning {
+	cursor: grabbing;
+}
+
+.crop-viewport:focus-visible {
+	outline: 3px solid var(--admin-blue);
+	outline-offset: 2px;
+}
+
+.crop-viewport canvas {
+	display: block;
+	height: 100%;
+	width: 100%;
+}
+
+.crop-frame {
+	border: 2px solid rgba(255, 255, 255, 0.85);
+	border-radius: var(--border-radius-form-elements);
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
+.crop-zoom-label {
+	margin-top: 1rem;
+}
+
+.crop-tools {
+	display: flex;
+	justify-content: center;
+	margin-top: 1rem;
+}
+
 #details-status {
 	color: var(--admin-ink);
 }
