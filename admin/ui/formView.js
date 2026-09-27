@@ -6,11 +6,26 @@ import {
 	generateImageWithNetworkRetry,
 	loadReferenceImages,
 } from '../../src/services/api.js';
+import {
+	downloadBlob,
+	extensionForMimeType,
+	filenameForBlob,
+} from '../../src/services/download.js';
+import {
+	canShareFile,
+	createShareFile,
+	shareFile,
+} from '../../src/services/share.js';
 import { takePendingVariantId } from '../services/pendingScroll.js';
 import {
 	CATEGORY_FOLDERS,
 	getPublicImageUrl,
 } from '../services/storageService.js';
+
+// Probing once with a stand-in file tells us whether to render Share controls at all.
+const canShareImages = canShareFile(
+	new File([new Uint8Array(1)], 'probe.jpg', { type: 'image/jpeg' }),
+);
 
 function slugify(text) {
 	return text
@@ -18,12 +33,6 @@ function slugify(text) {
 		.trim()
 		.replace(/[^a-z0-9]+/g, '-')
 		.replace(/^-+|-+$/g, '');
-}
-
-function extensionFromMime(mimeType) {
-	if (mimeType === 'image/png') return 'png';
-	if (mimeType === 'image/webp') return 'webp';
-	return 'jpg';
 }
 
 function parseImagePath(imagePath, folderPrefix) {
@@ -268,6 +277,7 @@ export function createFormView({
 						<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
 						<input type="file" class="variant-image-upload" accept="image/*" hidden />
 						<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
+						<button class="variant-image-share-btn" type="button" hidden><i class="fa-solid fa-share"></i> Share</button>
 					</div>
 					<div class="admin-image-preview" aria-label="Image preview">
 						<span
@@ -434,7 +444,7 @@ export function createFormView({
 				row._pendingImageObjectUrl = URL.createObjectURL(result.blob);
 
 				if (!hasStoredImage && extInput) {
-					extInput.value = extensionFromMime(result.blob.type);
+					extInput.value = extensionForMimeType(result.blob.type);
 				}
 				updateHiddenPath();
 
@@ -479,7 +489,7 @@ export function createFormView({
 				}
 				if (extInput) {
 					// Cropping re-encodes the file, so the extension follows the output blob.
-					extInput.value = extensionFromMime(cropped.type);
+					extInput.value = extensionForMimeType(cropped.type);
 				}
 			}
 			updateHiddenPath();
@@ -490,7 +500,23 @@ export function createFormView({
 			refreshImageControls(row);
 		});
 
-		downloadBtn.addEventListener('click', () => downloadCurrentImage(row));
+		downloadBtn.addEventListener('click', async () => {
+			try {
+				await downloadCurrentImage(row);
+			} catch (error) {
+				generateStatusEl.textContent = error.message;
+			}
+		});
+
+		const shareBtn = row.querySelector('.variant-image-share-btn');
+		shareBtn.hidden = !canShareImages;
+		shareBtn.addEventListener('click', async () => {
+			try {
+				await shareCurrentImage(row);
+			} catch (error) {
+				generateStatusEl.textContent = error.message;
+			}
+		});
 	}
 
 	async function confirmOverwriteIfNeeded(row) {
@@ -508,29 +534,52 @@ export function createFormView({
 	}
 
 	async function downloadCurrentImage(row) {
-		const path = row.dataset.originalImage;
-		if (!path) return;
-		const response = await fetch(getPublicImageUrl(path));
-		const blob = await response.blob();
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = path.split('/').pop();
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-		URL.revokeObjectURL(url);
+		const blob = await currentImageBlob(row);
+		if (!blob) return;
+		downloadBlob(blob, filenameForBlob(blob, imageBaseName(row)));
 	}
 
-	// Reflects whether a variant currently has (or will have) an image: button label and download availability.
+	async function shareCurrentImage(row) {
+		const blob = await currentImageBlob(row);
+		if (!blob) return;
+		const file = createShareFile(blob, imageBaseName(row));
+		if (!canShareFile(file)) return;
+		await shareFile(file, {
+			title: formName.value.trim() || 'Reference image',
+			text: row.querySelector('.variant-name').value.trim(),
+		});
+	}
+
+	// Prefers the unsaved blob so Share/Download work before the variant is persisted.
+	async function currentImageBlob(row) {
+		if (row._pendingImageBlob) return row._pendingImageBlob;
+		const path = row.dataset.originalImage;
+		if (!path) return null;
+		const response = await fetch(getPublicImageUrl(path));
+		if (!response.ok) throw new Error('Could not load the saved image.');
+		return response.blob();
+	}
+
+	function imageBaseName(row) {
+		const path = row.dataset.originalImage;
+		if (path) {
+			return path
+				.split('/')
+				.pop()
+				.replace(/\.[^.]+$/, '');
+		}
+		return readComposedFilename(row).base || 'reference-image';
+	}
+
+	// Reflects whether a variant currently has (or will have) an image: button label and action availability.
 	function refreshImageControls(row) {
 		const hasImage = Boolean(
 			row.dataset.originalImage || row._pendingImageBlob,
 		);
 		row.querySelector('.generate-reference-btn').innerHTML =
 			`<i class="fa-solid fa-wand-magic-sparkles"></i> ${hasImage ? 'Regenerate' : 'Generate'}`;
-		row.querySelector('.variant-image-download-btn').disabled =
-			!row.dataset.originalImage;
+		row.querySelector('.variant-image-download-btn').disabled = !hasImage;
+		row.querySelector('.variant-image-share-btn').disabled = !hasImage;
 	}
 
 	function releasePendingImage(row) {
