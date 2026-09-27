@@ -10,7 +10,8 @@ import {
 	loadReferenceImages,
 } from './src/services/api.js';
 import { loadCatalog } from './src/services/catalog.js';
-import { shareFile } from './src/services/share.js';
+import { downloadBlob, filenameForBlob } from './src/services/download.js';
+import { createShareFile, shareFile } from './src/services/share.js';
 import { initAlertModal, showAlert } from './src/ui/alertModal.js';
 import { setGenerationBusy } from './src/ui/buttonState.js';
 import {
@@ -58,6 +59,7 @@ let generationInProgress = false;
 const statusText = document.getElementById('status-text');
 const generateBtn = document.getElementById('generate-btn');
 const shareBtn = document.getElementById('share-btn');
+const copyLinkBtn = document.getElementById('copy-link-btn');
 const downloadBtn = document.getElementById('download-btn');
 const resetBtn = document.getElementById('reset-btn');
 const retryBtn = document.getElementById('retry-btn');
@@ -127,12 +129,15 @@ initGenerationOutput({
 	image: document.getElementById('output-img'),
 	placeholder: document.getElementById('image-placeholder'),
 	shareBtn,
+	shareFallback: document.getElementById('share-fallback'),
+	shareDiagnostics: document.getElementById('share-diagnostics'),
 	downloadBtn,
 	retryBtn,
 });
 
 generateBtn.addEventListener('click', generateSceneImage);
 shareBtn.addEventListener('click', shareImage);
+copyLinkBtn.addEventListener('click', copyPageLink);
 downloadBtn.addEventListener('click', downloadImage);
 resetBtn.addEventListener('click', resetScene);
 retryBtn.addEventListener('click', generateSceneImage);
@@ -240,22 +245,25 @@ function formatError(error) {
 
 async function shareImage() {
 	if (!generatedBlob) return;
-	await shareFile(generatedBlob, {
-		filename: 'pack-firewalkerz-scene.jpg',
-		mimeType: 'image/jpeg',
+	await shareFile(createShareFile(generatedBlob, 'pack-firewalkerz-scene'), {
 		title: 'Pack Firewalkerz Scene',
 		text: "Look at what happened in tonight's session!",
 	});
 }
 
+async function copyPageLink() {
+	try {
+		await navigator.clipboard.writeText(window.location.href);
+		copyLinkBtn.textContent = 'Link Copied';
+	} catch {
+		copyLinkBtn.textContent = 'Copy Failed';
+	}
+}
+
 function downloadImage() {
 	if (!generatedBlob) return;
-	const url = URL.createObjectURL(generatedBlob);
-	const a = document.createElement('a');
-	a.href = url;
-	a.download = 'pack-firewalkerz-scene.jpg';
-	document.body.appendChild(a);
-	a.click();
-	document.body.removeChild(a);
-	URL.revokeObjectURL(url);
+	downloadBlob(
+		generatedBlob,
+		filenameForBlob(generatedBlob, 'pack-firewalkerz-scene'),
+	);
 }

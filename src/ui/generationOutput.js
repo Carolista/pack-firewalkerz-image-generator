@@ -1,9 +1,15 @@
-import { canShareFile } from '../services/share.js';
+import {
+	canShareFile,
+	createShareFile,
+	describeShareSupport,
+} from '../services/share.js';
 
 let statusEl;
 let imageEl;
 let placeholderEl;
 let shareBtnEl;
+let shareFallbackEl;
+let shareDiagnosticsEl;
 let downloadBtnEl;
 let retryBtnEl;
 let imageRequestId = 0;
@@ -13,6 +19,8 @@ export function initGenerationOutput({
 	image,
 	placeholder,
 	shareBtn,
+	shareFallback,
+	shareDiagnostics,
 	downloadBtn,
 	retryBtn,
 }) {
@@ -20,6 +28,8 @@ export function initGenerationOutput({
 	imageEl = image;
 	placeholderEl = placeholder;
 	shareBtnEl = shareBtn;
+	shareFallbackEl = shareFallback;
+	shareDiagnosticsEl = shareDiagnostics;
 	downloadBtnEl = downloadBtn;
 	retryBtnEl = retryBtn;
 }
@@ -33,6 +43,7 @@ export function showGenerating() {
 	imageEl.style.display = 'none';
 	placeholderEl.hidden = false;
 	shareBtnEl.style.display = 'none';
+	shareFallbackEl.hidden = true;
 	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'none';
 	placeholderEl
@@ -48,8 +59,13 @@ export function showSuccess({ imageUrl, blob }) {
 		imageEl.style.display = 'block';
 		statusEl.innerText = 'Done!';
 
-		if (canShareFile(blob, 'scene.jpg', 'image/jpeg')) {
+		const file = createShareFile(blob, 'pack-firewalkerz-scene');
+		if (canShareFile(file)) {
 			shareBtnEl.style.display = 'inline-block';
+			shareFallbackEl.hidden = true;
+		} else {
+			shareFallbackEl.hidden = false;
+			shareDiagnosticsEl.textContent = describeShareSupport(file);
 		}
 		downloadBtnEl.style.display = 'inline-block';
 	};
@@ -75,6 +91,7 @@ export function showError(message) {
 	imageEl.style.display = 'none';
 	statusEl.innerText = `Error: ${message}`;
 	shareBtnEl.style.display = 'none';
+	shareFallbackEl.hidden = true;
 	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'inline-block';
 }
@@ -87,6 +104,7 @@ export function resetOutput() {
 	imageEl.style.display = 'none';
 	placeholderEl.hidden = true;
 	shareBtnEl.style.display = 'none';
+	shareFallbackEl.hidden = true;
 	downloadBtnEl.style.display = 'none';
 	retryBtnEl.style.display = 'none';
 	statusEl.innerText = 'Waiting for prompt...';

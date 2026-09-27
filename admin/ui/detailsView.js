@@ -10,24 +10,47 @@ export function createDetailsView({
 	modals,
 	navigateTo,
 }) {
+	const detailsName = document.getElementById('details-name');
+	const detailsStatus = document.getElementById('details-status');
+
 	const view = {
 		async load(route) {
 			container.hidden = false;
-			content.replaceChildren();
+			clearHeader();
 			setStatus(status, '');
+			showLoading();
 			try {
 				const [element] = await dataClient.getElementBySlug(route.slug);
 				if (!element) throw new Error('Element not found.');
-				content.append(renderElement(element));
+				content.replaceChildren(renderElement(element));
 			} catch (error) {
+				clearHeader();
+				content.replaceChildren();
 				setStatus(status, error.message);
 			}
 		},
 	};
 
+	function clearHeader() {
+		detailsName.textContent = '';
+		detailsStatus.textContent = '';
+	}
+
+	function showLoading() {
+		// Hold the outgoing content height so swapping elements does not collapse the panel.
+		const previousHeight = content.offsetHeight;
+		const wrapper = document.createElement('div');
+		wrapper.className = 'details-loading';
+		if (previousHeight > 0) wrapper.style.minHeight = `${previousHeight}px`;
+		const spinner = document.createElement('span');
+		spinner.className = 'image-spinner admin-image-spinner';
+		spinner.setAttribute('role', 'status');
+		spinner.setAttribute('aria-label', 'Loading element');
+		wrapper.append(spinner);
+		content.replaceChildren(wrapper);
+	}
+
 	function renderElement(element) {
-		const detailsName = document.getElementById('details-name');
-		const detailsStatus = document.getElementById('details-status');
 		detailsName.textContent = element.name;
 		const variantCount = element.game_element_variants?.length ?? 0;
 		detailsStatus.textContent = `${variantCount} variant${variantCount !== 1 ? 's' : ''}`;
