@@ -92,6 +92,7 @@ const cropModal = createCropModal({
 	canvas: document.getElementById('crop-canvas'),
 	zoomInput: document.getElementById('crop-zoom'),
 	rotateBtn: document.getElementById('crop-rotate-btn'),
+	rotateHandle: document.getElementById('crop-rotate-handle'),
 	status: document.getElementById('crop-status'),
 	cancelBtn: document.getElementById('crop-cancel-btn'),
 	applyBtn: document.getElementById('crop-apply-btn'),

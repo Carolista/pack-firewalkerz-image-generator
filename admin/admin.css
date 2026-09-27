@@ -528,6 +528,28 @@ textarea.variant-desc {
 	position: absolute;
 }
 
+.crop-rotate-handle {
+	align-items: center;
+	background-color: rgba(0, 0, 0, 0.6);
+	border: 2px solid rgba(255, 255, 255, 0.85);
+	border-radius: 50%;
+	color: #fff;
+	cursor: grab;
+	display: flex;
+	height: 2.5rem;
+	justify-content: center;
+	left: 50%;
+	position: absolute;
+	bottom: 0.75rem;
+	touch-action: none;
+	transform: translateX(-50%);
+	width: 2.5rem;
+}
+
+.crop-rotate-handle.is-rotating {
+	cursor: grabbing;
+}
+
 .crop-zoom-label {
 	margin-top: 1rem;
 }

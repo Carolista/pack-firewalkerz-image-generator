@@ -232,9 +232,12 @@
 					</h2>
 					<p id="crop-modal-instructions" class="crop-instructions">
 						Drag the image to reposition it, and use the zoom slider
-						or scroll to resize. With the crop area focused, the
-						arrow keys nudge the image, plus and minus zoom, and 0
-						resets everything.
+						or scroll to resize. On a touch screen, pinch to zoom
+						and twist to rotate. With the crop area focused, the
+						arrow keys nudge the image, plus and minus zoom, the
+						square brackets rotate 5 degrees at a time, and 0 resets
+						everything. The handle at the bottom of the crop area
+						rotates freely by dragging.
 					</p>
 					<div
 						id="crop-viewport"
@@ -246,6 +249,13 @@
 					>
 						<canvas id="crop-canvas"></canvas>
 						<div class="crop-frame" aria-hidden="true"></div>
+						<div
+							id="crop-rotate-handle"
+							class="crop-rotate-handle"
+							aria-hidden="true"
+						>
+							<i class="fa-solid fa-arrows-rotate"></i>
+						</div>
 					</div>
 					<label class="crop-zoom-label">
 						Zoom
