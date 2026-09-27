@@ -347,6 +347,16 @@ textarea.variant-desc {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
+	/* Reserves the h2 line box so the blank loading header does not shift the panel. */
+	min-height: 3.5rem;
+}
+
+.details-loading {
+	align-items: center;
+	display: flex;
+	justify-content: center;
+	min-height: min(60vh, 32rem);
+	padding: 3rem 0;
 }
 
 .header-actions,
@@ -447,8 +457,10 @@ textarea.variant-desc {
 }
 
 .variant-detail img {
+	aspect-ratio: 1 / 1;
 	border-radius: var(--border-radius-form-elements);
 	max-width: min(100%, 24rem);
+	width: min(100%, 24rem);
 }
 
 .details-heading-container {
