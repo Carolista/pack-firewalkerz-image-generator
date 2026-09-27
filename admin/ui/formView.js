@@ -15,17 +15,13 @@ import {
 	canShareFile,
 	createShareFile,
 	shareFile,
+	supportsImageSharing,
 } from '../../src/services/share.js';
 import { takePendingVariantId } from '../services/pendingScroll.js';
 import {
 	CATEGORY_FOLDERS,
 	getPublicImageUrl,
 } from '../services/storageService.js';
-
-// Probing once with a stand-in file tells us whether to render Share controls at all.
-const canShareImages = canShareFile(
-	new File([new Uint8Array(1)], 'probe.jpg', { type: 'image/jpeg' }),
-);
 
 function slugify(text) {
 	return text
@@ -277,7 +273,7 @@ export function createFormView({
 						<button class="variant-image-upload-btn" type="button"><i class="fa-solid fa-upload"></i> Upload</button>
 						<input type="file" class="variant-image-upload" accept="image/*" hidden />
 						<button class="variant-image-download-btn" type="button"><i class="fa-solid fa-download"></i> Download</button>
-						<button class="variant-image-share-btn" type="button" hidden><i class="fa-solid fa-share"></i> Share</button>
+						<button class="variant-image-share-btn" type="button" hidden><i class="fa-solid fa-share-from-square"></i> Share</button>
 					</div>
 					<div class="admin-image-preview" aria-label="Image preview">
 						<span
@@ -509,7 +505,7 @@ export function createFormView({
 		});
 
 		const shareBtn = row.querySelector('.variant-image-share-btn');
-		shareBtn.hidden = !canShareImages;
+		shareBtn.hidden = !supportsImageSharing();
 		shareBtn.addEventListener('click', async () => {
 			try {
 				await shareCurrentImage(row);

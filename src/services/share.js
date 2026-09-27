@@ -16,6 +16,22 @@ export function canShareFile(file) {
 	}
 }
 
+let imageShareSupport;
+
+// Lets callers decide whether to render Share controls before any real blob exists.
+export function supportsImageSharing() {
+	imageShareSupport ??= canShareFile(
+		new File([new Uint8Array(1)], 'probe.jpg', { type: 'image/jpeg' }),
+	);
+	return imageShareSupport;
+}
+
+export async function fetchShareBlob(url) {
+	const response = await fetch(url);
+	if (!response.ok) throw new Error('Could not load the image to share.');
+	return response.blob();
+}
+
 // Temporary: surfaces why sharing is unavailable on devices we cannot test directly.
 export function describeShareSupport(file) {
 	let filesResult = 'n/a';

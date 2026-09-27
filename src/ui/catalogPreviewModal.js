@@ -1,4 +1,11 @@
 import { resolveReferenceImageUrl } from '../services/api.js';
+import {
+	canShareFile,
+	createShareFile,
+	fetchShareBlob,
+	shareFile,
+	supportsImageSharing,
+} from '../services/share.js';
 import { focusFirst, trapFocus } from './focusTrap.js';
 
 let overlayEl;
@@ -60,8 +67,51 @@ function createVariantTile(element, variant) {
 		imageBox.append(image);
 	}
 
+	const captionRow = document.createElement('div');
+	captionRow.className = 'catalog-preview-caption';
+
 	const caption = document.createElement('figcaption');
 	caption.textContent = variant.variantName;
-	figure.append(imageBox, caption);
+	captionRow.append(caption);
+
+	if (variant.image && supportsImageSharing()) {
+		const shareButton = document.createElement('button');
+		shareButton.type = 'button';
+		shareButton.className = 'catalog-preview-share';
+		shareButton.innerHTML =
+			'<i class="fa-solid fa-share-from-square" aria-hidden="true"></i>';
+		shareButton.setAttribute(
+			'aria-label',
+			`Share ${element.name}, ${variant.variantName}`,
+		);
+		shareButton.addEventListener('click', () =>
+			shareVariantImage(element, variant),
+		);
+		captionRow.append(shareButton);
+	}
+
+	figure.append(imageBox, captionRow);
 	return figure;
+}
+
+async function shareVariantImage(element, variant) {
+	try {
+		const blob = await fetchShareBlob(
+			resolveReferenceImageUrl(variant.image),
+		);
+		const file = createShareFile(
+			blob,
+			variant.image
+				.split('/')
+				.pop()
+				.replace(/\.[^.]+$/, ''),
+		);
+		if (!canShareFile(file)) return;
+		await shareFile(file, {
+			title: element.name,
+			text: variant.variantName,
+		});
+	} catch (error) {
+		console.error('Could not share the image:', error);
+	}
 }

@@ -1,3 +1,10 @@
+import {
+	canShareFile,
+	createShareFile,
+	fetchShareBlob,
+	shareFile,
+	supportsImageSharing,
+} from '../../src/services/share.js';
 import { setPendingVariantId } from '../services/pendingScroll.js';
 import { getPublicImageUrl } from '../services/storageService.js';
 
@@ -69,11 +76,22 @@ export function createDetailsView({
 			text.append(description);
 			const actions = document.createElement('div');
 			actions.className = 'variant-detail-actions';
+			if (variant.image && supportsImageSharing()) {
+				const shareButton = document.createElement('button');
+				shareButton.type = 'button';
+				shareButton.className = 'share-variant';
+				shareButton.innerHTML =
+					'<i class="fa-solid fa-share-from-square" aria-hidden="true"></i> Share Image';
+				shareButton.addEventListener('click', () =>
+					shareVariantImage(element, variant),
+				);
+				actions.append(shareButton);
+			}
 			const editButton = document.createElement('button');
 			editButton.type = 'button';
 			editButton.className = 'edit-variant';
 			editButton.innerHTML =
-				'<i class="fa-solid fa-pen-to-square"></i> Edit Variant';
+				'<i class="fa-solid fa-pen-to-square"></i> Edit';
 			editButton.addEventListener('click', () => {
 				setPendingVariantId(variant.id);
 				navigateTo({
@@ -86,7 +104,7 @@ export function createDetailsView({
 			deleteButton.type = 'button';
 			deleteButton.className = 'delete-variant';
 			deleteButton.innerHTML =
-				'<i class="fa-solid fa-square-minus"></i> Delete Variant';
+				'<i class="fa-solid fa-square-minus"></i> Delete';
 			deleteButton.addEventListener('click', () =>
 				deleteVariant(element, variant),
 			);
@@ -102,6 +120,26 @@ export function createDetailsView({
 			wrapper.append(article);
 		}
 		return wrapper;
+	}
+
+	async function shareVariantImage(element, variant) {
+		try {
+			const blob = await fetchShareBlob(getPublicImageUrl(variant.image));
+			const file = createShareFile(
+				blob,
+				variant.image
+					.split('/')
+					.pop()
+					.replace(/\.[^.]+$/, ''),
+			);
+			if (!canShareFile(file)) return;
+			await shareFile(file, {
+				title: element.name,
+				text: variant.variant_name,
+			});
+		} catch (error) {
+			setStatus(status, error.message);
+		}
 	}
 
 	async function deleteVariant(element, variant) {

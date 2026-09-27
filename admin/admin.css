@@ -199,6 +199,25 @@ textarea.variant-desc {
 	margin-top: 0.5rem;
 }
 
+.share-variant {
+	background-color: transparent;
+	color: var(--admin-dark-blue);
+	font-size: 1.1rem;
+	padding: 0;
+	height: auto;
+	width: auto;
+}
+
+.share-variant:hover {
+	background-color: transparent;
+	color: var(--admin-blue);
+}
+
+.share-variant:active {
+	background-color: transparent;
+	color: var(--admin-midnight);
+}
+
 .edit-variant {
 	background-color: transparent;
 	color: var(--admin-blue);
