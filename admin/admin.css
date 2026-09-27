@@ -460,6 +460,8 @@ textarea.variant-desc {
 	aspect-ratio: 1 / 1;
 	border-radius: var(--border-radius-form-elements);
 	max-width: min(100%, 24rem);
+	/* Guards the reserved square box against any stored image that is not 1:1. */
+	object-fit: contain;
 	width: min(100%, 24rem);
 }
 
