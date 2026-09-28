@@ -565,22 +565,9 @@ footer {
 	margin-top: 0.75rem;
 }
 
-.share-note,
-.share-diagnostics {
+.share-note {
 	color: var(--cream-pale);
 	margin: 0 0 0.5rem;
-	/* The diagnostic string is one long token, so normal wrapping would overflow it. */
 	overflow-wrap: anywhere;
-	white-space: normal;
-	word-break: break-word;
-}
-
-.share-note {
 	font-size: 0.9rem;
-}
-
-.share-diagnostics {
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	margin: 0.5rem 0 0;
 }

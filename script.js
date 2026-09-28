@@ -130,7 +130,6 @@ initGenerationOutput({
 	placeholder: document.getElementById('image-placeholder'),
 	shareBtn,
 	shareFallback: document.getElementById('share-fallback'),
-	shareDiagnostics: document.getElementById('share-diagnostics'),
 	downloadBtn,
 	retryBtn,
 });
