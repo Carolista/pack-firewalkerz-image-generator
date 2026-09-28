@@ -528,8 +528,13 @@ textarea.variant-desc {
 	margin-bottom: 0.25rem;
 }
 
-.element-copy p:last-child {
+.element-copy p {
 	margin: 0;
+}
+
+.element-copy .unpublished-summary {
+	color: var(--admin-dark-blue);
+    font-style: italic;
 }
 
 .variant-detail {

@@ -71,26 +71,25 @@ export function createCatalogView({
 	function renderElement(element) {
 		const article = document.createElement('article');
 		article.className = 'element-card';
-		const firstVariant = sortVariants(element.game_element_variants)[0];
+		const variants = sortVariants(element.game_element_variants);
+		const firstVariant = variants[0];
 		const copy = document.createElement('div');
 		copy.className = 'element-copy';
 		const name = document.createElement('h3');
 		name.textContent = element.name;
-		const count = document.createElement('p');
-		const variantCount = element.game_element_variants?.length ?? 0;
-		if (variantCount > 1) {
-			const variantList = sortVariants(element.game_element_variants)
-				.map(variant =>
-					variant.is_published
-						? variant.variant_name
-						: `${variant.variant_name} (Unpublished)`,
-				)
-				.join(', ');
-			count.textContent = `${variantCount} variants: ${variantList}`;
-		} else if (variantCount === 1 && !firstVariant.is_published) {
-			count.textContent = 'Unpublished';
+		copy.append(name);
+		for (const [published, label] of [
+			[true, 'published'],
+			[false, 'unpublished'],
+		]) {
+			const names = variants
+				.filter(variant => variant.is_published === published)
+				.map(variant => variant.variant_name);
+			const summary = document.createElement('p');
+			if (!published) summary.className = 'unpublished-summary';
+			summary.textContent = `${names.length} variant${names.length === 1 ? '' : 's'} ${label}${names.length ? `: ${names.join(', ')}` : ''}`;
+			copy.append(summary);
 		}
-		copy.append(name, count);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
 		for (const action of Object.keys(BUTTON_ACTIONS)) {
