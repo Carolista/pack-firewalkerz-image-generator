@@ -626,8 +626,38 @@ export function createFormView({
 		setStatus(formStatus, 'Saving...');
 		const route = getRoute();
 		const rows = [...variantFormRows.querySelectorAll('.variant-form-row')];
-		if (!rows.length)
+		if (!rows.length && (!elementId || route.name === 'add'))
 			return setStatus(formStatus, 'Add at least one variant.');
+		if (!rows.length) {
+			saveInFlight = true;
+			setFormBusy(true);
+			try {
+				const confirmed = await modals.showConfirmation(
+					'Delete element?',
+					`Saving ${formName.value.trim()} with no variants will delete the element and its images. This cannot be undone.`,
+					{
+						cancelLabel: 'Keep Editing',
+						confirmLabel: 'Delete Element',
+					},
+				);
+				if (!confirmed) {
+					setStatus(formStatus, '');
+					return;
+				}
+				await storageService.deleteImages(
+					deletedVariants.map(variant => variant.image),
+				);
+				await dataClient.deleteElement(elementId);
+				deletedVariants = [];
+				navigateTo({ name: 'view', category: formCategory.value });
+			} catch (error) {
+				setStatus(formStatus, error.message);
+			} finally {
+				saveInFlight = false;
+				setFormBusy(false);
+			}
+			return;
+		}
 		const names = rows.map(row =>
 			row.querySelector('.variant-name').value.trim(),
 		);
