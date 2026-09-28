@@ -359,7 +359,8 @@ textarea:disabled {
 
 .character-row,
 .npc-row,
-.enemy-row {
+.enemy-row,
+.item-row {
 	display: grid;
 	grid-template-columns: minmax(0, 1fr) auto auto;
 	column-gap: 0.5rem;
@@ -368,7 +369,8 @@ textarea:disabled {
 
 .character-row + .character-row,
 .npc-row + .npc-row,
-.enemy-row + .enemy-row {
+.enemy-row + .enemy-row,
+.item-row + .item-row {
 	border-top: 2px solid var(--dark-gray);
 	padding-top: 0.5rem;
 }
@@ -378,27 +380,32 @@ textarea:disabled {
 .npc-row .element-field,
 .npc-row .variant-field,
 .enemy-row .element-field,
-.enemy-row .variant-field {
+.enemy-row .variant-field,
+.item-row .element-field,
+.item-row .variant-field {
 	display: contents;
 }
 
 .character-row .element-field label,
 .npc-row .element-field label,
-.enemy-row .element-field label {
+.enemy-row .element-field label,
+.item-row .element-field label {
 	grid-column: 1 / -1;
 	grid-row: 1;
 }
 
 .character-row .element-field select,
 .npc-row .element-field select,
-.enemy-row .element-field select {
+.enemy-row .element-field select,
+.item-row .element-field select {
 	grid-column: 1;
 	grid-row: 2;
 }
 
 .character-row .variant-field label,
 .npc-row .variant-field label,
-.enemy-row .variant-field label {
+.enemy-row .variant-field label,
+.item-row .variant-field label {
 	grid-column: 1 / -1;
 	grid-row: 3;
 	margin-top: 0.5rem;
@@ -406,7 +413,8 @@ textarea:disabled {
 
 .character-row .variant-field select,
 .npc-row .variant-field select,
-.enemy-row .variant-field select {
+.enemy-row .variant-field select,
+.item-row .variant-field select {
 	grid-column: 1 / -1;
 	grid-row: 4;
 }
@@ -425,7 +433,8 @@ textarea:disabled {
 
 .character-row .remove-row-btn,
 .npc-row .remove-row-btn,
-.enemy-row .remove-row-btn {
+.enemy-row .remove-row-btn,
+.item-row .remove-row-btn {
 	font-size: 1.2rem;
 	grid-column: 3;
 	grid-row: 2;
@@ -436,7 +445,8 @@ textarea:disabled {
 
 .character-row .preview-row-btn,
 .npc-row .preview-row-btn,
-.enemy-row .preview-row-btn {
+.enemy-row .preview-row-btn,
+.item-row .preview-row-btn {
 	grid-column: 2;
 	grid-row: 2;
 	height: var(--form-control-height);
@@ -465,7 +475,8 @@ textarea:disabled {
 }
 
 #add-npc-btn[hidden],
-#add-enemy-btn[hidden] {
+#add-enemy-btn[hidden],
+#add-item-btn[hidden] {
 	display: none;
 }
 
@@ -479,14 +490,16 @@ footer {
 @media (min-width: 700px) {
 	.character-row,
 	.npc-row,
-	.enemy-row {
+	.enemy-row,
+	.item-row {
 		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto auto;
 		grid-template-rows: auto auto;
 	}
 
 	.character-row .element-field label,
 	.npc-row .element-field label,
-	.enemy-row .element-field label {
+	.enemy-row .element-field label,
+	.item-row .element-field label {
 		grid-column: 1;
 		grid-row: 1;
 		margin-top: 0;
@@ -494,14 +507,16 @@ footer {
 
 	.character-row .element-field select,
 	.npc-row .element-field select,
-	.enemy-row .element-field select {
+	.enemy-row .element-field select,
+	.item-row .element-field select {
 		grid-column: 1;
 		grid-row: 2;
 	}
 
 	.character-row .variant-field label,
 	.npc-row .variant-field label,
-	.enemy-row .variant-field label {
+	.enemy-row .variant-field label,
+	.item-row .variant-field label {
 		grid-column: 2;
 		grid-row: 1;
 		margin-top: 0;
@@ -509,21 +524,24 @@ footer {
 
 	.character-row .variant-field select,
 	.npc-row .variant-field select,
-	.enemy-row .variant-field select {
+	.enemy-row .variant-field select,
+	.item-row .variant-field select {
 		grid-column: 2;
 		grid-row: 2;
 	}
 
 	.character-row .remove-row-btn,
 	.npc-row .remove-row-btn,
-	.enemy-row .remove-row-btn {
+	.enemy-row .remove-row-btn,
+	.item-row .remove-row-btn {
 		grid-column: 4;
 		grid-row: 2;
 	}
 
 	.character-row .preview-row-btn,
 	.npc-row .preview-row-btn,
-	.enemy-row .preview-row-btn {
+	.enemy-row .preview-row-btn,
+	.item-row .preview-row-btn {
 		grid-column: 3;
 		grid-row: 2;
 	}

@@ -322,5 +322,21 @@
 				}
 			]
 		}
+	],
+	"items": [
+		{
+			"id": "bea17b59-9d05-47f1-aef6-22a2ff80b9c1",
+			"elementType": "item",
+			"name": "PIG Employee Keychain",
+			"slug": "pig-employee-keychain",
+			"variants": [
+				{
+					"variantId": "ca5925cf-63e6-4ccf-a817-1cd447755b5b",
+					"variantName": "Keys",
+					"variantDesc": "A heavy set of a dozen keys for various commercial-level locks at a local restaurant; the keychain has a big white rubber tag with the outline of a neon pink pig and the letters PIG inside in the same neon pink; it looks a little dirty and beat up.",
+					"image": ""
+				}
+			]
+		}
 	]
 }

@@ -30,6 +30,14 @@ ${NO_BORDER_INSTRUCTION}
 Location: ${description}`;
 	}
 
+	if (category === 'item') {
+		return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
+Render exactly one item as the sole subject, fully visible in the frame:
+${name}: ${description}
+If a Neutral Void reference image is provided below, keep that exact background unchanged and do not modify or replace it. Otherwise, use a plain, neutral, unobtrusive background. Do not add any other objects, characters, or scenery.
+${NO_BORDER_INSTRUCTION}`;
+	}
+
 	return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
 Render exactly one individual character, NPC, or enemy in the foreground as follows:
 ${name}: ${description}
@@ -41,6 +49,7 @@ export function buildPrompt({
 	characters,
 	npcs,
 	enemies,
+	items = [],
 	location,
 	locationDesc,
 	scene,
@@ -59,7 +68,8 @@ Location: ${locationDesc ?? location?.variantDesc ?? ''}`;
 		isReferenceModeLocation(location) &&
 		!characters.length &&
 		!npcs.length &&
-		!enemies.length
+		!enemies.length &&
+		!items.length
 	) {
 		return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.
 Render exactly one individual character, NPC, or enemy in the foreground as follows:
@@ -85,6 +95,11 @@ ${NO_BORDER_INSTRUCTION}`;
 				? `Enemy: ${elementName} in ${variantName} variant (${variantDesc}).`
 				: `Enemy: ${elementName} (${variantDesc}).`,
 		),
+		...items.map(({ elementName, variantName, variantDesc }) =>
+			variantName
+				? `Item: ${elementName} in ${variantName} variant (${variantDesc}).`
+				: `Item: ${elementName} (${variantDesc}).`,
+		),
 	].join('\n');
 
 	const resolvedLocation = location ?? {
@@ -100,6 +115,6 @@ ${NO_BORDER_INSTRUCTION}`;
 ${entityBlocks}
 Environment/Setting: ${locationLabel}: ${resolvedLocation.variantDesc}. 
 Action/Scene: ${scene}
-If reference photos are provided below, use them only for each character's appearance and likeness. Do not copy a reference photo's pose, expression, camera angle, or background — pose and compose every character according to the Action/Scene description above. Make sure   characters don't look out of proportion to the elements in the setting behind them. Keep everything in natural perspective.
+If reference photos are provided below, use them only for each character's appearance and likeness or each item's appearance. Do not copy a reference photo's pose, expression, camera angle, or background — pose and compose every character and item according to the Action/Scene description above. Make sure characters and items don't look out of proportion to the elements in the setting behind them. Keep everything in natural perspective.
 ${NO_BORDER_INSTRUCTION}`;
 }

@@ -3,9 +3,15 @@ import test from 'node:test';
 
 import {
 	CHARACTER_ROWS_STORAGE_KEY,
+	ITEM_ROWS_STORAGE_KEY,
 	STORAGE_SCHEMA_VERSION,
 } from '../src/constants.js';
-import { getCharacterRows, setCharacterRows } from '../src/services/storage.js';
+import {
+	getCharacterRows,
+	getItemRows,
+	setCharacterRows,
+	setItemRows,
+} from '../src/services/storage.js';
 
 const values = new Map();
 globalThis.localStorage = {
@@ -30,6 +36,17 @@ test('stores and reads versioned row data', () => {
 	assert.deepEqual(JSON.parse(values.get(CHARACTER_ROWS_STORAGE_KEY)), {
 		version: STORAGE_SCHEMA_VERSION,
 		data: rows,
+	});
+});
+
+test('stores duplicate item rows with stable IDs', () => {
+	const row = { elementId: 'item-id', variantId: 'keys-variant-id' };
+	setItemRows([row, row]);
+
+	assert.deepEqual(getItemRows(), [row, row]);
+	assert.deepEqual(JSON.parse(values.get(ITEM_ROWS_STORAGE_KEY)), {
+		version: STORAGE_SCHEMA_VERSION,
+		data: [row, row],
 	});
 });
 

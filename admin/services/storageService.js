@@ -28,6 +28,7 @@ export const CATEGORY_FOLDERS = {
 	npc: 'npcs',
 	enemy: 'enemies',
 	location: 'locations',
+	item: 'items',
 };
 
 export function createStorageService(getSession, onAuthExpired) {

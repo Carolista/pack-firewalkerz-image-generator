@@ -37,6 +37,13 @@ const CATEGORIES = {
 		longPlural: 'Locations',
 		faClasses: 'fa-solid fa-circle-location-arrow',
 	},
+	item: {
+		shortSingular: 'Item',
+		shortPlural: 'Items',
+		longSingular: 'Item',
+		longPlural: 'Items',
+		faClasses: 'fa-regular fa-crystal-ball',
+	},
 };
 
 let activeCategory = 'character';

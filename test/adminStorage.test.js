@@ -1,7 +1,24 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { createStorageService } from '../admin/services/storageService.js';
+import { getRoute } from '../admin/routing.js';
+import {
+	CATEGORY_FOLDERS,
+	createStorageService,
+} from '../admin/services/storageService.js';
+
+test('item routes and image paths use the Items category', () => {
+	assert.deepEqual(getRoute('#/view/item'), {
+		name: 'view',
+		category: 'item',
+	});
+	assert.deepEqual(getRoute('#/edit/item/pig-employee-keychain'), {
+		name: 'edit',
+		category: 'item',
+		slug: 'pig-employee-keychain',
+	});
+	assert.equal(CATEGORY_FOLDERS.item, 'items');
+});
 
 test('image removal uses exact Storage object names without leading slashes', async () => {
 	const originalFetch = globalThis.fetch;

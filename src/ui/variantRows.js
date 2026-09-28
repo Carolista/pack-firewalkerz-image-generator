@@ -135,7 +135,8 @@ export function initVariantRows({
 
 	function updateAddButtonState() {
 		const count = container.querySelectorAll(`.${rowClassName}`).length;
-		const cap = allowDuplicates ? maxRows : elements.length;
+		const cap =
+			allowDuplicates && elements.length ? maxRows : elements.length;
 		addBtn.hidden = count >= cap;
 		addBtn.innerHTML =
 			count === 0

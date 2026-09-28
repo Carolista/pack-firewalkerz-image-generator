@@ -39,6 +39,11 @@ import {
 	showSuccess,
 } from './src/ui/generationOutput.js';
 import {
+	getItemSelections,
+	hasAtLeastOneRow as hasAtLeastOneItemRow,
+	initItemRows,
+} from './src/ui/itemRows.js';
+import {
 	getNPCSelections,
 	hasAtLeastOneRow as hasAtLeastOneNPCRow,
 	initNPCRows,
@@ -137,7 +142,7 @@ function getGenerationControls() {
 		document.getElementById('other-location-text'),
 		document.getElementById('scene-text'),
 		...document.querySelectorAll(
-			'#character-card button, #character-card select, #npc-card button, #npc-card select, #enemy-card button, #enemy-card select',
+			'#character-card button, #character-card select, #npc-card button, #npc-card select, #enemy-card button, #enemy-card select, #item-card button, #item-card select',
 		),
 	];
 }
@@ -160,6 +165,12 @@ initEnemyRows({
 	onPreview: showCatalogPreview,
 });
 
+initItemRows({
+	container: document.getElementById('item-rows'),
+	addBtn: document.getElementById('add-item-btn'),
+	onPreview: showCatalogPreview,
+});
+
 initSettingField({
 	selectEl: document.getElementById('location-select'),
 	variantFieldEl: document.getElementById('location-variant-field'),
@@ -171,7 +182,7 @@ initSettingField({
 
 if (catalogUnavailable) {
 	for (const panel of document.querySelectorAll(
-		'#setting-card, #character-card, #npc-card, #enemy-card',
+		'#setting-card, #character-card, #npc-card, #enemy-card, #item-card',
 	)) {
 		panel.hidden = true;
 	}
@@ -249,12 +260,13 @@ async function generateSceneImage() {
 		const hasEntities =
 			hasAtLeastOneCharacterRow() ||
 			hasAtLeastOneNPCRow() ||
-			hasAtLeastOneEnemyRow();
+			hasAtLeastOneEnemyRow() ||
+			hasAtLeastOneItemRow();
 
 		// Location reference mode and Neutral Void reference mode allow no entities
 		if (!hasEntities && !isLocationRef && !isNeutralVoidRef) {
 			await showAlert(
-				'Please add at least one character, NPC, or enemy.',
+				'Please add at least one character, NPC, enemy, or item.',
 			);
 			return;
 		}
@@ -275,10 +287,13 @@ async function generateSceneImage() {
 			isLocationRef || isNeutralVoidRef ? [] : getNPCSelections();
 		const enemies =
 			isLocationRef || isNeutralVoidRef ? [] : getEnemySelections();
+		const items =
+			isLocationRef || isNeutralVoidRef ? [] : getItemSelections();
 		const fullPrompt = buildPrompt({
 			characters,
 			npcs,
 			enemies,
+			items,
 			location,
 			locationDesc: isLocationRef ? location.variantDesc : undefined,
 			scene,
@@ -287,6 +302,7 @@ async function generateSceneImage() {
 			...characters,
 			...npcs,
 			...enemies,
+			...items,
 			location,
 		]);
 		await generateWithPrompt(fullPrompt, referenceImages);

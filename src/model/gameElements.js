@@ -4,6 +4,7 @@ export function normalizeCatalog(data) {
 		npcs: normalizeCollection(data.npcs, 'npc'),
 		enemies: normalizeCollection(data.enemies, 'enemy'),
 		locations: normalizeCollection(data.locations, 'location'),
+		items: normalizeCollection(data.items ?? [], 'item'),
 	};
 }
 
