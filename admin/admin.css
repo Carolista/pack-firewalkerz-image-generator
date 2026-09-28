@@ -696,6 +696,15 @@ textarea.variant-desc {
 	color: var(--admin-ink);
 }
 
+.details-error {
+	color: var(--red);
+	margin: 0;
+}
+
+.details-error:empty {
+	display: none;
+}
+
 .edit-button-group {
 	display: flex;
 	flex-direction: row;

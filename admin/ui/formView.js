@@ -772,11 +772,13 @@ export function createFormView({
 						refreshImageControls(row);
 					}
 				}
-				for (const { id, image } of deletedVariants) {
-					await dataClient.deleteVariant(id);
+				for (const { id, image } of [...deletedVariants]) {
 					if (image) await storageService.deleteImage(image);
+					await dataClient.deleteVariant(id);
+					deletedVariants = deletedVariants.filter(
+						variant => variant.id !== id,
+					);
 				}
-				deletedVariants = [];
 				setStatus(formStatus, '');
 				navigateTo({ name: 'view', category: formCategory.value });
 			} catch (error) {

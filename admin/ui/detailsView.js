@@ -154,8 +154,8 @@ export function createDetailsView({
 		if (!confirmed) return;
 		try {
 			modals.setConfirmBusy(true);
-			await dataClient.deleteVariant(variant.id);
 			if (variant.image) await storageService.deleteImage(variant.image);
+			await dataClient.deleteVariant(variant.id);
 			await view.load({ slug: element.slug });
 		} catch (error) {
 			setStatus(status, error.message);

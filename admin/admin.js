@@ -148,7 +148,7 @@ const catalogView = createCatalogView({
 const detailsView = createDetailsView({
 	container: detailsContainer,
 	content: detailsContent,
-	status: catalogStatus,
+	status: document.getElementById('details-error'),
 	dataClient,
 	storageService,
 	modals,
