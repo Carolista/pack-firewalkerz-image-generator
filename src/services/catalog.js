@@ -74,7 +74,13 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 		CATALOG = catalog;
 		return catalog;
 	} catch (error) {
-		catalog = { characters: [], npcs: [], enemies: [], locations: [] };
+		catalog = {
+			characters: [],
+			npcs: [],
+			enemies: [],
+			locations: [],
+			items: [],
+		};
 		CATALOG = catalog;
 		ADMIN_CATALOG_ACTIVE = false;
 		console.warn('Campaign catalog unavailable:', error);
@@ -106,6 +112,7 @@ function normalizeSupabaseCatalog(
 		npcs: [],
 		enemies: [],
 		locations: [],
+		items: [],
 	};
 	for (const element of elements) {
 		const collectionKey = {
@@ -113,6 +120,7 @@ function normalizeSupabaseCatalog(
 			npc: 'npcs',
 			enemy: 'enemies',
 			location: 'locations',
+			item: 'items',
 		}[element.element_type];
 		if (!collectionKey) continue;
 		const publishedVariants = variantsByElement.get(element.id);
@@ -134,6 +142,7 @@ export function getElements(elementType) {
 		npc: 'npcs',
 		enemy: 'enemies',
 		location: 'locations',
+		item: 'items',
 	}[elementType];
 	if (!collectionKey) {
 		throw new Error(`Unknown catalog element type: ${elementType}`);

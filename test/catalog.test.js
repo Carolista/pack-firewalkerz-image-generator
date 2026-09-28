@@ -25,6 +25,8 @@ test('normalizes and validates the catalog', () => {
 	assert.equal(catalog.npcs.length, 3);
 	assert.equal(catalog.enemies.length, 3);
 	assert.equal(catalog.locations.length, 4);
+	assert.equal(catalog.items.length, 1);
+	assert.equal(catalog.items[0].elementType, 'item');
 
 	for (const elements of Object.values(catalog)) {
 		for (const element of elements) {
@@ -45,6 +47,15 @@ test('looks up a variant by stable ID', () => {
 	const variant = getVariantById(enemy, expectedVariant.variantId);
 
 	assert.equal(variant.variantName, 'On Patrol');
+});
+
+test('looks up the starter item and its variant', () => {
+	const item = getElements('item')[0];
+	const variant = getVariantById(item, item.variants[0].variantId);
+
+	assert.equal(item.name, 'PIG Employee Keychain');
+	assert.equal(variant.variantName, 'Keys');
+	assert.match(variant.variantDesc, /neon pink pig/);
 });
 
 test('returns undefined for an unknown variant ID', () => {
@@ -262,6 +273,28 @@ test('renders normalized variant selections in the prompt', () => {
 	assert.match(prompt, /The bot searches the alley/);
 });
 
+test('renders every selected item, including duplicates, in the prompt', () => {
+	const item = {
+		elementName: 'PIG Employee Keychain',
+		variantName: 'Keys',
+		variantDesc: 'A dozen keys on a pink pig keychain.',
+	};
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		items: [item, item],
+		locationDesc: 'A restaurant.',
+		scene: 'Two keychains lie on a counter.',
+	});
+
+	assert.equal(
+		prompt.match(/Item: PIG Employee Keychain in Keys variant/g)?.length,
+		2,
+	);
+	assert.match(prompt, /each item's appearance/);
+});
+
 test('renders the selected location variant in the prompt', () => {
 	const prompt = buildPrompt({
 		characters: [],
@@ -366,6 +399,31 @@ test('renders normal prompt with Neutral Void and existing entities', () => {
 	assert.match(prompt, /Character: River-That-Remembers/);
 	assert.match(prompt, /Environment\/Setting: Neutral Void \(default\):/);
 	assert.match(prompt, /Action\/Scene: Standing in the void/);
+});
+
+test('items prevent the Neutral Void no-entities reference prompt', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		items: [
+			{
+				elementName: 'Keychain',
+				variantName: 'Keys',
+				variantDesc: 'A set of keys.',
+			},
+		],
+		location: {
+			elementName: 'Neutral Void',
+			slug: 'neutral-void',
+			variantName: 'default',
+			variantDesc: 'A neutral void.',
+		},
+		scene: 'The keys float in the void.',
+	});
+
+	assert.match(prompt, /Item: Keychain in Keys variant/);
+	assert.doesNotMatch(prompt, /Render exactly one individual/);
 });
 
 test('normal prompt includes a named location variant, even when it is the only one', () => {
@@ -507,6 +565,18 @@ test('buildReferenceImagePrompt renders a subject prompt for character/npc/enemy
 	assert.match(prompt, /plain, neutral, unobtrusive background/);
 });
 
+test('buildReferenceImagePrompt describes an item without character instructions', () => {
+	const prompt = buildReferenceImagePrompt({
+		category: 'item',
+		name: 'PIG Employee Keychain: Keys',
+		description: 'A dozen keys on a pink pig keychain.',
+	});
+
+	assert.match(prompt, /Render exactly one item/);
+	assert.match(prompt, /PIG Employee Keychain: Keys/);
+	assert.doesNotMatch(prompt, /head to toe|individual character/i);
+});
+
 test('prompts include edge-to-edge no-border instruction', () => {
 	const standardPrompt = buildPrompt({
 		characters: [],
@@ -542,6 +612,7 @@ test('public catalog loads only published variants and fails closed after a requ
 		},
 		{ id: 'shade', element_type: 'npc', name: 'Shade', slug: 'shade' },
 		{ id: 'grove', element_type: 'location', name: 'Grove', slug: 'grove' },
+		{ id: 'keys', element_type: 'item', name: 'Keys', slug: 'keys' },
 	];
 	const variant = (id, elementId, isPublished, sortOrder = null) => ({
 		id,
@@ -558,6 +629,8 @@ test('public catalog loads only published variants and fails closed after a requ
 		variant('river-first', 'river', true, 1),
 		variant('shade-draft', 'shade', false),
 		variant('grove-default', 'grove', true),
+		variant('keys-public', 'keys', true),
+		variant('keys-draft', 'keys', false),
 	];
 	try {
 		globalThis.fetch = async url => {
@@ -578,11 +651,16 @@ test('public catalog loads only published variants and fails closed after a requ
 		assert.equal(getElements('npc').length, 0);
 		assert.equal(getElements('location').length, 1);
 		assert.equal(getElements('enemy').length, 0);
+		assert.deepEqual(
+			getElements('item')[0].variants.map(row => row.variantId),
+			['keys-public'],
+		);
 
 		globalThis.fetch = async () => new Response(null, { status: 503 });
 		await assert.rejects(loadCatalog(), /Supabase catalog request failed/);
 		assert.deepEqual(getElements('character'), []);
 		assert.deepEqual(getElements('location'), []);
+		assert.deepEqual(getElements('item'), []);
 	} finally {
 		globalThis.fetch = originalFetch;
 	}
@@ -602,6 +680,7 @@ test('admin catalog requires RPC access and falls back to published variants', a
 	const originalFetch = globalThis.fetch;
 	const elements = [
 		{ id: 'mother', element_type: 'npc', name: 'Mother', slug: 'mother' },
+		{ id: 'keys', element_type: 'item', name: 'Keys', slug: 'keys' },
 	];
 	const variants = [
 		{
@@ -620,6 +699,14 @@ test('admin catalog requires RPC access and falls back to published variants', a
 			image: '',
 			is_published: false,
 		},
+		{
+			id: 'keys-draft',
+			element_id: 'keys',
+			variant_name: 'Draft',
+			variant_desc: 'A keychain.',
+			image: '',
+			is_published: false,
+		},
 	];
 	try {
 		globalThis.fetch = async (url, options) => {
@@ -632,6 +719,10 @@ test('admin catalog requires RPC access and falls back to published variants', a
 		assert.deepEqual(
 			getElements('npc')[0].variants.map(variant => variant.variantId),
 			['day', 'night'],
+		);
+		assert.equal(
+			getElements('item')[0].variants[0].variantId,
+			'keys-draft',
 		);
 
 		globalThis.fetch = async url => {
@@ -652,6 +743,7 @@ test('admin catalog requires RPC access and falls back to published variants', a
 			getElements('npc')[0].variants.map(variant => variant.variantId),
 			['day'],
 		);
+		assert.deepEqual(getElements('item'), []);
 	} finally {
 		globalThis.fetch = originalFetch;
 	}

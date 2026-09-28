@@ -1,4 +1,10 @@
-const ROUTE_CATEGORIES = new Set(['character', 'npc', 'enemy', 'location']);
+const ROUTE_CATEGORIES = new Set([
+	'character',
+	'npc',
+	'enemy',
+	'location',
+	'item',
+]);
 
 export function getRoute(hash = window.location.hash) {
 	const parts = hash.split('/');

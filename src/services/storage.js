@@ -1,6 +1,7 @@
 import {
 	CHARACTER_ROWS_STORAGE_KEY,
 	ENEMY_ROWS_STORAGE_KEY,
+	ITEM_ROWS_STORAGE_KEY,
 	LOCATION_STORAGE_KEY,
 	NPC_ROWS_STORAGE_KEY,
 	OTHER_LOCATION_TEXT_STORAGE_KEY,
@@ -52,6 +53,14 @@ export function getEnemyRows() {
 
 export function setEnemyRows(rows) {
 	setJsonValue(ENEMY_ROWS_STORAGE_KEY, rows);
+}
+
+export function getItemRows() {
+	return getJsonValue(ITEM_ROWS_STORAGE_KEY, []);
+}
+
+export function setItemRows(rows) {
+	setJsonValue(ITEM_ROWS_STORAGE_KEY, rows);
 }
 
 export function getOtherLocationText() {
