@@ -23,7 +23,7 @@
 			<h2>Image Generator</h2>
 		</header>
 		<main>
-			<div class="card">
+			<div id="setting-card" class="card">
 				<h3>Setting</h3>
 				<div class="field">
 					<label for="location-select">Location</label>
@@ -81,6 +81,11 @@
 			</div>
 			<div class="card">
 				<h3 id="scene-heading">Scene Activity</h3>
+				<p id="catalog-unavailable-notice" role="status" hidden>
+					Specific campaign elements are unavailable at this time;
+					image generation will be based solely on the scene
+					description below without campaign context.
+				</p>
 				<p id="scene-hint" class="field-hint">
 					Describe actions, facial expressions, placement of
 					characters within the setting, any items or props present,

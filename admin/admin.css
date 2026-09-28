@@ -163,6 +163,52 @@ textarea.variant-desc {
 	width: 5.5rem;
 }
 
+.variant-publish-control {
+	align-items: center;
+	color: var(--admin-ink);
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	width: fit-content;
+}
+
+.variant-published {
+	appearance: none;
+	background: var(--admin-light);
+	border: 1px solid var(--admin-ink);
+	border-radius: 999px;
+	cursor: pointer;
+	height: 1.5rem;
+	margin: 0;
+	position: relative;
+	width: 2.75rem;
+}
+
+.variant-published::before {
+	background: var(--admin-ink);
+	border-radius: 50%;
+	content: '';
+	height: 1rem;
+	left: 0.2rem;
+	position: absolute;
+	top: 0.2rem;
+	width: 1rem;
+}
+
+.variant-published:checked {
+	background: var(--admin-blue);
+}
+
+.variant-published:checked::before {
+	background: #fff;
+	transform: translateX(1.25rem);
+}
+
+.unpublished-label {
+	color: var(--admin-dark-blue);
+	font-size: 0.85rem;
+}
+
 .delete-variant-btn {
 	padding: 0;
 	aspect-ratio: 1;

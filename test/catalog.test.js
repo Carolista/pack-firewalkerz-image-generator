@@ -7,10 +7,15 @@ import {
 	NO_BORDER_INSTRUCTION,
 	buildPrompt,
 	buildReferenceImagePrompt,
+	buildSceneOnlyPrompt,
 	isLocationReferenceMode,
 	isReferenceModeLocation,
 } from '../src/prompt.js';
-import { getElements, getVariantById } from '../src/services/catalog.js';
+import {
+	getElements,
+	getVariantById,
+	loadCatalog,
+} from '../src/services/catalog.js';
 
 test('normalizes and validates the catalog', () => {
 	const catalog = assertCatalog(normalizeCatalog(DATA));
@@ -484,4 +489,71 @@ test('prompts include edge-to-edge no-border instruction', () => {
 	assert.ok(standardPrompt.includes(NO_BORDER_INSTRUCTION));
 	assert.ok(locationRefPrompt.includes(NO_BORDER_INSTRUCTION));
 	assert.ok(entityRefPrompt.includes(NO_BORDER_INSTRUCTION));
+});
+
+test('public catalog loads only published variants and fails closed after a request error', async () => {
+	const originalFetch = globalThis.fetch;
+	const elements = [
+		{
+			id: 'river',
+			element_type: 'character',
+			name: 'River',
+			slug: 'river',
+		},
+		{ id: 'shade', element_type: 'npc', name: 'Shade', slug: 'shade' },
+		{ id: 'grove', element_type: 'location', name: 'Grove', slug: 'grove' },
+	];
+	const variant = (id, elementId, isPublished, sortOrder = null) => ({
+		id,
+		element_id: elementId,
+		variant_name: id,
+		variant_desc: `${id} description`,
+		image: '',
+		sort_order: sortOrder,
+		is_published: isPublished,
+	});
+	const variants = [
+		variant('river-later', 'river', true, 2),
+		variant('river-draft', 'river', false, 1),
+		variant('river-first', 'river', true, 1),
+		variant('shade-draft', 'shade', false),
+		variant('grove-default', 'grove', true),
+	];
+	try {
+		globalThis.fetch = async url => {
+			if (url.includes('/game_element_variants')) {
+				assert.equal(
+					new URL(url).searchParams.get('is_published'),
+					'eq.true',
+				);
+				return new Response(JSON.stringify(variants));
+			}
+			return new Response(JSON.stringify(elements));
+		};
+		await loadCatalog();
+		assert.deepEqual(
+			getElements('character')[0].variants.map(row => row.variantId),
+			['river-first', 'river-later'],
+		);
+		assert.equal(getElements('npc').length, 0);
+		assert.equal(getElements('location').length, 1);
+		assert.equal(getElements('enemy').length, 0);
+
+		globalThis.fetch = async () => new Response(null, { status: 503 });
+		await assert.rejects(loadCatalog(), /Supabase catalog request failed/);
+		assert.deepEqual(getElements('character'), []);
+		assert.deepEqual(getElements('location'), []);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
+});
+
+test('scene-only prompt contains no campaign or reference-image context', () => {
+	const prompt = buildSceneOnlyPrompt('A traveler crosses a frozen lake.');
+	assert.match(prompt, /Scene: A traveler crosses a frozen lake/);
+	assert.ok(prompt.includes(NO_BORDER_INSTRUCTION));
+	assert.doesNotMatch(
+		prompt,
+		/Werewolf|World of Darkness|reference photo|Environment\/Setting/,
+	);
 });

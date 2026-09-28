@@ -71,6 +71,12 @@ export function createDetailsView({
 				heading.textContent = variant.variant_name;
 				text.append(heading);
 			}
+			if (!variant.is_published) {
+				const publication = document.createElement('span');
+				publication.className = 'unpublished-label';
+				publication.textContent = 'Unpublished';
+				text.append(publication);
+			}
 			const description = document.createElement('p');
 			description.textContent = variant.variant_desc;
 			text.append(description);

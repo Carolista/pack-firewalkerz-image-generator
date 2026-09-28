@@ -18,9 +18,10 @@ export async function loadCatalog() {
 			fetch(`${SUPABASE_URL}/rest/v1/game_elements?select=*`, {
 				headers,
 			}),
-			fetch(`${SUPABASE_URL}/rest/v1/game_element_variants?select=*`, {
-				headers,
-			}),
+			fetch(
+				`${SUPABASE_URL}/rest/v1/game_element_variants?select=*&is_published=eq.true`,
+				{ headers },
+			),
 		]);
 		if (!elementsResponse.ok || !variantsResponse.ok) {
 			throw new Error('Supabase catalog request failed.');
@@ -34,14 +35,17 @@ export async function loadCatalog() {
 		CATALOG = catalog;
 		return catalog;
 	} catch (error) {
-		console.warn('Using local catalog fallback:', error);
-		return catalog;
+		catalog = { characters: [], npcs: [], enemies: [], locations: [] };
+		CATALOG = catalog;
+		console.warn('Campaign catalog unavailable:', error);
+		throw error;
 	}
 }
 
 function normalizeSupabaseCatalog(elements, variants) {
 	const variantsByElement = new Map();
 	for (const variant of variants) {
+		if (variant.is_published !== true) continue;
 		const elementVariants = variantsByElement.get(variant.element_id) ?? [];
 		elementVariants.push({
 			variantId: variant.id,
@@ -67,12 +71,14 @@ function normalizeSupabaseCatalog(elements, variants) {
 			location: 'locations',
 		}[element.element_type];
 		if (!collectionKey) continue;
+		const publishedVariants = variantsByElement.get(element.id);
+		if (!publishedVariants?.length) continue;
 		normalized[collectionKey].push({
 			id: element.id,
 			elementType: element.element_type,
 			name: element.name,
 			slug: element.slug,
-			variants: variantsByElement.get(element.id) ?? [],
+			variants: publishedVariants,
 		});
 	}
 	return normalizeCatalog(normalized);

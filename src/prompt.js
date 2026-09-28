@@ -5,6 +5,13 @@ export const NEUTRAL_VOID_SLUG = 'neutral-void';
 export const NO_BORDER_INSTRUCTION =
 	'Fill the entire square canvas edge-to-edge with no white borders, blank margins, framing, or letterboxing.';
 
+export function buildSceneOnlyPrompt(scene) {
+	return `Detailed, painterly digital illustration.
+Use only the following scene description to determine the subjects, setting, and action.
+${NO_BORDER_INSTRUCTION}
+Scene: ${scene}`;
+}
+
 export function isReferenceModeLocation(location) {
 	return location?.slug === NEUTRAL_VOID_SLUG;
 }

@@ -80,9 +80,15 @@ export function createCatalogView({
 		const variantCount = element.game_element_variants?.length ?? 0;
 		if (variantCount > 1) {
 			const variantList = sortVariants(element.game_element_variants)
-				.map(variant => variant.variant_name)
+				.map(variant =>
+					variant.is_published
+						? variant.variant_name
+						: `${variant.variant_name} (Unpublished)`,
+				)
 				.join(', ');
 			count.textContent = `${variantCount} variants: ${variantList}`;
+		} else if (variantCount === 1 && !firstVariant.is_published) {
+			count.textContent = 'Unpublished';
 		}
 		copy.append(name, count);
 		const actions = document.createElement('div');

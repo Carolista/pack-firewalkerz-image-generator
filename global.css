@@ -176,6 +176,14 @@ label {
 	margin: -0.5rem 0 1rem;
 }
 
+#catalog-unavailable-notice {
+	background: var(--cream-pale);
+	border-left: 4px solid var(--red);
+	color: var(--dark-gray);
+	margin: 0 0 1rem;
+	padding: 0.75rem;
+}
+
 textarea,
 select,
 input {

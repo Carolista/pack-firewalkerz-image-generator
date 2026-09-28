@@ -1,6 +1,7 @@
 import { CUSTOM_LOCATION_REFERENCE_KEY } from './src/constants.js';
 import {
 	buildPrompt,
+	buildSceneOnlyPrompt,
 	isLocationReferenceMode,
 	isReferenceModeLocation,
 } from './src/prompt.js';
@@ -46,7 +47,12 @@ import {
 	initSettingField,
 } from './src/ui/settingField.js';
 
-await loadCatalog();
+let catalogUnavailable = false;
+try {
+	await loadCatalog();
+} catch {
+	catalogUnavailable = true;
+}
 
 const year = document.getElementById('year');
 let currentYear = new Date().getFullYear();
@@ -110,6 +116,16 @@ initSettingField({
 	onPreview: showCatalogPreview,
 });
 
+if (catalogUnavailable) {
+	for (const panel of document.querySelectorAll(
+		'#setting-card, #character-card, #npc-card, #enemy-card',
+	)) {
+		panel.hidden = true;
+	}
+	document.getElementById('catalog-unavailable-notice').hidden = false;
+	document.getElementById('scene-hint').hidden = true;
+}
+
 initCatalogPreviewModal({
 	overlay: document.getElementById('catalog-preview-overlay'),
 	closeBtn: document.getElementById('catalog-preview-close-btn'),
@@ -156,6 +172,16 @@ async function generateSceneImage() {
 	);
 
 	try {
+		const scene = sceneText.value.trim();
+		if (catalogUnavailable) {
+			if (!scene) {
+				await showAlert('Please describe the scene action.');
+				return;
+			}
+			await generateWithPrompt(buildSceneOnlyPrompt(scene), []);
+			return;
+		}
+
 		const location = getLocationSelectionDetails();
 		if (!location) {
 			await showAlert('Please describe the custom setting.');
@@ -179,8 +205,6 @@ async function generateSceneImage() {
 			);
 			return;
 		}
-
-		const scene = sceneText.value.trim();
 
 		// Location reference mode doesn't use scene, but Neutral Void does
 		if (!isLocationRef && !scene) {
@@ -212,27 +236,29 @@ async function generateSceneImage() {
 			...enemies,
 			location,
 		]);
-
-		showGenerating();
-
-		try {
-			const result = await generateImageWithNetworkRetry({
-				prompt: fullPrompt,
-				referenceImages,
-				onRetry: () =>
-					(statusText.innerText = 'Connection issue, retrying...'),
-			});
-			if (result.imageUrl) generatedBlob = showSuccess(result);
-			else showEmptyResponse(result.raw);
-		} catch (err) {
-			showError(formatError(err));
-		}
+		await generateWithPrompt(fullPrompt, referenceImages);
 	} finally {
 		generationInProgress = false;
 		setGenerationBusy(
 			{ ...generationControls, controls: getGenerationControls() },
 			false,
 		);
+	}
+}
+
+async function generateWithPrompt(prompt, referenceImages) {
+	showGenerating();
+	try {
+		const result = await generateImageWithNetworkRetry({
+			prompt,
+			referenceImages,
+			onRetry: () =>
+				(statusText.innerText = 'Connection issue, retrying...'),
+		});
+		if (result.imageUrl) generatedBlob = showSuccess(result);
+		else showEmptyResponse(result.raw);
+	} catch (err) {
+		showError(formatError(err));
 	}
 }
 
