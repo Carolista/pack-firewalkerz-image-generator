@@ -140,9 +140,9 @@ export function createCatalogView({
 			const imagePaths = (element.game_element_variants ?? [])
 				.map(variant => variant.image)
 				.filter(Boolean);
-			await dataClient.deleteElement(element.id);
 			if (imagePaths.length)
 				await storageService.deleteImages(imagePaths);
+			await dataClient.deleteElement(element.id);
 			await view.loadElements();
 		} catch (error) {
 			setStatus(catalogStatus, error.message);

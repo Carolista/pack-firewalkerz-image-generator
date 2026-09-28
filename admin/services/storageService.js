@@ -58,6 +58,24 @@ export function createStorageService(getSession, onAuthExpired) {
 		return data;
 	}
 
+	async function objectExists(path, canRetryAfterAuth = true) {
+		const encodedPath = path.split('/').map(encodeURIComponent).join('/');
+		const response = await fetch(
+			`${STORAGE_URL}/object/info/${BUCKET}/${encodedPath}`,
+			{ headers: authHeaders() },
+		);
+		if (response.status === 401 && canRetryAfterAuth && onAuthExpired) {
+			await onAuthExpired();
+			return objectExists(path, false);
+		}
+		if (response.status === 404) return false;
+		if (!response.ok) {
+			const data = await response.json().catch(() => null);
+			throw new Error(data?.message ?? 'Could not verify image removal.');
+		}
+		return true;
+	}
+
 	return {
 		// Overwrites an existing object at the same path (used when a variant regenerates its own image).
 		async uploadImage(path, blob) {
@@ -75,14 +93,34 @@ export function createStorageService(getSession, onAuthExpired) {
 			imageVersions.set(path, Date.now());
 			return result;
 		},
-		deleteImages(paths) {
-			const validPaths = paths.filter(Boolean);
-			if (!validPaths.length) return Promise.resolve([]);
-			return request(`${STORAGE_URL}/object/${BUCKET}`, {
+		async deleteImages(paths) {
+			const validPaths = [
+				...new Set(
+					paths
+						.filter(path => path && !/^https?:\/\//i.test(path))
+						.map(path => path.replace(/^\/+/, '')),
+				),
+			].filter(Boolean);
+			if (!validPaths.length) return [];
+			const deleted = await request(`${STORAGE_URL}/object/${BUCKET}`, {
 				method: 'DELETE',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ prefixes: validPaths }),
 			});
+			if (!Array.isArray(deleted)) {
+				throw new Error('Could not verify image removal.');
+			}
+			for (const path of validPaths) {
+				if (
+					!deleted.some(object => object.name === path) &&
+					(await objectExists(path))
+				) {
+					throw new Error(
+						`Image ${path} was not removed from Storage.`,
+					);
+				}
+			}
+			return deleted;
 		},
 		deleteImage(path) {
 			return this.deleteImages([path]);
