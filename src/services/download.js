@@ -4,8 +4,12 @@ const EXTENSIONS = {
 	'image/jpeg': 'jpg',
 };
 
+export function extensionForMimeType(mimeType) {
+	return EXTENSIONS[mimeType] ?? 'jpg';
+}
+
 export function filenameForBlob(blob, baseName) {
-	return `${baseName}.${EXTENSIONS[blob.type] ?? 'jpg'}`;
+	return `${baseName}.${extensionForMimeType(blob.type)}`;
 }
 
 // In-app webviews accept the click but never produce a file, so failure here is silent by nature.

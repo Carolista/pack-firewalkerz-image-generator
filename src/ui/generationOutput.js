@@ -1,15 +1,10 @@
-import {
-	canShareFile,
-	createShareFile,
-	describeShareSupport,
-} from '../services/share.js';
+import { canShareFile, createShareFile } from '../services/share.js';
 
 let statusEl;
 let imageEl;
 let placeholderEl;
 let shareBtnEl;
 let shareFallbackEl;
-let shareDiagnosticsEl;
 let downloadBtnEl;
 let retryBtnEl;
 let imageRequestId = 0;
@@ -20,7 +15,6 @@ export function initGenerationOutput({
 	placeholder,
 	shareBtn,
 	shareFallback,
-	shareDiagnostics,
 	downloadBtn,
 	retryBtn,
 }) {
@@ -29,7 +23,6 @@ export function initGenerationOutput({
 	placeholderEl = placeholder;
 	shareBtnEl = shareBtn;
 	shareFallbackEl = shareFallback;
-	shareDiagnosticsEl = shareDiagnostics;
 	downloadBtnEl = downloadBtn;
 	retryBtnEl = retryBtn;
 }
@@ -65,7 +58,6 @@ export function showSuccess({ imageUrl, blob }) {
 			shareFallbackEl.hidden = true;
 		} else {
 			shareFallbackEl.hidden = false;
-			shareDiagnosticsEl.textContent = describeShareSupport(file);
 		}
 		downloadBtnEl.style.display = 'inline-block';
 	};

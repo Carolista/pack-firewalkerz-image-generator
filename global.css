@@ -501,11 +501,45 @@ footer {
 	width: 100%;
 }
 
+.catalog-preview-caption {
+	align-items: center;
+	display: flex;
+	gap: 0.5rem;
+	justify-content: space-between;
+	margin-top: 0.4rem;
+}
+
 .catalog-preview-tile figcaption {
 	font-family: var(--font-card-heading);
 	font-size: 1rem;
 	margin-top: 0.4rem;
 	text-align: center;
+}
+
+.catalog-preview-caption figcaption {
+	color: var(--dark-gray);
+	margin-top: 0;
+	text-align: left;
+}
+
+.catalog-preview-share {
+	background: none;
+	color: var(--dark-gray);
+	flex-shrink: 0;
+	font-size: 1rem;
+	height: var(--form-control-height);
+	padding: 0 0.5rem;
+	width: auto;
+}
+
+.catalog-preview-share:hover {
+	background: var(--light-gray);
+	color: var(--dark-gray);
+}
+
+.catalog-preview-share:active {
+	background: var(--gray);
+	color: var(--dark-gray);
 }
 
 @media (max-width: 480px) {
@@ -531,22 +565,9 @@ footer {
 	margin-top: 0.75rem;
 }
 
-.share-note,
-.share-diagnostics {
-	color: var(--cream-pale);
-	margin: 0 0 0.5rem;
-	/* The diagnostic string is one long token, so normal wrapping would overflow it. */
-	overflow-wrap: anywhere;
-	white-space: normal;
-	word-break: break-word;
-}
-
 .share-note {
-	font-size: 0.9rem;
-}
-
-.share-diagnostics {
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	margin: 0.5rem 0 0;
+	color: var(--dark-gray);
+	margin: 0 0 0.5rem;
+	overflow-wrap: anywhere;
+	font-size: 1rem;
 }

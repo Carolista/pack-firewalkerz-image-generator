@@ -1,4 +1,10 @@
 import { focusFirst, trapFocus } from '../../src/ui/focusTrap.js';
+import {
+	clampCenter as clampCropCenter,
+	minZoomForAngle as minimumZoomForAngle,
+	normalizeSignedAngle,
+	transformAroundAnchor,
+} from './cropGeometry.js';
 
 const MAX_OUTPUT_SIZE = 1024;
 const MAX_ZOOM = 6;
@@ -9,7 +15,6 @@ const JPEG_QUALITY = 0.92;
 const LINE_HEIGHT_PX = 16;
 const ALPHA_TYPES = ['image/png', 'image/webp'];
 const QUARTER_TURN = Math.PI / 2;
-const FULL_TURN = Math.PI * 2;
 const KEY_ROTATE_STEP = (5 * Math.PI) / 180;
 // Pinches almost always carry incidental twist, so rotation waits for a clearly deliberate one.
 const PINCH_ROTATE_THRESHOLD = (18 * Math.PI) / 180;
@@ -356,22 +361,20 @@ export function createCropModal({
 		applyTransform(nearest, zoom, viewportSize / 2, viewportSize / 2);
 	}
 
-	// A square of side c rotated by angle spans c/2 * (|cos| + |sin|) on each axis,
-	// so the image must be that much larger to keep the crop fully covered.
 	function minZoomForAngle() {
-		return Math.abs(Math.cos(angle)) + Math.abs(Math.sin(angle));
+		return minimumZoomForAngle(angle);
 	}
 
-	// Maps a viewport coordinate back to the source pixel currently drawn there.
-	function sourcePointAt(viewportX, viewportY) {
-		const scale = baseScale * zoom;
-		const dx = viewportX - viewportSize / 2;
-		const dy = viewportY - viewportSize / 2;
-		const cos = Math.cos(angle);
-		const sin = Math.sin(angle);
+	function cropState() {
 		return {
-			x: centerX + (dx * cos + dy * sin) / scale,
-			y: centerY + (-dx * sin + dy * cos) / scale,
+			angle,
+			zoom,
+			centerX,
+			centerY,
+			baseScale,
+			viewportSize,
+			sourceWidth,
+			sourceHeight,
 		};
 	}
 
@@ -388,17 +391,14 @@ export function createCropModal({
 	// Keeps the source pixel under (anchorX, anchorY) pinned while angle and scale change.
 	function applyTransform(nextAngle, nextZoom, anchorX, anchorY) {
 		if (!source || !viewportSize) return;
-		const anchor = sourcePointAt(anchorX, anchorY);
-		angle = normalizeAngle(nextAngle);
-		if (Number.isFinite(nextZoom)) zoom = clampZoomValue(nextZoom);
-		const scale = baseScale * zoom;
-		const dx = anchorX - viewportSize / 2;
-		const dy = anchorY - viewportSize / 2;
-		const cos = Math.cos(angle);
-		const sin = Math.sin(angle);
-		centerX = anchor.x - (dx * cos + dy * sin) / scale;
-		centerY = anchor.y - (-dx * sin + dy * cos) / scale;
-		clampCenter();
+		({ angle, zoom, centerX, centerY } = transformAroundAnchor(
+			cropState(),
+			nextAngle,
+			nextZoom,
+			anchorX,
+			anchorY,
+			MAX_ZOOM,
+		));
 		syncZoomInput();
 		scheduleDraw();
 	}
@@ -426,11 +426,7 @@ export function createCropModal({
 	}
 
 	function clampCenter() {
-		if (!viewportSize) return;
-		const halfSpan =
-			(viewportSize / (baseScale * zoom) / 2) * minZoomForAngle();
-		centerX = clampAxis(centerX, halfSpan, sourceWidth);
-		centerY = clampAxis(centerY, halfSpan, sourceHeight);
+		({ centerX, centerY } = clampCropCenter(cropState()));
 	}
 
 	function syncZoomInput() {
@@ -543,22 +539,6 @@ export function createCropModal({
 		resolver?.(value);
 		resolver = null;
 	}
-}
-
-// Falls back to centring when the image is too small to satisfy the inset on this axis.
-function clampAxis(value, halfSpan, extent) {
-	if (halfSpan * 2 >= extent) return extent / 2;
-	return Math.max(halfSpan, Math.min(extent - halfSpan, value));
-}
-
-function normalizeAngle(value) {
-	return ((value % FULL_TURN) + FULL_TURN) % FULL_TURN;
-}
-
-// Maps an angle into [-PI, PI] so twist deltas never jump a full turn at the seam.
-function normalizeSignedAngle(value) {
-	const normalized = normalizeAngle(value);
-	return normalized > Math.PI ? normalized - FULL_TURN : normalized;
 }
 
 // Prefers createImageBitmap so EXIF rotation is baked in before any measurement happens.

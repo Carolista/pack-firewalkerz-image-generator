@@ -140,6 +140,11 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
+.variant-image-col {
+	/* The actions wrap against this column, which is far narrower than the viewport. */
+	container-type: inline-size;
+}
+
 .variant-meta-row {
 	display: flex;
 	gap: 0.5rem;
@@ -192,6 +197,25 @@ textarea.variant-desc {
 	display: flex;
 	gap: 1rem;
 	margin-top: 0.5rem;
+}
+
+.share-variant {
+	background-color: transparent;
+	color: var(--admin-dark-blue);
+	font-size: 1.1rem;
+	padding: 0;
+	height: auto;
+	width: auto;
+}
+
+.share-variant:hover {
+	background-color: transparent;
+	color: var(--admin-blue);
+}
+
+.share-variant:active {
+	background-color: transparent;
+	color: var(--admin-midnight);
 }
 
 .edit-variant {
@@ -272,18 +296,32 @@ textarea.variant-desc {
 }
 
 .variant-image-actions {
-	display: flex;
-	flex-wrap: wrap;
+	display: grid;
 	gap: 0.5rem;
+	grid-template-columns: 1fr;
 	margin-top: 0.5rem;
 }
 
+/* Only 1, 2, or 4 columns, so four buttons never split 3 and 1. */
+@container (min-width: 19rem) {
+	.variant-image-actions {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@container (min-width: 38rem) {
+	.variant-image-actions {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+}
+
 .variant-image-actions button {
-	flex: 1;
-	min-width: 9rem;
+	min-width: 0;
+	width: 100%;
 }
 
 .variant-image-download-btn:disabled,
+.variant-image-share-btn:disabled,
 .variant-image-upload-btn:disabled {
 	background: var(--admin-light);
 	color: var(--admin-ink);
