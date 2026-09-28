@@ -157,10 +157,82 @@ textarea.variant-desc {
 
 .variant-name-field {
 	flex: 1;
+	min-width: 0;
+}
+
+.variant-name-control {
+	align-items: center;
+	background: var(--admin-pale);
+	border-radius: var(--border-radius-form-elements);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	min-height: var(--form-control-height);
+	padding: 0 0.6rem;
+	width: 100%;
+}
+
+.variant-name-prefix {
+	color: var(--admin-ink);
+	overflow-wrap: anywhere;
+}
+
+.variant-name-control .variant-name {
+	background: transparent;
+	flex: 1 1 6rem;
+	min-width: 0;
+	padding: 0;
+	width: auto;
 }
 
 .variant-sort-field {
 	width: 5.5rem;
+}
+
+.variant-publish-control {
+	align-items: center;
+	color: var(--admin-ink);
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	width: fit-content;
+}
+
+.variant-published {
+	appearance: none;
+	background: var(--admin-light);
+	border: 1px solid var(--admin-ink);
+	border-radius: 999px;
+	cursor: pointer;
+	height: 1.5rem;
+	margin: 0;
+	position: relative;
+	width: 2.75rem;
+}
+
+.variant-published::before {
+	background: var(--admin-ink);
+	border-radius: 50%;
+	content: '';
+	height: 1rem;
+	left: 0.2rem;
+	position: absolute;
+	top: 0.2rem;
+	width: 1rem;
+}
+
+.variant-published:checked {
+	background: var(--admin-blue);
+}
+
+.variant-published:checked::before {
+	background: #fff;
+	transform: translateX(1.25rem);
+}
+
+.unpublished-label {
+	color: var(--admin-dark-blue);
+	font-size: 0.85rem;
 }
 
 .delete-variant-btn {
@@ -482,8 +554,13 @@ textarea.variant-desc {
 	margin-bottom: 0.25rem;
 }
 
-.element-copy p:last-child {
+.element-copy p {
 	margin: 0;
+}
+
+.element-copy .unpublished-summary {
+	color: var(--admin-dark-blue);
+	font-style: italic;
 }
 
 .variant-detail {

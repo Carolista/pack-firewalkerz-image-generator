@@ -1,6 +1,8 @@
+import { ADMIN_SESSION_KEY, createAuthClient } from './admin/services/auth.js';
 import { CUSTOM_LOCATION_REFERENCE_KEY } from './src/constants.js';
 import {
 	buildPrompt,
+	buildSceneOnlyPrompt,
 	isLocationReferenceMode,
 	isReferenceModeLocation,
 } from './src/prompt.js';
@@ -9,7 +11,7 @@ import {
 	isNetworkError,
 	loadReferenceImages,
 } from './src/services/api.js';
-import { loadCatalog } from './src/services/catalog.js';
+import { ADMIN_CATALOG_ACTIVE, loadCatalog } from './src/services/catalog.js';
 import { downloadBlob, filenameForBlob } from './src/services/download.js';
 import { createShareFile, shareFile } from './src/services/share.js';
 import { initAlertModal, showAlert } from './src/ui/alertModal.js';
@@ -45,8 +47,17 @@ import {
 	getLocationSelectionDetails,
 	initSettingField,
 } from './src/ui/settingField.js';
+import { initSignInModal } from './src/ui/signInModal.js';
 
-await loadCatalog();
+const authClient = createAuthClient();
+let catalogUnavailable = false;
+try {
+	await loadCatalog({
+		adminAccessToken: authClient.getSession()?.access_token,
+	});
+} catch {
+	catalogUnavailable = true;
+}
 
 const year = document.getElementById('year');
 let currentYear = new Date().getFullYear();
@@ -65,6 +76,55 @@ const resetBtn = document.getElementById('reset-btn');
 const retryBtn = document.getElementById('retry-btn');
 const sceneText = document.getElementById('scene-text');
 const locationSelect = document.getElementById('location-select');
+const signInBtn = document.getElementById('public-sign-in-btn');
+const signOutBtn = document.getElementById('public-sign-out-btn');
+const signInForm = document.getElementById('public-sign-in-form');
+const signInModal = initSignInModal({
+	overlay: document.getElementById('public-sign-in-overlay'),
+	closeBtn: document.getElementById('public-sign-in-close-btn'),
+	form: signInForm,
+	status: document.getElementById('public-sign-in-status'),
+});
+
+signInBtn.hidden = ADMIN_CATALOG_ACTIVE;
+document.getElementById('admin-catalog-controls').hidden =
+	!ADMIN_CATALOG_ACTIVE;
+signInBtn.addEventListener('click', () => signInModal.open());
+signInForm.addEventListener('submit', async event => {
+	event.preventDefault();
+	signInModal.setBusy(true);
+	signInModal.setStatus('Signing in...');
+	try {
+		await authClient.signIn(
+			signInForm.querySelector('[type="email"]').value,
+			signInForm.querySelector('[type="password"]').value,
+		);
+		await loadCatalog({
+			adminAccessToken: authClient.getSession()?.access_token,
+		});
+		if (!ADMIN_CATALOG_ACTIVE) {
+			await authClient.signOut();
+			throw new Error('This account cannot access the admin catalog.');
+		}
+		window.location.reload();
+	} catch (error) {
+		signInModal.setStatus(error.message);
+	} finally {
+		signInModal.setBusy(false);
+	}
+});
+signOutBtn.addEventListener('click', async () => {
+	signOutBtn.disabled = true;
+	try {
+		await authClient.signOut();
+		window.location.reload();
+	} finally {
+		signOutBtn.disabled = false;
+	}
+});
+window.addEventListener('storage', event => {
+	if (event.key === ADMIN_SESSION_KEY) window.location.reload();
+});
 
 const generationControls = { generateBtn, retryBtn };
 
@@ -104,11 +164,20 @@ initSettingField({
 	selectEl: document.getElementById('location-select'),
 	variantFieldEl: document.getElementById('location-variant-field'),
 	variantSelectEl: document.getElementById('location-variant-select'),
-	descEl: document.getElementById('location-desc-text'),
 	otherTextEl: document.getElementById('other-location-text'),
 	previewBtn: document.getElementById('location-preview-btn'),
 	onPreview: showCatalogPreview,
 });
+
+if (catalogUnavailable) {
+	for (const panel of document.querySelectorAll(
+		'#setting-card, #character-card, #npc-card, #enemy-card',
+	)) {
+		panel.hidden = true;
+	}
+	document.getElementById('catalog-unavailable-notice').hidden = false;
+	document.getElementById('scene-hint').hidden = true;
+}
 
 initCatalogPreviewModal({
 	overlay: document.getElementById('catalog-preview-overlay'),
@@ -156,6 +225,16 @@ async function generateSceneImage() {
 	);
 
 	try {
+		const scene = sceneText.value.trim();
+		if (catalogUnavailable) {
+			if (!scene) {
+				await showAlert('Please describe the scene action.');
+				return;
+			}
+			await generateWithPrompt(buildSceneOnlyPrompt(scene), []);
+			return;
+		}
+
 		const location = getLocationSelectionDetails();
 		if (!location) {
 			await showAlert('Please describe the custom setting.');
@@ -179,8 +258,6 @@ async function generateSceneImage() {
 			);
 			return;
 		}
-
-		const scene = sceneText.value.trim();
 
 		// Location reference mode doesn't use scene, but Neutral Void does
 		if (!isLocationRef && !scene) {
@@ -212,27 +289,29 @@ async function generateSceneImage() {
 			...enemies,
 			location,
 		]);
-
-		showGenerating();
-
-		try {
-			const result = await generateImageWithNetworkRetry({
-				prompt: fullPrompt,
-				referenceImages,
-				onRetry: () =>
-					(statusText.innerText = 'Connection issue, retrying...'),
-			});
-			if (result.imageUrl) generatedBlob = showSuccess(result);
-			else showEmptyResponse(result.raw);
-		} catch (err) {
-			showError(formatError(err));
-		}
+		await generateWithPrompt(fullPrompt, referenceImages);
 	} finally {
 		generationInProgress = false;
 		setGenerationBusy(
 			{ ...generationControls, controls: getGenerationControls() },
 			false,
 		);
+	}
+}
+
+async function generateWithPrompt(prompt, referenceImages) {
+	showGenerating();
+	try {
+		const result = await generateImageWithNetworkRetry({
+			prompt,
+			referenceImages,
+			onRetry: () =>
+				(statusText.innerText = 'Connection issue, retrying...'),
+		});
+		if (result.imageUrl) generatedBlob = showSuccess(result);
+		else showEmptyResponse(result.raw);
+	} catch (err) {
+		showError(formatError(err));
 	}
 }
 

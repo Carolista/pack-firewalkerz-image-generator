@@ -74,6 +74,40 @@ body.modal-open {
 	overflow: hidden;
 }
 
+.public-header {
+	align-items: flex-start;
+	display: flex;
+	gap: 1rem;
+	justify-content: space-between;
+}
+
+.public-header h1 {
+	margin-top: 0;
+}
+
+.public-header-actions,
+#admin-catalog-controls {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	justify-content: flex-end;
+}
+
+#admin-catalog-controls span {
+	color: var(--cream-pale);
+}
+
+@media (max-width: 600px) {
+	.public-header {
+		flex-direction: column;
+	}
+
+	.public-header-actions {
+		align-self: flex-end;
+	}
+}
+
 h1 {
 	color: var(--cream);
 	font-family: var(--font-title);
@@ -142,6 +176,27 @@ h3 {
 	overscroll-behavior: contain;
 }
 
+.public-sign-in-modal h2 {
+	color: var(--dark-gray);
+	margin: 0 2rem 1rem 0;
+}
+
+.public-sign-in-modal form {
+	display: grid;
+	gap: 1rem;
+}
+
+#public-sign-in-status {
+	color: var(--red);
+	font-size: 0.9rem;
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+#public-sign-in-status:empty {
+	display: none;
+}
+
 .modal-close {
 	position: absolute;
 	top: 0.5rem;
@@ -174,6 +229,14 @@ label {
 	font-style: italic;
 	font-weight: 600;
 	margin: -0.5rem 0 1rem;
+}
+
+#catalog-unavailable-notice {
+	background: var(--cream-pale);
+	border-left: 4px solid var(--red);
+	color: var(--dark-gray);
+	margin: 0 0 1rem;
+	padding: 0.75rem;
 }
 
 textarea,

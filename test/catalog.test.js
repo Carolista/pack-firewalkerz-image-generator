@@ -7,10 +7,16 @@ import {
 	NO_BORDER_INSTRUCTION,
 	buildPrompt,
 	buildReferenceImagePrompt,
+	buildSceneOnlyPrompt,
 	isLocationReferenceMode,
 	isReferenceModeLocation,
 } from '../src/prompt.js';
-import { getElements, getVariantById } from '../src/services/catalog.js';
+import {
+	ADMIN_CATALOG_ACTIVE,
+	getElements,
+	getVariantById,
+	loadCatalog,
+} from '../src/services/catalog.js';
 
 test('normalizes and validates the catalog', () => {
 	const catalog = assertCatalog(normalizeCatalog(DATA));
@@ -358,8 +364,47 @@ test('renders normal prompt with Neutral Void and existing entities', () => {
 
 	// With entities, should use normal mode even with Neutral Void
 	assert.match(prompt, /Character: River-That-Remembers/);
-	assert.match(prompt, /Environment\/Setting: Neutral Void:/);
+	assert.match(prompt, /Environment\/Setting: Neutral Void \(default\):/);
 	assert.match(prompt, /Action\/Scene: Standing in the void/);
+});
+
+test('normal prompt includes a named location variant, even when it is the only one', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Mother',
+			variantName: 'At Home',
+			variantDesc: 'A welcoming house.',
+		},
+		scene: 'A visitor arrives.',
+	});
+
+	assert.match(
+		prompt,
+		/Environment\/Setting: Mother \(At Home\): A welcoming house/,
+	);
+});
+
+test('normal prompt omits a variant label for a custom location', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Custom Location',
+			variantName: '',
+			variantDesc: 'A misty harbor.',
+		},
+		scene: 'A ship arrives.',
+	});
+
+	assert.match(
+		prompt,
+		/Environment\/Setting: Custom Location: A misty harbor/,
+	);
+	assert.doesNotMatch(prompt, /Custom Location \(default\)/);
 });
 
 test('detects location reference mode', () => {
@@ -484,4 +529,130 @@ test('prompts include edge-to-edge no-border instruction', () => {
 	assert.ok(standardPrompt.includes(NO_BORDER_INSTRUCTION));
 	assert.ok(locationRefPrompt.includes(NO_BORDER_INSTRUCTION));
 	assert.ok(entityRefPrompt.includes(NO_BORDER_INSTRUCTION));
+});
+
+test('public catalog loads only published variants and fails closed after a request error', async () => {
+	const originalFetch = globalThis.fetch;
+	const elements = [
+		{
+			id: 'river',
+			element_type: 'character',
+			name: 'River',
+			slug: 'river',
+		},
+		{ id: 'shade', element_type: 'npc', name: 'Shade', slug: 'shade' },
+		{ id: 'grove', element_type: 'location', name: 'Grove', slug: 'grove' },
+	];
+	const variant = (id, elementId, isPublished, sortOrder = null) => ({
+		id,
+		element_id: elementId,
+		variant_name: id,
+		variant_desc: `${id} description`,
+		image: '',
+		sort_order: sortOrder,
+		is_published: isPublished,
+	});
+	const variants = [
+		variant('river-later', 'river', true, 2),
+		variant('river-draft', 'river', false, 1),
+		variant('river-first', 'river', true, 1),
+		variant('shade-draft', 'shade', false),
+		variant('grove-default', 'grove', true),
+	];
+	try {
+		globalThis.fetch = async url => {
+			if (url.includes('/game_element_variants')) {
+				assert.equal(
+					new URL(url).searchParams.get('is_published'),
+					'eq.true',
+				);
+				return new Response(JSON.stringify(variants));
+			}
+			return new Response(JSON.stringify(elements));
+		};
+		await loadCatalog();
+		assert.deepEqual(
+			getElements('character')[0].variants.map(row => row.variantId),
+			['river-first', 'river-later'],
+		);
+		assert.equal(getElements('npc').length, 0);
+		assert.equal(getElements('location').length, 1);
+		assert.equal(getElements('enemy').length, 0);
+
+		globalThis.fetch = async () => new Response(null, { status: 503 });
+		await assert.rejects(loadCatalog(), /Supabase catalog request failed/);
+		assert.deepEqual(getElements('character'), []);
+		assert.deepEqual(getElements('location'), []);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
+});
+
+test('scene-only prompt contains no campaign or reference-image context', () => {
+	const prompt = buildSceneOnlyPrompt('A traveler crosses a frozen lake.');
+	assert.match(prompt, /Scene: A traveler crosses a frozen lake/);
+	assert.ok(prompt.includes(NO_BORDER_INSTRUCTION));
+	assert.doesNotMatch(
+		prompt,
+		/Werewolf|World of Darkness|reference photo|Environment\/Setting/,
+	);
+});
+
+test('admin catalog requires RPC access and falls back to published variants', async () => {
+	const originalFetch = globalThis.fetch;
+	const elements = [
+		{ id: 'mother', element_type: 'npc', name: 'Mother', slug: 'mother' },
+	];
+	const variants = [
+		{
+			id: 'day',
+			element_id: 'mother',
+			variant_name: 'Day',
+			variant_desc: 'By day',
+			image: '',
+			is_published: true,
+		},
+		{
+			id: 'night',
+			element_id: 'mother',
+			variant_name: 'Night',
+			variant_desc: 'By night',
+			image: '',
+			is_published: false,
+		},
+	];
+	try {
+		globalThis.fetch = async (url, options) => {
+			assert.match(url, /\/rpc\/get_admin_catalog$/);
+			assert.equal(options.headers.Authorization, 'Bearer admin-token');
+			return new Response(JSON.stringify({ elements, variants }));
+		};
+		await loadCatalog({ adminAccessToken: 'admin-token' });
+		assert.equal(ADMIN_CATALOG_ACTIVE, true);
+		assert.deepEqual(
+			getElements('npc')[0].variants.map(variant => variant.variantId),
+			['day', 'night'],
+		);
+
+		globalThis.fetch = async url => {
+			if (url.includes('/rpc/'))
+				return new Response(null, { status: 403 });
+			if (url.includes('/game_element_variants')) {
+				assert.equal(
+					new URL(url).searchParams.get('is_published'),
+					'eq.true',
+				);
+				return new Response(JSON.stringify(variants));
+			}
+			return new Response(JSON.stringify(elements));
+		};
+		await loadCatalog({ adminAccessToken: 'denied-token' });
+		assert.equal(ADMIN_CATALOG_ACTIVE, false);
+		assert.deepEqual(
+			getElements('npc')[0].variants.map(variant => variant.variantId),
+			['day'],
+		);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
 });

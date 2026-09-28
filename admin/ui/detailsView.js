@@ -66,10 +66,14 @@ export function createDetailsView({
 			const article = document.createElement('article');
 			article.className = 'variant-detail';
 			const text = document.createElement('div');
-			if (variant.variant_name.toLowerCase() !== 'default') {
-				const heading = document.createElement('h3');
-				heading.textContent = variant.variant_name;
-				text.append(heading);
+			const heading = document.createElement('h3');
+			heading.textContent = variant.variant_name;
+			text.append(heading);
+			if (!variant.is_published) {
+				const publication = document.createElement('span');
+				publication.className = 'unpublished-label';
+				publication.textContent = 'Unpublished';
+				text.append(publication);
 			}
 			const description = document.createElement('p');
 			description.textContent = variant.variant_desc;

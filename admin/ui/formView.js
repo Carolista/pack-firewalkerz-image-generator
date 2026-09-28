@@ -85,7 +85,6 @@ export function createFormView({
 	let generationInFlight = false;
 	let saveInFlight = false;
 	let autoSyncSlug = true;
-	let autoSyncFirstFilename = true;
 	let neutralVoidReferenceImages;
 
 	// Entity reference generation reuses the Neutral Void background, same as the public generator.
@@ -116,15 +115,14 @@ export function createFormView({
 		if (autoSyncSlug) {
 			formSlug.value = slugify(formName.value);
 		}
-		if (autoSyncFirstFilename) {
-			const firstRow = variantFormRows.querySelector('.variant-form-row');
-			const filenameInput = firstRow?.querySelector(
-				'.variant-image-filename',
+		for (const row of variantFormRows.querySelectorAll(
+			'.variant-form-row',
+		)) {
+			row.querySelector('.variant-name-prefix').textContent =
+				`${formName.value.trim() || 'Element'}: `;
+			row.querySelector('.variant-name').dispatchEvent(
+				new Event('input'),
 			);
-			if (filenameInput) {
-				filenameInput.value = slugify(formName.value);
-				filenameInput.dispatchEvent(new Event('input'));
-			}
 		}
 	});
 
@@ -134,7 +132,6 @@ export function createFormView({
 
 	formName.addEventListener('blur', () => {
 		autoSyncSlug = false;
-		autoSyncFirstFilename = false;
 	});
 
 	addVariantBtn.addEventListener('click', () =>
@@ -162,7 +159,6 @@ export function createFormView({
 			elementId = null;
 			deletedVariants = [];
 			autoSyncSlug = route.name === 'add';
-			autoSyncFirstFilename = route.name === 'add';
 			try {
 				if (route.name === 'add') {
 					formName.value = '';
@@ -214,20 +210,6 @@ export function createFormView({
 		const row = document.createElement('div');
 		row.className = 'variant-form-row';
 		row.dataset.variantId = variant.id ?? '';
-		const existingNames = new Set(
-			[...variantFormRows.querySelectorAll('.variant-name')].map(input =>
-				input.value.trim().toLowerCase(),
-			),
-		);
-		let defaultName = variant.variant_name;
-		if (!defaultName) {
-			defaultName = existingNames.size
-				? `Variant ${existingNames.size + 1}`
-				: 'default';
-			while (existingNames.has(defaultName.toLowerCase())) {
-				defaultName = `Variant ${existingNames.size + 2}`;
-			}
-		}
 		const folder = CATEGORY_FOLDERS[formCategory.value];
 		const folderPrefix = `/${folder}/`;
 		const existingImage = variant.image ?? '';
@@ -236,6 +218,7 @@ export function createFormView({
 		const existingExt = parsed.ext;
 		const hasStoredImage = Boolean(existingImage);
 		row.dataset.originalImage = existingImage;
+		const isPublished = variant.is_published === true;
 
 		const imageFieldHtml = hasStoredImage
 			? `
@@ -257,10 +240,19 @@ export function createFormView({
 		row.innerHTML = `
 			<div class="variant-info-col">
 				<div class="variant-meta-row">
-					<label class="variant-name-field">Variant Name*<input class="variant-name" required value="${defaultName}" /></label>
+					<label class="variant-name-field">Variant Name*
+						<span class="variant-name-control">
+							<span class="variant-name-prefix" aria-hidden="true"></span>
+							<input class="variant-name" required value="${variant.variant_name ?? ''}" />
+						</span>
+					</label>
 					<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
 					<button class="delete-variant-btn delete" type="button" title="Delete variant" aria-label="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
+				<label class="variant-publish-control">
+										<input class="variant-published" type="checkbox" role="switch" ${isPublished ? 'checked' : ''} />
+					<span class="variant-publication-status" aria-hidden="true">${isPublished ? 'Published' : 'Unpublished'}</span>
+				</label>
 				<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			</div>
 			<div class="variant-image-col">
@@ -285,6 +277,15 @@ export function createFormView({
 				</div>
 			</div>
 		`;
+		row.querySelector('.variant-name-prefix').textContent =
+			`${formName.value.trim() || 'Element'}: `;
+		row.querySelector('.variant-published').addEventListener(
+			'change',
+			event => {
+				row.querySelector('.variant-publication-status').textContent =
+					event.target.checked ? 'Published' : 'Unpublished';
+			},
+		);
 		row.querySelector('.delete-variant-btn').addEventListener(
 			'click',
 			async () => {
@@ -316,6 +317,10 @@ export function createFormView({
 		resize();
 
 		const filenameInput = row.querySelector('.variant-image-filename');
+		const variantNameInput = row.querySelector('.variant-name');
+		let autoSyncFilename = Boolean(
+			filenameInput && !filenameInput.value.trim(),
+		);
 		const extInput = row.querySelector('.variant-image-ext');
 		const hiddenImageInput = row.querySelector('.variant-image');
 		const imagePreview = row.querySelector('.admin-image-preview');
@@ -372,10 +377,19 @@ export function createFormView({
 			imageSpinner.hidden = false;
 		};
 
+		variantNameInput.addEventListener('input', () => {
+			if (!autoSyncFilename || !filenameInput) return;
+			filenameInput.value =
+				formName.value.trim() && variantNameInput.value.trim()
+					? slugify(`${formName.value} ${variantNameInput.value}`)
+					: '';
+			filenameInput.dispatchEvent(new Event('input'));
+		});
+
 		if (filenameInput) {
 			filenameInput.addEventListener('input', event => {
 				if (event.isTrusted) {
-					autoSyncFirstFilename = false;
+					autoSyncFilename = false;
 				}
 				updateHiddenPath();
 				updatePreview();
@@ -624,12 +638,18 @@ export function createFormView({
 		)
 			return setStatus(formStatus, 'Variant names must be unique.');
 		if (
-			rows.length > 1 &&
-			names.some(name => name.toLowerCase() === 'default')
+			rows.some(
+				row =>
+					!row.dataset.variantId &&
+					row
+						.querySelector('.variant-name')
+						.value.trim()
+						.toLowerCase() === 'default',
+			)
 		)
 			return setStatus(
 				formStatus,
-				'When an element has multiple variants, none can be named "default". Please rename variants to descriptive names.',
+				'Give each new variant a specific name instead of "default".',
 			);
 		saveInFlight = true;
 		setFormBusy(true);
@@ -728,6 +748,8 @@ export function createFormView({
 						variant_desc: row
 							.querySelector('.variant-desc')
 							.value.trim(),
+						is_published:
+							row.querySelector('.variant-published').checked,
 						sort_order:
 							Number(row.querySelector('.variant-sort').value) ||
 							null,
@@ -777,6 +799,7 @@ export function createFormView({
 				id: row.dataset.variantId,
 				name: row.querySelector('.variant-name').value,
 				description: row.querySelector('.variant-desc').value,
+				isPublished: row.querySelector('.variant-published').checked,
 				sortOrder: row.querySelector('.variant-sort').value,
 				image: row.querySelector('.variant-image').value,
 			})),
