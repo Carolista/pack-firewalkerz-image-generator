@@ -566,8 +566,8 @@ footer {
 }
 
 .share-note {
-	color: var(--cream-pale);
+	color: var(--dark-gray);
 	margin: 0 0 0.5rem;
 	overflow-wrap: anywhere;
-	font-size: 0.9rem;
+	font-size: 1rem;
 }
