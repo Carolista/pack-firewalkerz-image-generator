@@ -12,6 +12,7 @@ import {
 	isReferenceModeLocation,
 } from '../src/prompt.js';
 import {
+	ADMIN_CATALOG_ACTIVE,
 	getElements,
 	getVariantById,
 	loadCatalog,
@@ -363,8 +364,47 @@ test('renders normal prompt with Neutral Void and existing entities', () => {
 
 	// With entities, should use normal mode even with Neutral Void
 	assert.match(prompt, /Character: River-That-Remembers/);
-	assert.match(prompt, /Environment\/Setting: Neutral Void:/);
+	assert.match(prompt, /Environment\/Setting: Neutral Void \(default\):/);
 	assert.match(prompt, /Action\/Scene: Standing in the void/);
+});
+
+test('normal prompt includes a named location variant, even when it is the only one', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Mother',
+			variantName: 'At Home',
+			variantDesc: 'A welcoming house.',
+		},
+		scene: 'A visitor arrives.',
+	});
+
+	assert.match(
+		prompt,
+		/Environment\/Setting: Mother \(At Home\): A welcoming house/,
+	);
+});
+
+test('normal prompt omits a variant label for a custom location', () => {
+	const prompt = buildPrompt({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		location: {
+			elementName: 'Custom Location',
+			variantName: '',
+			variantDesc: 'A misty harbor.',
+		},
+		scene: 'A ship arrives.',
+	});
+
+	assert.match(
+		prompt,
+		/Environment\/Setting: Custom Location: A misty harbor/,
+	);
+	assert.doesNotMatch(prompt, /Custom Location \(default\)/);
 });
 
 test('detects location reference mode', () => {
@@ -556,4 +596,63 @@ test('scene-only prompt contains no campaign or reference-image context', () => 
 		prompt,
 		/Werewolf|World of Darkness|reference photo|Environment\/Setting/,
 	);
+});
+
+test('admin catalog requires RPC access and falls back to published variants', async () => {
+	const originalFetch = globalThis.fetch;
+	const elements = [
+		{ id: 'mother', element_type: 'npc', name: 'Mother', slug: 'mother' },
+	];
+	const variants = [
+		{
+			id: 'day',
+			element_id: 'mother',
+			variant_name: 'Day',
+			variant_desc: 'By day',
+			image: '',
+			is_published: true,
+		},
+		{
+			id: 'night',
+			element_id: 'mother',
+			variant_name: 'Night',
+			variant_desc: 'By night',
+			image: '',
+			is_published: false,
+		},
+	];
+	try {
+		globalThis.fetch = async (url, options) => {
+			assert.match(url, /\/rpc\/get_admin_catalog$/);
+			assert.equal(options.headers.Authorization, 'Bearer admin-token');
+			return new Response(JSON.stringify({ elements, variants }));
+		};
+		await loadCatalog({ adminAccessToken: 'admin-token' });
+		assert.equal(ADMIN_CATALOG_ACTIVE, true);
+		assert.deepEqual(
+			getElements('npc')[0].variants.map(variant => variant.variantId),
+			['day', 'night'],
+		);
+
+		globalThis.fetch = async url => {
+			if (url.includes('/rpc/'))
+				return new Response(null, { status: 403 });
+			if (url.includes('/game_element_variants')) {
+				assert.equal(
+					new URL(url).searchParams.get('is_published'),
+					'eq.true',
+				);
+				return new Response(JSON.stringify(variants));
+			}
+			return new Response(JSON.stringify(elements));
+		};
+		await loadCatalog({ adminAccessToken: 'denied-token' });
+		assert.equal(ADMIN_CATALOG_ACTIVE, false);
+		assert.deepEqual(
+			getElements('npc')[0].variants.map(variant => variant.variantId),
+			['day'],
+		);
+	} finally {
+		globalThis.fetch = originalFetch;
+	}
 });

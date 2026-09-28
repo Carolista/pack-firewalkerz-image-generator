@@ -157,6 +157,32 @@ textarea.variant-desc {
 
 .variant-name-field {
 	flex: 1;
+	min-width: 0;
+}
+
+.variant-name-control {
+	align-items: center;
+	background: var(--admin-pale);
+	border-radius: var(--border-radius-form-elements);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.25rem;
+	min-height: var(--form-control-height);
+	padding: 0 0.6rem;
+	width: 100%;
+}
+
+.variant-name-prefix {
+	color: var(--admin-ink);
+	overflow-wrap: anywhere;
+}
+
+.variant-name-control .variant-name {
+	background: transparent;
+	flex: 1 1 6rem;
+	min-width: 0;
+	padding: 0;
+	width: auto;
 }
 
 .variant-sort-field {
@@ -534,7 +560,7 @@ textarea.variant-desc {
 
 .element-copy .unpublished-summary {
 	color: var(--admin-dark-blue);
-    font-style: italic;
+	font-style: italic;
 }
 
 .variant-detail {

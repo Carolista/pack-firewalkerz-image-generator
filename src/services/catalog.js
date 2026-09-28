@@ -5,9 +5,48 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from './supabaseConfig.js';
 let catalog = assertCatalog(normalizeCatalog(DATA));
 
 export let CATALOG = catalog;
+export let ADMIN_CATALOG_ACTIVE = false;
 
-export async function loadCatalog() {
+export async function loadCatalog({ adminAccessToken } = {}) {
 	if (!SUPABASE_PUBLISHABLE_KEY) return catalog;
+
+	ADMIN_CATALOG_ACTIVE = false;
+	if (adminAccessToken) {
+		try {
+			const response = await fetch(
+				`${SUPABASE_URL}/rest/v1/rpc/get_admin_catalog`,
+				{
+					headers: {
+						apikey: SUPABASE_PUBLISHABLE_KEY,
+						Authorization: `Bearer ${adminAccessToken}`,
+					},
+				},
+			);
+			if (!response.ok) throw new Error('Admin catalog access denied.');
+			const result = await response.json();
+			if (
+				!Array.isArray(result?.elements) ||
+				!Array.isArray(result?.variants)
+			) {
+				throw new Error('Invalid admin catalog response.');
+			}
+			catalog = assertCatalog(
+				normalizeSupabaseCatalog(
+					result.elements,
+					result.variants,
+					true,
+				),
+			);
+			CATALOG = catalog;
+			ADMIN_CATALOG_ACTIVE = true;
+			return catalog;
+		} catch (error) {
+			console.warn(
+				'Admin catalog unavailable; loading published catalog:',
+				error,
+			);
+		}
+	}
 
 	try {
 		const headers = {
@@ -37,15 +76,20 @@ export async function loadCatalog() {
 	} catch (error) {
 		catalog = { characters: [], npcs: [], enemies: [], locations: [] };
 		CATALOG = catalog;
+		ADMIN_CATALOG_ACTIVE = false;
 		console.warn('Campaign catalog unavailable:', error);
 		throw error;
 	}
 }
 
-function normalizeSupabaseCatalog(elements, variants) {
+function normalizeSupabaseCatalog(
+	elements,
+	variants,
+	includeUnpublished = false,
+) {
 	const variantsByElement = new Map();
 	for (const variant of variants) {
-		if (variant.is_published !== true) continue;
+		if (!includeUnpublished && variant.is_published !== true) continue;
 		const elementVariants = variantsByElement.get(variant.element_id) ?? [];
 		elementVariants.push({
 			variantId: variant.id,

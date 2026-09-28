@@ -89,13 +89,12 @@ ${NO_BORDER_INSTRUCTION}`;
 
 	const resolvedLocation = location ?? {
 		elementName: 'Setting',
-		variantName: 'default',
+		variantName: '',
 		variantDesc: locationDesc ?? '',
 	};
-	const locationLabel =
-		resolvedLocation.variantName === 'default'
-			? resolvedLocation.elementName
-			: `${resolvedLocation.elementName} (${resolvedLocation.variantName})`;
+	const locationLabel = resolvedLocation.variantName
+		? `${resolvedLocation.elementName} (${resolvedLocation.variantName})`
+		: resolvedLocation.elementName;
 
 	return `Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style. 
 ${entityBlocks}

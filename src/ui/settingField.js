@@ -16,7 +16,6 @@ let locations;
 let selectEl;
 let variantFieldEl;
 let variantSelectEl;
-let descEl;
 let otherTextEl;
 let previewBtnEl;
 let onPreview;
@@ -28,7 +27,6 @@ export function initSettingField({
 	selectEl: select,
 	variantFieldEl: variantField,
 	variantSelectEl: variantSelect,
-	descEl: desc,
 	otherTextEl: otherText,
 	previewBtn,
 	onPreview: preview,
@@ -36,7 +34,6 @@ export function initSettingField({
 	selectEl = select;
 	variantFieldEl = variantField;
 	variantSelectEl = variantSelect;
-	descEl = desc;
 	otherTextEl = otherText;
 	previewBtnEl = previewBtn;
 	onPreview = preview;
@@ -80,7 +77,7 @@ export function getLocationSelectionDetails() {
 					elementType: 'location',
 					elementName: 'Custom Location',
 					variantId: OTHER_LOCATION_KEY,
-					variantName: 'default',
+					variantName: '',
 					variantDesc,
 					image: '',
 					slug: null,
@@ -150,7 +147,6 @@ function updateLocationDisplay() {
 	const usesTextarea = isOther || isCustomReference;
 
 	previewBtnEl.hidden = usesTextarea;
-	descEl.hidden = usesTextarea;
 	otherTextEl.hidden = !usesTextarea;
 	variantFieldEl.hidden = true;
 	if (usesTextarea) return;
@@ -162,7 +158,6 @@ function updateLocationDisplay() {
 	previewBtnEl.title = previewLabel;
 	updateVariantSelect(location, restoredVariantId ?? variantSelectEl.value);
 	restoredVariantId = undefined;
-	descEl.textContent = getLocationDescription() ?? '';
 }
 
 function restoreLocationSelection() {
