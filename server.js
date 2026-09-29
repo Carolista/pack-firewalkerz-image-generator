@@ -1,7 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import cors from 'cors';
-import express from 'express';
 import dotenv from 'dotenv';
+import express from 'express';
 
 dotenv.config();
 
@@ -19,44 +19,95 @@ app.use(
 );
 app.use(express.json({ limit: '20mb' }));
 
+const MAX_PARTS = 120;
+const MAX_IMAGE_PARTS = 40;
+const MAX_TEXT_LENGTH = 10000;
+const ALLOWED_IMAGE_MIME_TYPES = new Set([
+	'image/jpeg',
+	'image/png',
+	'image/webp',
+]);
+
+function getTextPartError(part) {
+	if (typeof part.text !== 'string' || !part.text.length) {
+		return 'text is empty';
+	}
+	if (part.text.length > MAX_TEXT_LENGTH) {
+		return `text is ${part.text.length} characters (max ${MAX_TEXT_LENGTH})`;
+	}
+	return null;
+}
+
+function getImagePartError({ inlineData }) {
+	if (inlineData === null || typeof inlineData !== 'object') {
+		return 'inlineData is not an object';
+	}
+	if (!ALLOWED_IMAGE_MIME_TYPES.has(inlineData.mimeType)) {
+		return `unsupported image type "${inlineData.mimeType}"`;
+	}
+	if (typeof inlineData.data !== 'string' || !inlineData.data.length) {
+		return 'image data is empty';
+	}
+	return null;
+}
+
+// Returns { parts } with only the fields Gemini needs, or { reason } when the payload is malformed.
+function sanitizeParts(parts) {
+	if (!Array.isArray(parts) || !parts.length) {
+		return { reason: '"parts" must be a non-empty array' };
+	}
+	if (parts.length > MAX_PARTS) {
+		return { reason: `${parts.length} parts (max ${MAX_PARTS})` };
+	}
+	let imageCount = 0;
+	const sanitized = [];
+	for (const [index, part] of parts.entries()) {
+		if (part === null || typeof part !== 'object') {
+			return { reason: `part ${index} is not an object` };
+		}
+		if ('text' in part) {
+			const error = getTextPartError(part);
+			if (error) return { reason: `part ${index}: ${error}` };
+			sanitized.push({ text: part.text });
+		} else if ('inlineData' in part) {
+			const error = getImagePartError(part);
+			if (error) return { reason: `part ${index}: ${error}` };
+			imageCount += 1;
+			const { mimeType, data } = part.inlineData;
+			sanitized.push({ inlineData: { mimeType, data } });
+		} else {
+			return { reason: `part ${index} has neither text nor inlineData` };
+		}
+	}
+	if (imageCount > MAX_IMAGE_PARTS) {
+		return { reason: `${imageCount} images (max ${MAX_IMAGE_PARTS})` };
+	}
+	return { parts: sanitized };
+}
+
+function sendError(res, status, detail) {
+	console.error(`/generate-image ${status}: ${detail}`);
+	res.status(status).json({ error: 'Image generation failed.', detail });
+}
+
 app.post('/generate-image', async (req, res) => {
 	try {
-		const { prompt, referenceImages = [] } = req.body;
+		const { parts, reason } = sanitizeParts(req.body?.parts);
+		if (reason) {
+			return sendError(res, 400, `Invalid prompt parts: ${reason}`);
+		}
 
 		const apiKey = process.env.GEMINI_API_KEY;
 
 		if (!apiKey) {
-			return res.status(400).json({ error: 'API key is required.' });
+			return sendError(res, 500, 'GEMINI_API_KEY is not configured.');
 		}
 
 		const ai = new GoogleGenAI({ apiKey });
 
-		const imageParts = referenceImages
-			.filter(
-				img =>
-					img &&
-					typeof img.mimeType === 'string' &&
-					typeof img.data === 'string',
-			)
-			.flatMap(img => [
-				...(typeof img.label === 'string' ? [{ text: img.label }] : []),
-				{ inlineData: { mimeType: img.mimeType, data: img.data } },
-			]);
-
-		// Use generateContent with an AI Studio supported image model
-		// Reminder is placed after the images since trailing instructions carry more weight than leading ones.
-		const poseReminder =
-			imageParts.length > 0
-				? [
-						{
-							text: "Reminder: the reference photos above are for each character's appearance only (face, coloring, features, physique). Disregard their poses, facial expressions, gaze directions, and camera angles entirely — pose, express, and orient every character strictly according to the Action/Scene description given earlier.",
-						},
-					]
-				: [];
-
 		const response = await ai.models.generateContent({
 			model: 'gemini-2.5-flash-image',
-			contents: [{ text: prompt }, ...imageParts, ...poseReminder],
+			contents: parts,
 		});
 
 		// Extract base64 image data from the response structure
@@ -64,9 +115,15 @@ app.post('/generate-image', async (req, res) => {
 		const part = candidates?.[0]?.content?.parts?.find(p => p.inlineData);
 
 		if (!part || !part.inlineData) {
-			return res
-				.status(500)
-				.json({ error: 'No image returned in response.' });
+			const modelText = candidates?.[0]?.content?.parts
+				?.map(p => p.text)
+				.filter(Boolean)
+				.join(' ');
+			return sendError(
+				res,
+				500,
+				`No image in model response (finishReason: ${candidates?.[0]?.finishReason ?? 'none'}${modelText ? `; model text: ${modelText}` : ''}).`,
+			);
 		}
 
 		const base64Data = part.inlineData.data;
@@ -75,9 +132,7 @@ app.post('/generate-image', async (req, res) => {
 		res.json({ imageUrl: `data:${mimeType};base64,${base64Data}` });
 	} catch (error) {
 		console.error('Server Error:', error);
-		res.status(500).json({
-			error: error.message || 'Internal Server Error',
-		});
+		sendError(res, 500, error.message || 'Internal Server Error');
 	}
 });
 

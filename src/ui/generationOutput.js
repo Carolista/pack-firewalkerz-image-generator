@@ -73,9 +73,8 @@ export function showSuccess({ imageUrl, blob }) {
 }
 
 export function showEmptyResponse(raw) {
-	statusEl.innerText =
-		'Response received, but no inline image data was returned.';
-	console.log('Response payload:', raw);
+	statusEl.innerText = 'No image was generated. Please try again.';
+	console.error('Response contained no image data:', raw);
 }
 
 export function showError(message) {

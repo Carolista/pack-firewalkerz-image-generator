@@ -1,15 +1,17 @@
 import { ADMIN_SESSION_KEY, createAuthClient } from './admin/services/auth.js';
-import { CUSTOM_LOCATION_REFERENCE_KEY } from './src/constants.js';
 import {
-	buildPrompt,
+	buildLocationPrompt,
 	buildSceneOnlyPrompt,
-	isLocationReferenceMode,
-	isReferenceModeLocation,
+	buildScenePrompt,
+	buildSingleSubjectPrompt,
+	formatPromptForDebug,
+	isCustomLocationReference,
+	isNeutralVoidLocation,
 } from './src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
 	isNetworkError,
-	loadReferenceImages,
+	resolvePromptParts,
 } from './src/services/api.js';
 import { ADMIN_CATALOG_ACTIVE, loadCatalog } from './src/services/catalog.js';
 import { downloadBlob, filenameForBlob } from './src/services/download.js';
@@ -242,7 +244,7 @@ async function generateSceneImage() {
 				await showAlert('Please describe the scene action.');
 				return;
 			}
-			await generateWithPrompt(buildSceneOnlyPrompt(scene), []);
+			await generateWithPrompt(buildSceneOnlyPrompt(scene));
 			return;
 		}
 
@@ -252,10 +254,8 @@ async function generateSceneImage() {
 			return;
 		}
 
-		const isLocationRef =
-			locationSelect.value === CUSTOM_LOCATION_REFERENCE_KEY ||
-			isLocationReferenceMode(location);
-		const isNeutralVoidRef = isReferenceModeLocation(location);
+		const isLocationRef = isCustomLocationReference(location);
+		const isNeutralVoidRef = isNeutralVoidLocation(location);
 
 		const hasEntities =
 			hasAtLeastOneCharacterRow() ||
@@ -280,32 +280,28 @@ async function generateSceneImage() {
 			return;
 		}
 
-		// In reference modes, ignore any saved entities and use empty arrays
-		const characters =
-			isLocationRef || isNeutralVoidRef ? [] : getCharacterSelections();
-		const npcs =
-			isLocationRef || isNeutralVoidRef ? [] : getNPCSelections();
-		const enemies =
-			isLocationRef || isNeutralVoidRef ? [] : getEnemySelections();
-		const items =
-			isLocationRef || isNeutralVoidRef ? [] : getItemSelections();
-		const fullPrompt = buildPrompt({
-			characters,
-			npcs,
-			enemies,
-			items,
-			location,
-			locationDesc: isLocationRef ? location.variantDesc : undefined,
-			scene,
-		});
-		const referenceImages = await loadReferenceImages([
-			...characters,
-			...npcs,
-			...enemies,
-			...items,
-			location,
-		]);
-		await generateWithPrompt(fullPrompt, referenceImages);
+		let promptParts;
+		if (isLocationRef) {
+			promptParts = buildLocationPrompt(location.variantDesc);
+		} else if (isNeutralVoidRef) {
+			// Neutral Void ignores saved rows; the scene text describes the single subject.
+			promptParts = buildSingleSubjectPrompt({
+				description: scene,
+				backgroundImage: location.image,
+			});
+		} else {
+			promptParts = buildScenePrompt({
+				subjects: [
+					...getCharacterSelections(),
+					...getNPCSelections(),
+					...getEnemySelections(),
+					...getItemSelections(),
+				],
+				location,
+				scene,
+			});
+		}
+		await generateWithPrompt(promptParts);
 	} finally {
 		generationInProgress = false;
 		setGenerationBusy(
@@ -315,26 +311,25 @@ async function generateSceneImage() {
 	}
 }
 
-async function generateWithPrompt(prompt, referenceImages) {
+async function generateWithPrompt(promptParts) {
+	console.debug(`Image prompt:\n${formatPromptForDebug(promptParts)}`);
 	showGenerating();
 	try {
 		const result = await generateImageWithNetworkRetry({
-			prompt,
-			referenceImages,
+			parts: await resolvePromptParts(promptParts),
 			onRetry: () =>
 				(statusText.innerText = 'Connection issue, retrying...'),
 		});
 		if (result.imageUrl) generatedBlob = showSuccess(result);
 		else showEmptyResponse(result.raw);
 	} catch (err) {
-		showError(formatError(err));
+		console.error('Image generation failed:', err, err.cause ?? '');
+		showError(
+			isNetworkError(err)
+				? 'Could not reach the server. Please try again.'
+				: 'Something went wrong while generating the image. Please try again.',
+		);
 	}
-}
-
-function formatError(error) {
-	return isNetworkError(error)
-		? 'Could not reach the server. Please try again.'
-		: error.message;
 }
 
 async function shareImage() {
