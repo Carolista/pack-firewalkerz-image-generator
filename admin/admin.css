@@ -231,8 +231,10 @@ textarea.variant-desc {
 }
 
 .unpublished-label {
-	color: var(--admin-dark-blue);
-	font-size: 0.85rem;
+	color: var(--admin-blue);
+	font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
 }
 
 .delete-variant-btn {
