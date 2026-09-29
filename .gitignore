@@ -145,6 +145,5 @@ vite.config.ts.timestamp-*
 .DS_Store
 .vscode
 CONTEXT.md
-.copilotinstructions
 REACT_PLANNING.md
 FUTURE_WORK.md

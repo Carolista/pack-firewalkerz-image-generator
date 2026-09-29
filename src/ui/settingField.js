@@ -2,7 +2,7 @@ import {
 	CUSTOM_LOCATION_REFERENCE_KEY,
 	OTHER_LOCATION_KEY,
 } from '../constants.js';
-import { NEUTRAL_VOID_SLUG, isLocationReferenceMode } from '../prompt.js';
+import { isCustomLocationReference, isNeutralVoidLocation } from '../prompt.js';
 import { getElements, getVariantById } from '../services/catalog.js';
 import {
 	getLocationSelection,
@@ -122,7 +122,7 @@ function getLocation(elementId) {
 function populateLocationSelect() {
 	// Neutral Void and the custom reference-image option are admin-only; excluded from the public dropdown.
 	for (const location of locations) {
-		if (location.slug !== NEUTRAL_VOID_SLUG) {
+		if (!isNeutralVoidLocation(location)) {
 			selectEl.add(new Option(location.name, location.id));
 		}
 	}
@@ -198,10 +198,11 @@ function persistOtherLocationText() {
 
 function updateSceneUI() {
 	const location = getLocationSelectionDetails();
-	const isNeutralVoidReference = location?.slug === NEUTRAL_VOID_SLUG;
+	const isNeutralVoidReference = isNeutralVoidLocation(location);
+	// The location is null until reference text is entered, so the select value is checked too.
 	const isLocationReference =
 		selectEl.value === CUSTOM_LOCATION_REFERENCE_KEY ||
-		isLocationReferenceMode(location);
+		isCustomLocationReference(location);
 
 	const characterCard = document.getElementById('character-card');
 	const npcCard = document.getElementById('npc-card');

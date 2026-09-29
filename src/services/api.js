@@ -60,66 +60,70 @@ function blobToBase64(blob) {
 }
 
 // Skips and warns on load failure rather than failing the whole generation.
-async function loadReferenceImage({
-	elementType,
-	elementName,
-	variantName,
-	image,
-}) {
+async function loadReferenceImage(image) {
 	try {
 		const response = await fetch(resolveReferenceImageUrl(image));
 		if (!response.ok) throw new Error(`HTTP ${response.status}`);
 		const originalBlob = await response.blob();
 		const resizedBlob = await downscaleImage(originalBlob);
 		const data = await blobToBase64(resizedBlob);
-		const subject = elementType === 'location' ? 'location' : 'appearance';
-		const label = variantName
-			? `This reference image shows the ${subject} of ${elementName} in its ${variantName} variant. Do NOT reuse the reference image's composition, lighting, or camera angle.`
-			: `This reference image shows the ${subject} of ${elementName}. Do NOT reuse the reference image's composition, lighting, or camera angle.`;
-		return { mimeType: resizedBlob.type || 'image/jpeg', data, label };
+		return { mimeType: resizedBlob.type || 'image/jpeg', data };
 	} catch (error) {
 		console.warn(`Skipping reference image "${image}":`, error);
 		return null;
 	}
 }
 
-// Loads/downscales the reference image for each entity that has one, in parallel.
-export async function loadReferenceImages(entities) {
-	const loaded = await Promise.all(
-		entities
-			.filter(({ image }) => image)
-			.map(entity => loadReferenceImage(entity)),
+// Converts prompt parts to request parts; an image that failed to load is dropped with its label.
+export function assembleRequestParts(parts, imageDataByPath) {
+	return parts.flatMap(part => {
+		if (part.type === 'text') return [{ text: part.text }];
+		const inlineData = imageDataByPath.get(part.image);
+		return inlineData ? [{ text: part.label }, { inlineData }] : [];
+	});
+}
+
+export async function resolvePromptParts(parts) {
+	const imagePaths = [
+		...new Set(
+			parts.filter(part => part.type === 'image').map(part => part.image),
+		),
+	];
+	const loaded = await Promise.all(imagePaths.map(loadReferenceImage));
+	const imageDataByPath = new Map(
+		imagePaths.map((path, index) => [path, loaded[index]]),
 	);
-	return loaded.filter(Boolean);
+	return assembleRequestParts(parts, imageDataByPath);
 }
 
 // Retries once when the local server is unreachable.
-export async function generateImageWithNetworkRetry({
-	prompt,
-	referenceImages,
-	onRetry,
-}) {
+export async function generateImageWithNetworkRetry({ parts, onRetry }) {
 	try {
-		return await generateImage({ prompt, referenceImages });
+		return await generateImage({ parts });
 	} catch (error) {
 		if (!isNetworkError(error)) throw error;
 		onRetry?.();
 		await delay(NETWORK_RETRY_DELAY_MS);
-		return generateImage({ prompt, referenceImages });
+		return generateImage({ parts });
 	}
 }
 
 // Returns { imageUrl: null, blob: null, raw } when the server responds without inline image data.
-export async function generateImage({ prompt, referenceImages }) {
+export async function generateImage({ parts }) {
 	const response = await fetch(SERVER_URL, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ prompt, referenceImages }),
+		body: JSON.stringify({ parts }),
 	});
 
-	const data = await response.json();
+	const data = await response.json().catch(() => null);
 
-	if (data.error) throw new Error(data.error);
+	if (!response.ok || !data || data.error) {
+		// The server's detail is developer-facing; callers log it and show their own message.
+		throw new Error('Image generation failed.', {
+			cause: data?.detail ?? data?.error ?? `HTTP ${response.status}`,
+		});
+	}
 
 	if (!data.imageUrl) {
 		return { imageUrl: null, blob: null, raw: data };

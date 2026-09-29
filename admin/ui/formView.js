@@ -1,10 +1,12 @@
 import {
 	NEUTRAL_VOID_SLUG,
-	buildReferenceImagePrompt,
+	buildLocationPrompt,
+	buildSingleSubjectPrompt,
+	formatPromptForDebug,
 } from '../../src/prompt.js';
 import {
 	generateImageWithNetworkRetry,
-	loadReferenceImages,
+	resolvePromptParts,
 } from '../../src/services/api.js';
 import {
 	downloadBlob,
@@ -85,30 +87,21 @@ export function createFormView({
 	let generationInFlight = false;
 	let saveInFlight = false;
 	let autoSyncSlug = true;
-	let neutralVoidReferenceImages;
+	let neutralVoidImagePath;
 
 	// Entity reference generation reuses the Neutral Void background, same as the public generator.
-	async function getNeutralVoidReferenceImages() {
-		if (neutralVoidReferenceImages === undefined) {
+	async function getNeutralVoidImagePath() {
+		if (neutralVoidImagePath === undefined) {
 			try {
 				const [neutralVoid] =
 					await dataClient.getElementBySlug(NEUTRAL_VOID_SLUG);
-				const variant = neutralVoid?.game_element_variants?.[0];
-				neutralVoidReferenceImages = variant?.image
-					? await loadReferenceImages([
-							{
-								elementType: 'location',
-								elementName: neutralVoid.name,
-								variantName: variant.variant_name,
-								image: variant.image,
-							},
-						])
-					: [];
+				neutralVoidImagePath =
+					neutralVoid?.game_element_variants?.[0]?.image || null;
 			} catch {
-				neutralVoidReferenceImages = [];
+				neutralVoidImagePath = null;
 			}
 		}
-		return neutralVoidReferenceImages;
+		return neutralVoidImagePath;
 	}
 
 	formName.addEventListener('input', () => {
@@ -427,18 +420,24 @@ export function createFormView({
 			generateStatusEl.textContent = 'Generating...';
 			showGeneratingPreview();
 			try {
-				const prompt = buildReferenceImagePrompt({
-					category: formCategory.value,
-					name: row.querySelector('.variant-name').value.trim(),
-					description: desc,
-				});
-				const referenceImages =
-					formCategory.value === 'location'
-						? []
-						: await getNeutralVoidReferenceImages();
+				const category = formCategory.value;
+				const promptParts =
+					category === 'location'
+						? buildLocationPrompt(desc)
+						: buildSingleSubjectPrompt({
+								category,
+								name: row
+									.querySelector('.variant-name')
+									.value.trim(),
+								description: desc,
+								backgroundImage:
+									await getNeutralVoidImagePath(),
+							});
+				console.debug(
+					`Image prompt:\n${formatPromptForDebug(promptParts)}`,
+				);
 				const result = await generateImageWithNetworkRetry({
-					prompt,
-					referenceImages,
+					parts: await resolvePromptParts(promptParts),
 					onRetry: () => {
 						generateStatusEl.textContent =
 							'Connection issue, retrying...';
@@ -463,7 +462,13 @@ export function createFormView({
 				updatePreview();
 				refreshImageControls(row);
 			} catch (error) {
-				generateStatusEl.textContent = error.message;
+				console.error(
+					'Image generation failed:',
+					error,
+					error.cause ?? '',
+				);
+				generateStatusEl.textContent =
+					'Image generation failed. Please try again.';
 			} finally {
 				updatePreview();
 				setGenerationBusy(false);
