@@ -22,6 +22,7 @@ app.use(express.json({ limit: '20mb' }));
 const MAX_PARTS = 120;
 const MAX_IMAGE_PARTS = 40;
 const MAX_TEXT_LENGTH = 10000;
+const IMAGE_MODEL = process.env.GEMINI_IMAGE_MODEL || 'gemini-2.5-flash-image';
 const ALLOWED_IMAGE_MIME_TYPES = new Set([
 	'image/jpeg',
 	'image/png',
@@ -106,23 +107,28 @@ app.post('/generate-image', async (req, res) => {
 		const ai = new GoogleGenAI({ apiKey });
 
 		const response = await ai.models.generateContent({
-			model: 'gemini-2.5-flash-image',
+			model: IMAGE_MODEL,
 			contents: parts,
+			// Without this, the model may match a reference image's aspect ratio.
+			config: { imageConfig: { aspectRatio: '1:1' } },
 		});
 
-		// Extract base64 image data from the response structure
 		const candidates = response.candidates;
-		const part = candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+		// Gemini 3 image models may emit interim thought images before the final one.
+		const outputParts = (candidates?.[0]?.content?.parts ?? []).filter(
+			p => !p.thought,
+		);
+		const part = outputParts.findLast(p => p.inlineData);
 
-		if (!part || !part.inlineData) {
-			const modelText = candidates?.[0]?.content?.parts
-				?.map(p => p.text)
+		if (!part) {
+			const modelText = outputParts
+				.map(p => p.text)
 				.filter(Boolean)
 				.join(' ');
 			return sendError(
 				res,
 				500,
-				`No image in model response (finishReason: ${candidates?.[0]?.finishReason ?? 'none'}${modelText ? `; model text: ${modelText}` : ''}).`,
+				`No image in ${IMAGE_MODEL} response (finishReason: ${candidates?.[0]?.finishReason ?? 'none'}${modelText ? `; model text: ${modelText}` : ''}).`,
 			);
 		}
 
@@ -138,5 +144,5 @@ app.post('/generate-image', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-	console.log(`🚀 Proxy Server running on port ${PORT}`);
+	console.log(`🚀 Proxy Server running on port ${PORT} using ${IMAGE_MODEL}`);
 });

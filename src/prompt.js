@@ -6,10 +6,10 @@ import { CUSTOM_LOCATION_REFERENCE_KEY } from './constants.js';
 export const NEUTRAL_VOID_SLUG = 'neutral-void';
 
 export const STYLE_INSTRUCTION =
-	'Dark fantasy illustration, World of Darkness Werewolf: The Apocalypse RPG style.';
+	'Dark fantasy illustration in the World of Darkness Werewolf: The Apocalypse RPG style, rendered as a digital painting: gentle edges, soft diffused lighting, muted atmospheric colors, and painterly rather than photographic, comic-book, or hyper-detailed rendering.';
 
 export const NO_BORDER_INSTRUCTION =
-	'Fill the entire square canvas edge-to-edge with no white borders, blank margins, framing, or letterboxing.';
+	'Fill the entire square canvas edge-to-edge with no white borders, blank margins, framing, or letterboxing. The artwork is unsigned: no signatures, initials, watermarks, logos, or captions anywhere in the image, including the corners.';
 
 const ROLE_LABELS = {
 	character: 'Character',
