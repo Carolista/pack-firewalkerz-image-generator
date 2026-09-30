@@ -5,8 +5,7 @@ import { CUSTOM_LOCATION_REFERENCE_KEY } from './constants.js';
 
 export const NEUTRAL_VOID_SLUG = 'neutral-void';
 
-export const STYLE_INSTRUCTION =
-	'RPG fantasy-style illustration, rendered as a painterly, luminescent digital painting: gentle edges, no hard lines, soft diffused lighting, with muted atmospheric colors. Not photographic or realistic, not comic-book style, nor hyper-detailed rendering. No outlines, just light and shadow to provide shape and form to objects and people. Avoid digital gloss.';
+export const STYLE_INSTRUCTION = "Digital oil and gouache painting style, cinematic storybook realism illustration. Rich tactile brushstrokes, soft painterly edge blending, lineless form definition, volumetric atmospheric lighting, matte painterly finish. Highly detailed environmental texture without hyperrealistic photos or flat cartoon lines. Avoid 3D CGI render, avoid flat cel shading, avoid black ink outlines, avoid vector line art, avoid sharp digital edge sharpening, avoid photorealism, avoid comic book ink lines.";
 
 export const NO_BORDER_INSTRUCTION =
 	'Fill the entire square canvas edge-to-edge with no white borders, blank margins, framing, or letterboxing. The artwork is unsigned: no signatures, initials, watermarks, logos, or captions anywhere in the image, including the corners.';
@@ -40,7 +39,7 @@ export function isCustomLocationReference(location) {
 
 export function buildSceneOnlyPrompt(scene) {
 	return [
-		textPart(`Detailed, painterly digital illustration.
+		textPart(`Painterly digital illustration.
 Use only the following scene description to determine the subjects, setting, and action.
 ${NO_BORDER_INSTRUCTION}
 Scene: ${scene}`),
@@ -49,7 +48,7 @@ Scene: ${scene}`),
 
 export function buildLocationPrompt(description) {
 	return [
-		textPart(`Detailed, atmospheric, painterly digital illustration.
+		textPart(`Atmospheric, painterly digital illustration.
 Use the location description as the sole direction for the subject matter and faithfully render all details it describes, whether natural, architectural, cultural, or civilized.
 Do not add unrelated subjects, creatures, themes, or visual motifs that are not present in the location description.
 ${NO_BORDER_INSTRUCTION}
