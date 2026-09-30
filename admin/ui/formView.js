@@ -119,6 +119,12 @@ export function createFormView({
 		}
 	});
 
+	formName.addEventListener('change', () => {
+		for (const input of variantFormRows.querySelectorAll('.variant-name')) {
+			input.dispatchEvent(new Event('change'));
+		}
+	});
+
 	formSlug.addEventListener('input', () => {
 		autoSyncSlug = false;
 	});
@@ -378,21 +384,23 @@ export function createFormView({
 					: '';
 			filenameInput.dispatchEvent(new Event('input'));
 		});
+		variantNameInput.addEventListener('change', () => {
+			if (autoSyncFilename && filenameInput) updatePreview();
+		});
 
+		// Preview hits the storage bucket, so refresh it on change rather than every keystroke.
 		if (filenameInput) {
 			filenameInput.addEventListener('input', event => {
 				if (event.isTrusted) {
 					autoSyncFilename = false;
 				}
 				updateHiddenPath();
-				updatePreview();
 			});
+			filenameInput.addEventListener('change', updatePreview);
 		}
 		if (extInput) {
-			extInput.addEventListener('input', () => {
-				updateHiddenPath();
-				updatePreview();
-			});
+			extInput.addEventListener('input', updateHiddenPath);
+			extInput.addEventListener('change', updatePreview);
 		}
 		updatePreview();
 
