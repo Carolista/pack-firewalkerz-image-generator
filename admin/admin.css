@@ -137,11 +137,12 @@ textarea.variant-desc {
 }
 
 .subcategory-assignment label {
-	flex: 1 1 14rem;
+	flex: 1 1 0;
+	min-width: 0;
 }
 
 .subcategory-assignment button {
-	margin-bottom: 1rem;
+	margin-bottom: 0.5rem;
 }
 
 .subcategory-modal {
@@ -782,6 +783,15 @@ textarea.variant-desc {
 }
 
 @media (max-width: 600px) {
+	.subcategory-assignment button {
+		padding: 0;
+		width: var(--form-control-height);
+	}
+
+	.manage-subcategories-label {
+		display: none;
+	}
+
 	.catalog-toolbar,
 	.element-card {
 		align-items: stretch;
