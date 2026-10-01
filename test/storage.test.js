@@ -5,15 +5,18 @@ import {
 	CHARACTER_ROWS_STORAGE_KEY,
 	ITEM_FILTER_SELECTIONS_STORAGE_KEY,
 	ITEM_ROWS_STORAGE_KEY,
+	LAST_ENEMY_SELECTION_STORAGE_KEY,
 	STORAGE_SCHEMA_VERSION,
 } from '../src/constants.js';
 import {
 	getCharacterRows,
 	getItemFilterSelections,
 	getItemRows,
+	getLastEnemySelection,
 	setCharacterRows,
 	setItemFilterSelections,
 	setItemRows,
+	setLastEnemySelection,
 } from '../src/services/storage.js';
 
 const values = new Map();
@@ -50,6 +53,17 @@ test('stores duplicate item rows with stable IDs', () => {
 	assert.deepEqual(JSON.parse(values.get(ITEM_ROWS_STORAGE_KEY)), {
 		version: STORAGE_SCHEMA_VERSION,
 		data: [row, row],
+	});
+});
+
+test('stores the last enemy and variant selection', () => {
+	const selection = { elementId: 'enemy-id', variantId: 'variant-id' };
+	setLastEnemySelection(selection);
+
+	assert.deepEqual(getLastEnemySelection(), selection);
+	assert.deepEqual(JSON.parse(values.get(LAST_ENEMY_SELECTION_STORAGE_KEY)), {
+		version: STORAGE_SCHEMA_VERSION,
+		data: selection,
 	});
 });
 

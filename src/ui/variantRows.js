@@ -40,6 +40,8 @@ export function initVariantRows({
 	matchesFilter = () => true,
 	getFilterSelections = () => ({}),
 	setFilterSelections = () => {},
+	getAddRowSelection = () => null,
+	onSelectionChange = () => {},
 	showVariantWhenSingleVariant = false,
 }) {
 	let rowIdCounter = 0;
@@ -91,7 +93,10 @@ export function initVariantRows({
 		select.className = variantSelectClassName;
 		select.id = `${elementSelect.id}-variant`;
 		label.htmlFor = select.id;
-		select.addEventListener('change', persistRows);
+		select.addEventListener('change', () => {
+			persistRows();
+			onSelectionChange(getRowSelection(elementSelect, row));
+		});
 		field.replaceChildren(label, select);
 		for (const variant of element.variants) {
 			select.add(new Option(variant.variantName, variant.variantId));
@@ -136,7 +141,10 @@ export function initVariantRows({
 			persistRows();
 		};
 		rowChangeHandlers.set(select, handleElementChange);
-		select.addEventListener('change', () => handleElementChange());
+		select.addEventListener('change', () => {
+			handleElementChange();
+			onSelectionChange(getRowSelection(select, row));
+		});
 
 		const previewBtn = document.createElement('button');
 		previewBtn.type = 'button';
@@ -275,8 +283,20 @@ export function initVariantRows({
 		});
 	}
 
+	function getRowSelection(elementSelect, row) {
+		const element = getElement(elementSelect.value);
+		if (!element) return null;
+		return {
+			elementId: element.id,
+			variantId:
+				row.querySelector(`.${variantSelectClassName}`)?.value ??
+				element.variants[0].variantId,
+		};
+	}
+
 	addBtn.addEventListener('click', () => {
-		createRow();
+		const selection = getAddRowSelection();
+		createRow(selection?.elementId, selection?.variantId);
 		refreshElementOptions();
 		updateAddButtonState();
 		persistRows();
