@@ -201,9 +201,16 @@ textarea.variant-desc {
 }
 
 .subcategory-summary {
-	color: var(--admin-blue);
+	margin: 0 0 0.4rem;
+}
+
+.subcategory-summary-text {
+	color: white;
+	background-color: var(--admin-blue);
 	font-size: 0.9rem;
-	margin: 0.25rem 0;
+	text-transform: uppercase;
+	padding: 0.2rem 0.6rem;
+	border-radius: 9999px;
 }
 
 .variant-form-row {

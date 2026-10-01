@@ -84,9 +84,12 @@ export function createCatalogView({
 			? element.game_element_subcategories[0]
 			: element.game_element_subcategories;
 		if (subcategory?.name) {
-			const subcategorySummary = document.createElement('p');
+			const subcategorySummary = document.createElement('div');
 			subcategorySummary.className = 'subcategory-summary';
-			subcategorySummary.textContent = `Subcategory: ${subcategory.name}`;
+			const subcategoryText = document.createElement('span');
+			subcategoryText.className = 'subcategory-summary-text';
+			subcategorySummary.append(subcategoryText);
+			subcategoryText.textContent = subcategory.name;
 			copy.append(subcategorySummary);
 		}
 		for (const [published, label] of [
