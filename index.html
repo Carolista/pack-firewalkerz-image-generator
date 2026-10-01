@@ -101,6 +101,10 @@
 			</div>
 			<div id="item-card" class="card">
 				<h3>Items</h3>
+				<div id="item-subcategory-filter-field" class="field" hidden>
+					<label for="item-subcategory-filter">Filter items</label>
+					<select id="item-subcategory-filter"></select>
+				</div>
 				<div id="item-rows"></div>
 				<button id="add-item-btn" type="button">
 					<i class="fa-solid fa-circle-plus"></i>
@@ -136,7 +140,8 @@
 				</button>
 				<div class="image-actions">
 					<button id="generate-btn">
-						<i class="fa-solid fa-wand-magic-sparkles"></i> Generate
+						<i class="fa-solid fa-wand-magic-sparkles"></i>
+						<span id="generate-btn-label">Generate</span>
 					</button>
 					<button id="reset-btn" type="button">
 						<i class="fa-solid fa-rotate-left"></i> Reset

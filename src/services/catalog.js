@@ -1,8 +1,17 @@
-import DATA from '../data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../model/gameElements.js';
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from './supabaseConfig.js';
 
-let catalog = assertCatalog(normalizeCatalog(DATA));
+function createEmptyCatalog() {
+	return {
+		characters: [],
+		npcs: [],
+		enemies: [],
+		locations: [],
+		items: [],
+	};
+}
+
+let catalog = createEmptyCatalog();
 
 export let CATALOG = catalog;
 export let ADMIN_CATALOG_ACTIVE = false;
@@ -30,12 +39,20 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 			) {
 				throw new Error('Invalid admin catalog response.');
 			}
+			const elementsResponse = await fetch(
+				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)`,
+				{
+					headers: {
+						apikey: SUPABASE_PUBLISHABLE_KEY,
+						Authorization: `Bearer ${adminAccessToken}`,
+					},
+				},
+			);
+			if (!elementsResponse.ok)
+				throw new Error('Admin element catalog access denied.');
+			const elements = await elementsResponse.json();
 			catalog = assertCatalog(
-				normalizeSupabaseCatalog(
-					result.elements,
-					result.variants,
-					true,
-				),
+				normalizeSupabaseCatalog(elements, result.variants, true),
 			);
 			CATALOG = catalog;
 			ADMIN_CATALOG_ACTIVE = true;
@@ -54,9 +71,12 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 			Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
 		};
 		const [elementsResponse, variantsResponse] = await Promise.all([
-			fetch(`${SUPABASE_URL}/rest/v1/game_elements?select=*`, {
-				headers,
-			}),
+			fetch(
+				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)`,
+				{
+					headers,
+				},
+			),
 			fetch(
 				`${SUPABASE_URL}/rest/v1/game_element_variants?select=*&is_published=eq.true`,
 				{ headers },
@@ -74,13 +94,7 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 		CATALOG = catalog;
 		return catalog;
 	} catch (error) {
-		catalog = {
-			characters: [],
-			npcs: [],
-			enemies: [],
-			locations: [],
-			items: [],
-		};
+		catalog = createEmptyCatalog();
 		CATALOG = catalog;
 		ADMIN_CATALOG_ACTIVE = false;
 		console.warn('Campaign catalog unavailable:', error);
@@ -125,9 +139,17 @@ function normalizeSupabaseCatalog(
 		if (!collectionKey) continue;
 		const publishedVariants = variantsByElement.get(element.id);
 		if (!publishedVariants?.length) continue;
+		const subcategoryRelation = Array.isArray(
+			element.game_element_subcategories,
+		)
+			? element.game_element_subcategories[0]
+			: element.game_element_subcategories;
 		normalized[collectionKey].push({
 			id: element.id,
 			elementType: element.element_type,
+			subcategoryId: element.subcategory_id ?? null,
+			subcategoryName:
+				element.subcategory_name ?? subcategoryRelation?.name ?? null,
 			name: element.name,
 			slug: element.slug,
 			variants: publishedVariants,

@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import DATA from '../src/data.json' with { type: 'json' };
 import { assertCatalog, normalizeCatalog } from '../src/model/gameElements.js';
 import {
 	ADMIN_CATALOG_ACTIVE,
@@ -10,13 +9,97 @@ import {
 	loadCatalog,
 } from '../src/services/catalog.js';
 
-test('normalizes and validates the catalog', () => {
-	const catalog = assertCatalog(normalizeCatalog(DATA));
+const TEST_DATA = {
+	characters: [
+		{
+			id: 'river',
+			name: 'River-That-Remembers',
+			slug: 'river',
+			variants: [1, 2, 3, 4, 5].map(sortOrder => ({
+				variantId: `river-${sortOrder}`,
+				variantName: `Form ${sortOrder}`,
+				variantDesc: '',
+				image: '',
+				sortOrder,
+			})),
+		},
+	],
+	npcs: [
+		{
+			id: 'mother',
+			name: 'Mother',
+			slug: 'mother',
+			variants: [
+				{
+					variantId: 'mother-day',
+					variantName: 'Day',
+					variantDesc: '',
+					image: '',
+				},
+			],
+		},
+	],
+	enemies: [
+		{
+			id: 'security-bot',
+			name: 'Security Bot',
+			slug: 'securityBot',
+			variants: [
+				{
+					variantId: 'security-bot-patrol',
+					variantName: 'On Patrol',
+					variantDesc: '',
+					image: '',
+				},
+			],
+		},
+	],
+	locations: [
+		{
+			id: 'neutral-void',
+			name: 'Neutral Void',
+			slug: 'neutral-void',
+			variants: [
+				{
+					variantId: 'neutral-void-default',
+					variantName: 'default',
+					variantDesc:
+						'A neutral void as a generic background; render the individual form of the character.',
+					image: '',
+				},
+			],
+		},
+	],
+	items: [
+		{
+			id: 'pig-keychain',
+			name: 'PIG Employee Keychain',
+			slug: 'pig-employee-keychain',
+			variants: [
+				{
+					variantId: 'pig-keychain-keys',
+					variantName: 'Keys',
+					variantDesc: 'A neon pink pig keychain.',
+					image: '',
+				},
+			],
+		},
+	],
+};
+const TEST_CATALOG = assertCatalog(normalizeCatalog(TEST_DATA));
 
-	assert.equal(catalog.characters.length, 3);
-	assert.equal(catalog.npcs.length, 3);
-	assert.equal(catalog.enemies.length, 3);
-	assert.equal(catalog.locations.length, 4);
+test('starts with an empty catalog before Supabase data loads', () => {
+	assert.deepEqual(getElements('character'), []);
+	assert.deepEqual(getElements('item'), []);
+});
+
+test('normalizes and validates the catalog', () => {
+	const catalog = TEST_CATALOG;
+
+	assert.equal(catalog.characters.length, 1);
+	assert.equal(catalog.npcs.length, 1);
+	assert.equal(catalog.enemies.length, 1);
+	assert.equal(catalog.locations.length, 1);
 	assert.equal(catalog.items.length, 1);
 	assert.equal(catalog.items[0].elementType, 'item');
 
@@ -29,8 +112,38 @@ test('normalizes and validates the catalog', () => {
 	}
 });
 
+test('normalizes optional subcategory metadata', () => {
+	const catalog = normalizeCatalog({
+		characters: [],
+		npcs: [],
+		enemies: [],
+		locations: [],
+		items: [
+			{
+				id: 'categorized-item',
+				name: 'Categorized Item',
+				slug: 'categorized-item',
+				subcategoryId: 'personal-items',
+				subcategoryName: 'Personal Items',
+				variants: [],
+			},
+			{
+				id: 'uncategorized-item',
+				name: 'Uncategorized Item',
+				slug: 'uncategorized-item',
+				variants: [],
+			},
+		],
+	});
+
+	assert.equal(catalog.items[0].subcategoryId, 'personal-items');
+	assert.equal(catalog.items[0].subcategoryName, 'Personal Items');
+	assert.equal(catalog.items[1].subcategoryId, null);
+	assert.equal(catalog.items[1].subcategoryName, null);
+});
+
 test('looks up a variant by stable ID', () => {
-	const enemy = getElements('enemy').find(
+	const enemy = TEST_CATALOG.enemies.find(
 		({ slug }) => slug === 'securityBot',
 	);
 	const expectedVariant = enemy.variants.find(
@@ -42,7 +155,7 @@ test('looks up a variant by stable ID', () => {
 });
 
 test('looks up the starter item and its variant', () => {
-	const item = getElements('item')[0];
+	const item = TEST_CATALOG.items[0];
 	const variant = getVariantById(item, item.variants[0].variantId);
 
 	assert.equal(item.name, 'PIG Employee Keychain');
@@ -51,7 +164,7 @@ test('looks up the starter item and its variant', () => {
 });
 
 test('returns undefined for an unknown variant ID', () => {
-	const character = getElements('character')[0];
+	const character = TEST_CATALOG.characters[0];
 
 	assert.equal(getVariantById(character, 'missing-variant-id'), undefined);
 });
@@ -64,7 +177,7 @@ test('rejects an unknown catalog element type', () => {
 });
 
 test('preserves werewolf variant sort order', () => {
-	const character = getElements('character').find(
+	const character = TEST_CATALOG.characters.find(
 		({ slug }) => slug === 'river',
 	);
 
@@ -76,8 +189,27 @@ test('preserves werewolf variant sort order', () => {
 
 test('sorts elements alphabetically by name', () => {
 	assert.deepEqual(
-		getElements('character').map(element => element.name),
-		['Lorica Albrecht', 'Monkshood', 'River-That-Remembers'],
+		normalizeCatalog({
+			characters: [
+				{
+					id: 'river',
+					name: 'River',
+					slug: 'river',
+					variants: [],
+				},
+				{
+					id: 'lorica',
+					name: 'Lorica',
+					slug: 'lorica',
+					variants: [],
+				},
+			],
+			npcs: [],
+			enemies: [],
+			locations: [],
+			items: [],
+		}).characters.map(element => element.name),
+		['Lorica', 'River'],
 	);
 });
 
@@ -247,7 +379,7 @@ test('rejects invalid variant fields', () => {
 });
 
 test('includes Neutral Void location in the catalog', () => {
-	const catalog = assertCatalog(normalizeCatalog(DATA));
+	const catalog = TEST_CATALOG;
 	const neutralVoid = catalog.locations.find(
 		loc => loc.slug === 'neutral-void',
 	);
@@ -273,7 +405,17 @@ test('public catalog loads only published variants and fails closed after a requ
 		},
 		{ id: 'shade', element_type: 'npc', name: 'Shade', slug: 'shade' },
 		{ id: 'grove', element_type: 'location', name: 'Grove', slug: 'grove' },
-		{ id: 'keys', element_type: 'item', name: 'Keys', slug: 'keys' },
+		{
+			id: 'keys',
+			element_type: 'item',
+			name: 'Keys',
+			slug: 'keys',
+			subcategory_id: 'personal-items',
+			game_element_subcategories: {
+				id: 'personal-items',
+				name: 'Personal Items',
+			},
+		},
 	];
 	const variant = (id, elementId, isPublished, sortOrder = null) => ({
 		id,
@@ -316,6 +458,8 @@ test('public catalog loads only published variants and fails closed after a requ
 			getElements('item')[0].variants.map(row => row.variantId),
 			['keys-public'],
 		);
+		assert.equal(getElements('item')[0].subcategoryId, 'personal-items');
+		assert.equal(getElements('item')[0].subcategoryName, 'Personal Items');
 
 		globalThis.fetch = async () => new Response(null, { status: 503 });
 		await assert.rejects(loadCatalog(), /Supabase catalog request failed/);
@@ -361,9 +505,16 @@ test('admin catalog requires RPC access and falls back to published variants', a
 	];
 	try {
 		globalThis.fetch = async (url, options) => {
-			assert.match(url, /\/rpc\/get_admin_catalog$/);
+			if (url.includes('/rpc/get_admin_catalog')) {
+				assert.equal(
+					options.headers.Authorization,
+					'Bearer admin-token',
+				);
+				return new Response(JSON.stringify({ elements, variants }));
+			}
+			assert.match(url, /\/game_elements\?/);
 			assert.equal(options.headers.Authorization, 'Bearer admin-token');
-			return new Response(JSON.stringify({ elements, variants }));
+			return new Response(JSON.stringify(elements));
 		};
 		await loadCatalog({ adminAccessToken: 'admin-token' });
 		assert.equal(ADMIN_CATALOG_ACTIVE, true);

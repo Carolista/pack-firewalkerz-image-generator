@@ -5,6 +5,7 @@ export const CHARACTER_ROWS_STORAGE_KEY = 'ww20CharacterRows';
 export const NPC_ROWS_STORAGE_KEY = 'ww20NPCRows';
 export const ENEMY_ROWS_STORAGE_KEY = 'ww20EnemyRows';
 export const ITEM_ROWS_STORAGE_KEY = 'ww20ItemRows';
+export const ITEM_FILTER_SELECTIONS_STORAGE_KEY = 'ww20ItemFilterSelections';
 export const OTHER_LOCATION_TEXT_STORAGE_KEY = 'ww20OtherLocationText';
 export const LOCATION_STORAGE_KEY = 'ww20LocationSelect';
 

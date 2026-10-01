@@ -78,6 +78,15 @@ export function createCatalogView({
 		const name = document.createElement('h3');
 		name.textContent = element.name;
 		copy.append(name);
+		const subcategory = Array.isArray(element.game_element_subcategories)
+			? element.game_element_subcategories[0]
+			: element.game_element_subcategories;
+		if (subcategory?.name) {
+			const subcategorySummary = document.createElement('p');
+			subcategorySummary.className = 'subcategory-summary';
+			subcategorySummary.textContent = `Subcategory: ${subcategory.name}`;
+			copy.append(subcategorySummary);
+		}
 		for (const [published, label] of [
 			[true, 'published'],
 			[false, 'unpublished'],

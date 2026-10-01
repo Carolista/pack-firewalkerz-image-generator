@@ -129,6 +129,74 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
+.subcategory-assignment {
+	align-items: end;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+}
+
+.subcategory-assignment label {
+	flex: 1 1 14rem;
+}
+
+.subcategory-assignment button {
+	margin-bottom: 1rem;
+}
+
+.subcategory-modal {
+	width: min(100%, 34rem);
+}
+
+.subcategory-modal form {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.subcategory-modal .status {
+	min-height: 1.4em;
+}
+
+.subcategory-list {
+	list-style: none;
+	margin: 1rem 0;
+	max-height: min(45vh, 24rem);
+	overflow-y: auto;
+	padding: 0;
+}
+
+.subcategory-list li {
+	align-items: center;
+	border-top: 1px solid var(--admin-line);
+	display: flex;
+	gap: 0.5rem;
+	justify-content: space-between;
+	padding: 0.5rem 0;
+}
+
+.subcategory-modal-actions,
+.subcategory-modal-footer {
+	display: flex;
+	gap: 0.5rem;
+}
+
+.subcategory-modal-actions button {
+	aspect-ratio: 1;
+	flex: 0 0 auto;
+	padding: 0.25rem;
+	width: 2.5rem;
+}
+
+.subcategory-modal-footer {
+	justify-content: flex-end;
+}
+
+.subcategory-summary {
+	color: var(--admin-blue);
+	font-size: 0.9rem;
+	margin: 0.25rem 0;
+}
+
 .variant-form-row {
 	grid-template-columns: 1fr;
 }

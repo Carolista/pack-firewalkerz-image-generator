@@ -3,13 +3,16 @@ import test from 'node:test';
 
 import {
 	CHARACTER_ROWS_STORAGE_KEY,
+	ITEM_FILTER_SELECTIONS_STORAGE_KEY,
 	ITEM_ROWS_STORAGE_KEY,
 	STORAGE_SCHEMA_VERSION,
 } from '../src/constants.js';
 import {
 	getCharacterRows,
+	getItemFilterSelections,
 	getItemRows,
 	setCharacterRows,
+	setItemFilterSelections,
 	setItemRows,
 } from '../src/services/storage.js';
 
@@ -48,6 +51,22 @@ test('stores duplicate item rows with stable IDs', () => {
 		version: STORAGE_SCHEMA_VERSION,
 		data: [row, row],
 	});
+});
+
+test('stores item selections separately for each filter group', () => {
+	const selections = {
+		__all__: [{ elementId: 'all-item', variantId: 'all-variant' }],
+		personal: [
+			{ elementId: 'personal-item', variantId: 'personal-variant' },
+		],
+	};
+	setItemFilterSelections(selections);
+
+	assert.deepEqual(getItemFilterSelections(), selections);
+	assert.deepEqual(
+		JSON.parse(values.get(ITEM_FILTER_SELECTIONS_STORAGE_KEY)),
+		{ version: STORAGE_SCHEMA_VERSION, data: selections },
+	);
 });
 
 test('ignores and removes rows from an old storage schema', () => {

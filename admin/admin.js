@@ -7,6 +7,7 @@ import { createCropModal } from './ui/cropModal.js';
 import { createDetailsView } from './ui/detailsView.js';
 import { createFormView } from './ui/formView.js';
 import { createModalController } from './ui/modals.js';
+import { createSubcategoryModal } from './ui/subcategoryModal.js';
 
 const CATEGORIES = {
 	character: {
@@ -70,6 +71,7 @@ const elementForm = document.getElementById('element-form');
 const formCategory = document.getElementById('form-category');
 const formName = document.getElementById('form-name');
 const formSlug = document.getElementById('form-slug');
+const formSubcategory = document.getElementById('form-subcategory');
 const formStatus = document.getElementById('form-status');
 const variantFormRows = document.getElementById('variant-form-rows');
 const loginForm = document.getElementById('login-form');
@@ -117,13 +119,29 @@ const modals = createModalController({
 	confirmConfirmBtn: confirmModalConfirmBtn,
 	onReauthenticate: reauthenticate,
 });
-const formView = createFormView({
+let formView;
+const subcategoryModal = createSubcategoryModal({
+	overlay: document.getElementById('subcategory-modal-overlay'),
+	heading: document.getElementById('subcategory-modal-heading'),
+	status: document.getElementById('subcategory-modal-status'),
+	createForm: document.getElementById('subcategory-create-form'),
+	nameInput: document.getElementById('subcategory-name-input'),
+	list: document.getElementById('subcategory-list'),
+	closeBtn: document.getElementById('subcategory-modal-close-btn'),
+	dataClient,
+	categories: CATEGORIES,
+	onChange: () => formView?.refreshSubcategories(),
+});
+formView = createFormView({
 	formContainer,
 	formHeading,
 	elementForm,
 	formCategory,
 	formName,
 	formSlug,
+	formSubcategory,
+	manageSubcategoriesBtn: document.getElementById('manage-subcategories-btn'),
+	subcategoryModal,
 	formStatus,
 	formSaveBtn: document.getElementById('form-save-btn'),
 	variantFormRows,

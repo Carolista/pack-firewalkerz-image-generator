@@ -18,6 +18,8 @@ function normalizeElement(element, elementType) {
 	return {
 		id: element.id,
 		elementType: element.elementType ?? elementType,
+		subcategoryId: element.subcategoryId ?? null,
+		subcategoryName: element.subcategoryName ?? null,
 		name: element.name,
 		slug: element.slug,
 		variants: normalizeVariants(element.variants),
