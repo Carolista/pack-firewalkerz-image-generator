@@ -75,7 +75,10 @@ test('location prompt describes only the location', () => {
 	const text = promptText(parts);
 
 	assert.equal(imageParts(parts).length, 0);
-	assert.match(text, /Detailed, atmospheric, painterly digital illustration/);
+	assert.match(
+		text,
+		/Digital oil and gouache painting style, cinematic storybook realism illustration/,
+	);
 	assert.match(text, /Do not add unrelated subjects, creatures, themes/);
 	assert.match(text, /Location: A flooded stone chapel\./);
 	assert.ok(text.includes(NO_BORDER_INSTRUCTION));

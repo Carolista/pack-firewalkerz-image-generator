@@ -325,8 +325,7 @@ async function generateWithPrompt(promptParts) {
 		if (result.imageUrl) {
 			generatedBlob = showSuccess(result);
 			generateBtnLabel.innerText = 'Regenerate';
-		}
-		else showEmptyResponse(result.raw);
+		} else showEmptyResponse(result.raw);
 	} catch (err) {
 		console.error('Image generation failed:', err, err.cause ?? '');
 		showError(
