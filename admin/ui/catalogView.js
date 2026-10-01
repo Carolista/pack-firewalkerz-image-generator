@@ -33,11 +33,13 @@ export function createCatalogView({
 				button.setAttribute('aria-label', tabLabel);
 				const icon = document.createElement('i');
 				icon.className = categories[category].faClasses;
-				const label =
-					category === getActiveCategory()
-						? ` ${categories[category].shortPlural}`
-						: '';
-				button.append(icon, label);
+				button.append(icon);
+				if (category === getActiveCategory()) {
+					const label = document.createElement('span');
+					label.className = 'tab-label';
+					label.textContent = ` ${categories[category].shortPlural}`;
+					button.append(label);
+				}
 				button.addEventListener('click', () => {
 					setActiveCategory(category);
 					navigateTo({ name: 'view', category });

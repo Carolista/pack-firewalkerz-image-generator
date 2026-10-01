@@ -605,6 +605,7 @@ textarea.variant-desc {
 	background: var(--admin-surface);
 	font-size: 1.2rem;
 	border-radius: 0;
+	padding: 0.8rem;
 }
 
 .tab:hover {
@@ -921,6 +922,12 @@ textarea.variant-desc {
 		flex: none;
 		padding-inline-start: 0;
 		width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	.tab.active .tab-label {
+		display: none;
 	}
 }
 
