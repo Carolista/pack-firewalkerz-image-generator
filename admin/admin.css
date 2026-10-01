@@ -129,6 +129,14 @@ textarea.variant-desc {
 	gap: 1rem;
 }
 
+#form-panel,
+#variant-form-rows,
+.variant-form-row,
+.variant-info-col,
+.variant-image-col {
+	min-width: 0;
+}
+
 .subcategory-assignment {
 	align-items: end;
 	display: flex;
@@ -199,7 +207,7 @@ textarea.variant-desc {
 }
 
 .variant-form-row {
-	grid-template-columns: 1fr;
+	grid-template-columns: minmax(0, 1fr);
 }
 
 .variant-info-col,
@@ -218,6 +226,15 @@ textarea.variant-desc {
 	display: flex;
 	gap: 0.5rem;
 	align-items: flex-end;
+	min-width: 0;
+}
+
+.variant-controls-row {
+	align-items: stretch;
+	display: grid;
+	gap: 0.5rem;
+	grid-template-columns: minmax(0, 1fr) 5.5rem var(--form-control-height);
+	min-width: 0;
 }
 
 .variant-meta-row label {
@@ -255,16 +272,30 @@ textarea.variant-desc {
 }
 
 .variant-sort-field {
-	width: 5.5rem;
+	margin-bottom: 0;
+	min-width: 0;
+}
+
+.variant-controls-row .delete-variant-btn {
+	align-self: end;
 }
 
 .variant-publish-control {
-	align-items: center;
-	color: var(--admin-ink);
-	flex-direction: row;
-	flex-wrap: wrap;
-	gap: 0.6rem;
-	width: fit-content;
+	display: grid;
+	gap: 0.4rem;
+	grid-template-rows: auto var(--form-control-height);
+	margin-bottom: 0;
+	min-width: 0;
+}
+
+.variant-publication-status {
+	grid-row: 1;
+}
+
+.variant-publish-control .variant-published {
+	align-self: start;
+	grid-row: 2;
+	margin-top: 0;
 }
 
 .variant-published {
@@ -273,30 +304,31 @@ textarea.variant-desc {
 	border: 1px solid var(--admin-ink);
 	border-radius: 999px;
 	cursor: pointer;
-	height: 1.5rem;
+	height: 1.75rem;
 	margin: 0;
 	position: relative;
-	width: 2.75rem;
+	width: 3rem;
 }
 
 .variant-published::before {
 	background: var(--admin-ink);
 	border-radius: 50%;
 	content: '';
-	height: 1rem;
-	left: 0.2rem;
+	height: 1.125rem;
+	left: 0.25rem;
 	position: absolute;
-	top: 0.2rem;
-	width: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 1.125rem;
 }
 
 .variant-published:checked {
-	background: var(--admin-blue);
+	background: #287a46;
 }
 
 .variant-published:checked::before {
 	background: #fff;
-	transform: translateX(1.25rem);
+	transform: translate(1.375rem, -50%);
 }
 
 .unpublished-label {
@@ -409,9 +441,17 @@ textarea.variant-desc {
 }
 
 .variant-image-filename-row {
-	display: flex;
 	align-items: center;
+	display: flex;
 	gap: 0.4rem;
+	min-width: 0;
+	width: 100%;
+}
+
+.variant-image-filename {
+	flex: 1 1 0;
+	min-width: 0;
+	width: auto;
 }
 
 .stored-image-path {
@@ -434,7 +474,10 @@ textarea.variant-desc {
 }
 
 .variant-image-ext {
+	flex: 0 1 5rem;
 	max-width: 5rem;
+	min-width: 2.5rem;
+	width: 5rem;
 	text-transform: lowercase;
 }
 
@@ -783,6 +826,30 @@ textarea.variant-desc {
 }
 
 @media (max-width: 600px) {
+	.variant-controls-row {
+		gap: 0.25rem;
+		grid-template-columns: minmax(0, 1fr) 3.75rem var(--form-control-height);
+	}
+
+	.variant-publish-control {
+		gap: 0.25rem;
+	}
+
+	.variant-sort-field {
+		position: relative;
+		white-space: nowrap;
+		z-index: 1;
+	}
+
+	.variant-sort-field input {
+		font-size: 0.85rem;
+		padding-inline: 0.3rem;
+	}
+
+	.variant-image-actions {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
 	.subcategory-assignment button {
 		padding: 0;
 		width: var(--form-control-height);
@@ -842,6 +909,21 @@ textarea.variant-desc {
 	}
 }
 
+@media (max-width: 400px) {
+	.variant-name-control {
+		align-items: stretch;
+		flex-direction: column;
+		padding-block: 0.4rem;
+	}
+
+	#form-panel .variant-name-control .variant-name {
+		align-self: stretch;
+		flex: none;
+		padding-inline-start: 0;
+		width: 100%;
+	}
+}
+
 @media (max-width: 800px) {
 	.variant-detail {
 		flex-direction: column;
@@ -882,7 +964,7 @@ textarea.variant-desc {
 	}
 
 	.variant-form-row {
-		grid-template-columns: 1.2fr 1fr;
+		grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 		gap: 1.5rem;
 	}
 }

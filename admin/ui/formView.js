@@ -279,13 +279,15 @@ export function createFormView({
 							<input class="variant-name" required value="${variant.variant_name ?? ''}" />
 						</span>
 					</label>
+				</div>
+				<div class="variant-controls-row">
+					<label class="variant-publish-control">
+						<span class="variant-publication-status">${isPublished ? 'Published' : 'Unpublished'}</span>
+						<input class="variant-published" type="checkbox" role="switch" ${isPublished ? 'checked' : ''} />
+					</label>
 					<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
 					<button class="delete-variant-btn delete" type="button" title="Delete variant" aria-label="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
-				<label class="variant-publish-control">
-										<input class="variant-published" type="checkbox" role="switch" ${isPublished ? 'checked' : ''} />
-					<span class="variant-publication-status" aria-hidden="true">${isPublished ? 'Published' : 'Unpublished'}</span>
-				</label>
 				<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			</div>
 			<div class="variant-image-col">
