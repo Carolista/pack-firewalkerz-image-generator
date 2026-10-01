@@ -19,6 +19,7 @@ export function createCatalogView({
 	elementList,
 	addElementBtn,
 	filterField,
+	manageSubcategoriesBtn,
 	filterSelect,
 	dataClient,
 	storageService,
@@ -102,6 +103,10 @@ export function createCatalogView({
 				);
 				filterSelect.value = filter;
 				filterField.hidden = !options.length;
+				// A failed lookup (null) keeps the generic Manage label.
+				setManageButtonLabel(
+					subcategories?.length === 0 ? 'Create' : 'Manage',
+				);
 
 				const visible = elements.filter(element =>
 					matchesCatalogFilter(element, filter),
@@ -130,6 +135,11 @@ export function createCatalogView({
 		},
 	};
 	return view;
+
+	function setManageButtonLabel(verb) {
+		manageSubcategoriesBtn.innerHTML = `<i class="fa-solid fa-list-check"></i> ${verb} Subcategories`;
+		manageSubcategoriesBtn.title = `${verb} subcategories for this category`;
+	}
 
 	function renderElement(element) {
 		const article = document.createElement('article');

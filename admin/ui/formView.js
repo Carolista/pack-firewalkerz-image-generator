@@ -232,6 +232,7 @@ export function createFormView({
 		for (const subcategory of subcategories) {
 			formSubcategory.add(new Option(subcategory.name, subcategory.id));
 		}
+		setManageButtonLabel(subcategories.length ? 'Manage' : 'Create');
 		formSubcategory.value = subcategories.some(
 			subcategory => subcategory.id === selectedId,
 		)
@@ -243,6 +244,17 @@ export function createFormView({
 				'The selected subcategory was removed, so this element now has no subcategory.',
 			);
 		}
+	}
+
+	function setManageButtonLabel(verb) {
+		manageSubcategoriesBtn.querySelector(
+			'.manage-subcategories-label',
+		).textContent = `${verb} subcategories`;
+		manageSubcategoriesBtn.title = `${verb} subcategories for this category`;
+		manageSubcategoriesBtn.setAttribute(
+			'aria-label',
+			`${verb} subcategories`,
+		);
 	}
 
 	function addVariantFormRow(variant = {}, { scrollIntoView = false } = {}) {

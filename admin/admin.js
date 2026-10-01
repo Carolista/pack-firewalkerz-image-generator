@@ -171,6 +171,7 @@ const catalogView = createCatalogView({
 	elementList,
 	addElementBtn,
 	filterField: document.getElementById('catalog-filter-field'),
+	manageSubcategoriesBtn,
 	filterSelect: document.getElementById('catalog-subcategory-filter'),
 	dataClient,
 	storageService,
