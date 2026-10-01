@@ -237,6 +237,12 @@ export function createFormView({
 		)
 			? selectedId
 			: '';
+		if (selectedId && !formSubcategory.value) {
+			setStatus(
+				formStatus,
+				'The selected subcategory was removed, so this element now has no subcategory.',
+			);
+		}
 	}
 
 	function addVariantFormRow(variant = {}, { scrollIntoView = false } = {}) {
@@ -863,6 +869,14 @@ export function createFormView({
 				setStatus(formStatus, '');
 				navigateTo({ name: 'view', category: formCategory.value });
 			} catch (error) {
+				if (error.code === '23503') {
+					// The chosen subcategory was deleted elsewhere after the form loaded.
+					await refreshSubcategories('').catch(() => {});
+					return setStatus(
+						formStatus,
+						'The selected subcategory no longer exists. Choose another and save again.',
+					);
+				}
 				setStatus(formStatus, error.message);
 			}
 		} finally {

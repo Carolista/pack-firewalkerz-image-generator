@@ -1,4 +1,9 @@
 import { getPublicImageUrl } from '../services/storageService.js';
+import {
+	getCatalogFilterOptions,
+	isKnownFilterValue,
+	matchesCatalogFilter,
+} from './catalogFilter.js';
 
 const BUTTON_ACTIONS = {
 	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },
@@ -13,13 +18,25 @@ export function createCatalogView({
 	catalogStatus,
 	elementList,
 	addElementBtn,
+	filterField,
+	filterSelect,
 	dataClient,
 	storageService,
 	modals,
 	navigateTo,
 	getActiveCategory,
 	setActiveCategory,
+	getActiveFilter,
+	onStaleFilter,
 }) {
+	let loadToken = 0;
+	filterSelect.addEventListener('change', () =>
+		navigateTo({
+			name: 'view',
+			category: getActiveCategory(),
+			subcategory: filterSelect.value,
+		}),
+	);
 	const view = {
 		renderTabs() {
 			categoryTabs.replaceChildren();
@@ -51,20 +68,64 @@ export function createCatalogView({
 		},
 		async loadElements() {
 			const category = getActiveCategory();
+			const token = ++loadToken;
 			setStatus(catalogStatus, 'Loading catalog...');
 			elementList.replaceChildren();
-			addElementBtn.innerHTML = `<i class="fa-solid fa-square-plus"></i> Add ${categories[category].longSingular}`;
+			filterField.hidden = true;
+			addElementBtn.innerHTML = `<i class="fa-solid fa-square-plus"></i> Add ${categories[category].shortSingular}`;
 			addElementBtn.title = `Create a new ${categories[category].longSingular}`;
 			try {
-				const elements = await dataClient.listElements(category);
-				for (const element of elements)
+				const [elements, subcategories] = await Promise.all([
+					dataClient.listElements(category),
+					// The filter is optional, so a failure here must not hide the catalog.
+					dataClient.listSubcategories(category).catch(() => null),
+				]);
+				if (token !== loadToken) return;
+
+				const requestedFilter = getActiveFilter();
+				const options = getCatalogFilterOptions(
+					subcategories ?? [],
+					elements,
+					`All ${categories[category].shortPlural}`,
+				);
+				const filterIsStale =
+					Boolean(subcategories) &&
+					!isKnownFilterValue(requestedFilter, subcategories);
+				const filter =
+					options.length && !filterIsStale ? requestedFilter : '';
+				if (filter !== requestedFilter) onStaleFilter();
+
+				filterSelect.replaceChildren(
+					...options.map(
+						({ value, label }) => new Option(label, value),
+					),
+				);
+				filterSelect.value = filter;
+				filterField.hidden = !options.length;
+
+				const visible = elements.filter(element =>
+					matchesCatalogFilter(element, filter),
+				);
+				for (const element of visible)
 					elementList.append(renderElement(element));
+				const plural = categories[category].shortPlural;
+				if (options.length) {
+					// The filter's option labels already carry the counts.
+					setStatus(
+						catalogStatus,
+						filterIsStale
+							? 'The selected subcategory no longer exists, so all are shown.'
+							: '',
+					);
+					return;
+				}
 				setStatus(
 					catalogStatus,
-					`${categories[category].longPlural}: ${elements.length} result${elements.length !== 1 ? 's' : ''}`,
+					`${plural}: ${elements.length} result${elements.length !== 1 ? 's' : ''}`,
 				);
 			} catch (error) {
-				setStatus(catalogStatus, error.message);
+				if (token === loadToken)
+					setStatus(catalogStatus, error.message);
 			}
 		},
 	};

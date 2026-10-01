@@ -1,4 +1,4 @@
-import { getRoute, navigateTo } from './routing.js';
+import { getRoute, navigateTo as navigateToRoute } from './routing.js';
 import { createAdminDataClient } from './services/adminData.js';
 import { createAuthClient } from './services/auth.js';
 import { createStorageService } from './services/storageService.js';
@@ -48,6 +48,8 @@ const CATEGORIES = {
 };
 
 let activeCategory = 'character';
+// Last catalog subcategory filter per category, so returning to a list keeps it.
+const rememberedFilters = {};
 const authClient = createAuthClient({
 	onSessionExpired: showReauthenticationModal,
 });
@@ -81,6 +83,9 @@ const categoryTabs = document.getElementById('category-tabs');
 const elementList = document.getElementById('element-list');
 const signOutBtn = document.getElementById('sign-out-btn');
 const addElementBtn = document.getElementById('add-element-btn');
+const manageSubcategoriesBtn = document.getElementById(
+	'catalog-manage-subcategories-btn',
+);
 const reauthModalOverlay = document.getElementById('reauth-modal-overlay');
 const reauthForm = document.getElementById('reauth-form');
 const reauthStatus = document.getElementById('reauth-status');
@@ -129,8 +134,12 @@ const subcategoryModal = createSubcategoryModal({
 	list: document.getElementById('subcategory-list'),
 	closeBtn: document.getElementById('subcategory-modal-close-btn'),
 	dataClient,
+	modals,
 	categories: CATEGORIES,
-	onChange: () => formView?.refreshSubcategories(),
+	onChange: () =>
+		catalogPanel.hidden
+			? formView?.refreshSubcategories()
+			: catalogView.loadElements(),
 });
 formView = createFormView({
 	formContainer,
@@ -161,6 +170,8 @@ const catalogView = createCatalogView({
 	catalogStatus,
 	elementList,
 	addElementBtn,
+	filterField: document.getElementById('catalog-filter-field'),
+	filterSelect: document.getElementById('catalog-subcategory-filter'),
 	dataClient,
 	storageService,
 	modals,
@@ -168,6 +179,13 @@ const catalogView = createCatalogView({
 	getActiveCategory: () => activeCategory,
 	setActiveCategory: category => {
 		activeCategory = category;
+	},
+	getActiveFilter: () => rememberedFilters[activeCategory] ?? '',
+	onStaleFilter: () => {
+		rememberedFilters[activeCategory] = '';
+		if (getRoute()?.subcategory) {
+			history.replaceState(null, '', `#/view/${activeCategory}`);
+		}
 	},
 });
 const detailsView = createDetailsView({
@@ -184,6 +202,9 @@ signOutBtn.addEventListener('click', signOut);
 addElementBtn.addEventListener('click', () => {
 	navigateTo({ name: 'add', category: activeCategory });
 });
+manageSubcategoriesBtn.addEventListener('click', () =>
+	subcategoryModal.open(activeCategory),
+);
 detailsBackBtn.addEventListener('click', () => {
 	navigateTo({ name: 'view', category: activeCategory });
 });
@@ -257,6 +278,8 @@ async function renderShell() {
 	loginPanel.hidden = authenticated;
 	const route = getRoute();
 	if (route?.category) activeCategory = route.category;
+	if (route?.name === 'view')
+		rememberedFilters[route.category] = route.subcategory;
 	const detailsRoute = route?.name === 'details' ? route : null;
 	const formRoute = ['add', 'edit'].includes(route?.name) ? route : null;
 	catalogPanel.hidden = !authenticated || Boolean(detailsRoute || formRoute);
@@ -272,4 +295,16 @@ async function renderShell() {
 
 function setStatus(element, message) {
 	element.textContent = message;
+}
+
+// View routes without an explicit filter reuse the remembered one.
+function navigateTo(route) {
+	navigateToRoute(
+		route.name === 'view' && route.subcategory === undefined
+			? {
+					...route,
+					subcategory: rememberedFilters[route.category] ?? '',
+				}
+			: route,
+	);
 }

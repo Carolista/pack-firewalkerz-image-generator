@@ -90,8 +90,28 @@
 								class="status"
 								role="status"
 							></div>
+							<div
+								id="catalog-filter-field"
+								class="catalog-filter-field"
+								hidden
+							>
+								<select
+									id="catalog-subcategory-filter"
+									aria-label="Filter by subcategory"
+								></select>
+							</div>
 						</div>
-						<button id="add-element-btn" type="button"></button>
+						<div class="catalog-toolbar-actions">
+							<button
+								id="catalog-manage-subcategories-btn"
+								type="button"
+								title="Manage subcategories for this category"
+							>
+								<i class="fa-solid fa-list-check"></i>
+								Manage Subcategories
+							</button>
+							<button id="add-element-btn" type="button"></button>
+						</div>
 					</div>
 					<div id="element-list" class="element-list"></div>
 				</div>
@@ -201,6 +221,44 @@
 					</div>
 				</form>
 			</section>
+
+			<div id="subcategory-modal-overlay" class="modal-overlay" hidden>
+				<div
+					class="modal subcategory-modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="subcategory-modal-heading"
+				>
+					<h2
+						id="subcategory-modal-heading"
+						class="modal-heading"
+					></h2>
+					<p
+						id="subcategory-modal-status"
+						class="status"
+						role="status"
+					></p>
+					<form id="subcategory-create-form">
+						<label>
+							New subcategory
+							<input
+								id="subcategory-name-input"
+								maxlength="80"
+								required
+							/>
+						</label>
+						<button type="submit">
+							<i class="fa-solid fa-plus"></i> Add subcategory
+						</button>
+					</form>
+					<ul id="subcategory-list" class="subcategory-list"></ul>
+					<div class="subcategory-modal-footer">
+						<button id="subcategory-modal-close-btn" type="button">
+							Done
+						</button>
+					</div>
+				</div>
+			</div>
 
 			<div id="reauth-modal-overlay" class="modal-overlay" hidden>
 				<div
@@ -343,44 +401,6 @@
 							class="delete"
 						>
 							Delete
-						</button>
-					</div>
-				</div>
-			</div>
-
-			<div id="subcategory-modal-overlay" class="modal-overlay" hidden>
-				<div
-					class="modal subcategory-modal"
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby="subcategory-modal-heading"
-				>
-					<h2
-						id="subcategory-modal-heading"
-						class="modal-heading"
-					></h2>
-					<p
-						id="subcategory-modal-status"
-						class="status"
-						role="status"
-					></p>
-					<form id="subcategory-create-form">
-						<label>
-							New subcategory
-							<input
-								id="subcategory-name-input"
-								maxlength="80"
-								required
-							/>
-						</label>
-						<button type="submit">
-							<i class="fa-solid fa-plus"></i> Add subcategory
-						</button>
-					</form>
-					<ul id="subcategory-list" class="subcategory-list"></ul>
-					<div class="subcategory-modal-footer">
-						<button id="subcategory-modal-close-btn" type="button">
-							Done
 						</button>
 					</div>
 				</div>

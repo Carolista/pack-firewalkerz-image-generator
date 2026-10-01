@@ -6,6 +6,7 @@ import {
 const ELEMENTS_URL = `${SUPABASE_URL}/rest/v1/game_elements`;
 const VARIANTS_URL = `${SUPABASE_URL}/rest/v1/game_element_variants`;
 const SUBCATEGORIES_URL = `${SUPABASE_URL}/rest/v1/game_element_subcategories`;
+const RPC_DELETE_SUBCATEGORY_URL = `${SUPABASE_URL}/rest/v1/rpc/delete_game_element_subcategory`;
 
 export function createAdminDataClient(getSession, onAuthExpired) {
 	function headers() {
@@ -29,7 +30,12 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 			return request(url, options, false);
 		}
 		if (!response.ok) {
-			throw new Error(data?.message ?? 'Supabase request failed.');
+			const error = new Error(
+				data?.message ?? 'Supabase request failed.',
+			);
+			error.code = data?.code;
+			error.status = response.status;
+			throw error;
 		}
 		return data;
 	}
@@ -80,11 +86,17 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 				},
 			);
 		},
-		deleteSubcategory(id) {
-			return deleteRow(
-				`${SUBCATEGORIES_URL}?id=eq.${encodeURIComponent(id)}`,
-				'subcategory',
+		listElementsBySubcategory(subcategoryId) {
+			return request(
+				`${ELEMENTS_URL}?subcategory_id=eq.${encodeURIComponent(subcategoryId)}&select=id,name&order=name.asc`,
 			);
+		},
+		// Unassigns its elements and deletes the subcategory atomically; resolves to the unassigned count.
+		deleteSubcategory(id) {
+			return request(RPC_DELETE_SUBCATEGORY_URL, {
+				method: 'POST',
+				body: JSON.stringify({ p_subcategory_id: id }),
+			});
 		},
 		createElement(element) {
 			return request(ELEMENTS_URL, {

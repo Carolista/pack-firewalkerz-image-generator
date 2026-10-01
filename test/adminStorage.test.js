@@ -11,6 +11,7 @@ test('item routes and image paths use the Items category', () => {
 	assert.deepEqual(getRoute('#/view/item'), {
 		name: 'view',
 		category: 'item',
+		subcategory: '',
 	});
 	assert.deepEqual(getRoute('#/edit/item/pig-employee-keychain'), {
 		name: 'edit',
