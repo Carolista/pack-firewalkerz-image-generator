@@ -76,6 +76,7 @@ let generationInProgress = false;
 
 const statusText = document.getElementById('status-text');
 const generateBtn = document.getElementById('generate-btn');
+const generateBtnLabel = document.getElementById('generate-btn-label');
 const shareBtn = document.getElementById('share-btn');
 const copyLinkBtn = document.getElementById('copy-link-btn');
 const downloadBtn = document.getElementById('download-btn');
@@ -227,6 +228,7 @@ function resetScene() {
 	sceneText.value = '';
 	resetOutput();
 	generatedBlob = null;
+	generateBtnLabel.innerText = 'Generate';
 }
 
 async function generateSceneImage() {
@@ -320,7 +322,10 @@ async function generateWithPrompt(promptParts) {
 			onRetry: () =>
 				(statusText.innerText = 'Connection issue, retrying...'),
 		});
-		if (result.imageUrl) generatedBlob = showSuccess(result);
+		if (result.imageUrl) {
+			generatedBlob = showSuccess(result);
+			generateBtnLabel.innerText = 'Regenerate';
+		}
 		else showEmptyResponse(result.raw);
 	} catch (err) {
 		console.error('Image generation failed:', err, err.cause ?? '');
