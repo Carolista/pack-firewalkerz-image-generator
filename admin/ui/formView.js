@@ -215,9 +215,18 @@ export function createFormView({
 			if (initialSnapshot && getSnapshot() !== initialSnapshot) {
 				const confirmed = await modals.showConfirmation(
 					'Unsaved changes',
-					'Leave this form and discard your changes?',
-					{ cancelLabel: 'Stay', confirmLabel: 'Discard Changes' },
+					'Save your changes before leaving, or discard them?',
+					{
+						cancelLabel: 'Stay',
+						extraLabel: 'Save',
+						extraChoice: 'save',
+						confirmLabel: 'Discard Changes',
+					},
 				);
+				if (confirmed === 'save') {
+					elementForm.requestSubmit();
+					return;
+				}
 				if (!confirmed) return;
 			}
 			navigateTo({ name: 'view', category: formCategory.value });

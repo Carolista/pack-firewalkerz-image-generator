@@ -644,8 +644,8 @@ textarea.variant-desc {
 }
 
 .tab:hover {
-	color: var(--admin-blue);
-	background-color: var(--admin-line);
+	color: var(--admin-midnight);
+	background-color: var(--admin-blue);
 }
 
 .tab.active,
@@ -773,6 +773,15 @@ textarea.variant-desc {
 	min-height: var(--form-control-height);
 	padding: 0.4rem 1rem;
 	text-align: center;
+}
+
+#confirm-modal-overlay.confirm-three-actions .confirm-actions {
+	grid-template-columns: repeat(3, max-content);
+}
+
+#confirm-modal-overlay.confirm-three-actions #confirm-modal-extra-btn {
+	grid-column: auto;
+	order: 0;
 }
 
 .crop-modal {
@@ -917,6 +926,10 @@ textarea.variant-desc {
 	}
 
 	#confirm-modal-overlay .confirm-actions {
+		grid-template-columns: 1fr;
+	}
+
+	#confirm-modal-overlay.confirm-three-actions .confirm-actions {
 		grid-template-columns: 1fr;
 	}
 

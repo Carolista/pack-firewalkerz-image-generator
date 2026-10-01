@@ -18,6 +18,7 @@ export function createModalController({
 		confirmOverlay.querySelector('.modal') ?? confirmOverlay;
 	let confirmResolver;
 	let extraHandler;
+	let extraResult;
 	let extraUsed = false;
 	let releaseConfirmTrap;
 	let releaseReauthTrap;
@@ -31,8 +32,12 @@ export function createModalController({
 	confirmConfirmBtn.addEventListener('click', () =>
 		resolveConfirmation(true),
 	);
-	// Runs the caller's callback without resolving, so Cancel/Confirm remain available afterward.
 	confirmExtraBtn.addEventListener('click', async () => {
+		if (extraResult !== undefined) {
+			resolveConfirmation(extraResult);
+			return;
+		}
+		// Callback actions leave Cancel/Confirm available afterward.
 		extraUsed = true;
 		confirmExtraBtn.disabled = true;
 		try {
@@ -68,6 +73,7 @@ export function createModalController({
 				confirmLabel = 'Delete',
 				extraLabel,
 				onExtra,
+				extraChoice,
 			} = {},
 		) {
 			confirmHeading.textContent = heading;
@@ -75,10 +81,15 @@ export function createModalController({
 			confirmCancelBtn.textContent = cancelLabel;
 			confirmConfirmBtn.textContent = confirmLabel;
 			extraHandler = extraLabel ? onExtra : null;
+			extraResult = extraChoice;
 			extraUsed = false;
 			confirmExtraBtn.disabled = false;
 			confirmExtraBtn.hidden = !extraLabel;
 			confirmExtraBtn.textContent = extraLabel ?? '';
+			confirmOverlay.classList.toggle(
+				'confirm-three-actions',
+				extraChoice !== undefined,
+			);
 			previouslyFocusedConfirmEl = document.activeElement;
 			confirmOverlay.hidden = false;
 			releaseConfirmTrap = trapFocus(confirmModalEl);
@@ -109,5 +120,6 @@ export function createModalController({
 		confirmResolver?.(value);
 		confirmResolver = null;
 		extraHandler = null;
+		extraResult = undefined;
 	}
 }
