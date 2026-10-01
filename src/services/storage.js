@@ -1,7 +1,9 @@
 import {
 	CHARACTER_ROWS_STORAGE_KEY,
 	ENEMY_ROWS_STORAGE_KEY,
+	ITEM_FILTER_SELECTIONS_STORAGE_KEY,
 	ITEM_ROWS_STORAGE_KEY,
+	LAST_ENEMY_SELECTION_STORAGE_KEY,
 	LOCATION_STORAGE_KEY,
 	NPC_ROWS_STORAGE_KEY,
 	OTHER_LOCATION_TEXT_STORAGE_KEY,
@@ -55,12 +57,28 @@ export function setEnemyRows(rows) {
 	setJsonValue(ENEMY_ROWS_STORAGE_KEY, rows);
 }
 
+export function getLastEnemySelection() {
+	return getJsonValue(LAST_ENEMY_SELECTION_STORAGE_KEY, null);
+}
+
+export function setLastEnemySelection(selection) {
+	setJsonValue(LAST_ENEMY_SELECTION_STORAGE_KEY, selection);
+}
+
 export function getItemRows() {
 	return getJsonValue(ITEM_ROWS_STORAGE_KEY, []);
 }
 
 export function setItemRows(rows) {
 	setJsonValue(ITEM_ROWS_STORAGE_KEY, rows);
+}
+
+export function getItemFilterSelections() {
+	return getJsonValue(ITEM_FILTER_SELECTIONS_STORAGE_KEY, {});
+}
+
+export function setItemFilterSelections(selections) {
+	setJsonValue(ITEM_FILTER_SELECTIONS_STORAGE_KEY, selections);
 }
 
 export function getOtherLocationText() {

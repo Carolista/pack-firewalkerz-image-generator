@@ -5,6 +5,7 @@ import {
 
 const ELEMENTS_URL = `${SUPABASE_URL}/rest/v1/game_elements`;
 const VARIANTS_URL = `${SUPABASE_URL}/rest/v1/game_element_variants`;
+const SUBCATEGORIES_URL = `${SUPABASE_URL}/rest/v1/game_element_subcategories`;
 
 export function createAdminDataClient(getSession, onAuthExpired) {
 	function headers() {
@@ -49,12 +50,40 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 	return {
 		listElements(category) {
 			return request(
-				`${ELEMENTS_URL}?element_type=eq.${encodeURIComponent(category)}&select=*,game_element_variants(*)&order=name.asc`,
+				`${ELEMENTS_URL}?element_type=eq.${encodeURIComponent(category)}&select=*,game_element_variants(*),game_element_subcategories(id,name)&order=name.asc`,
 			);
 		},
 		getElementBySlug(slug) {
 			return request(
-				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*)`,
+				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*),game_element_subcategories(id,name)`,
+			);
+		},
+		listSubcategories(elementType) {
+			return request(
+				`${SUBCATEGORIES_URL}?element_type=eq.${encodeURIComponent(elementType)}&select=id,element_type,name&order=name.asc`,
+			);
+		},
+		createSubcategory(subcategory) {
+			return request(SUBCATEGORIES_URL, {
+				method: 'POST',
+				headers: { Prefer: 'return=representation' },
+				body: JSON.stringify(subcategory),
+			});
+		},
+		updateSubcategory(id, changes) {
+			return request(
+				`${SUBCATEGORIES_URL}?id=eq.${encodeURIComponent(id)}`,
+				{
+					method: 'PATCH',
+					headers: { Prefer: 'return=representation' },
+					body: JSON.stringify(changes),
+				},
+			);
+		},
+		deleteSubcategory(id) {
+			return deleteRow(
+				`${SUBCATEGORIES_URL}?id=eq.${encodeURIComponent(id)}`,
+				'subcategory',
 			);
 		},
 		createElement(element) {

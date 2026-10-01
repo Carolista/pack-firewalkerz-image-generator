@@ -150,6 +150,23 @@
 								pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
 							/>
 						</label>
+						<div class="subcategory-assignment">
+							<label>
+								Subcategory
+								<select id="form-subcategory"></select>
+							</label>
+							<button
+								id="manage-subcategories-btn"
+								type="button"
+								aria-label="Manage subcategories"
+								title="Manage subcategories for this category"
+							>
+								<i class="fa-solid fa-list-check"></i>
+								<span class="manage-subcategories-label">
+									Manage subcategories
+								</span>
+							</button>
+						</div>
 						<div>
 							<div class="form-section-heading">
 								<h3 class="variant-heading">Variants</h3>
@@ -326,6 +343,44 @@
 							class="delete"
 						>
 							Delete
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<div id="subcategory-modal-overlay" class="modal-overlay" hidden>
+				<div
+					class="modal subcategory-modal"
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="subcategory-modal-heading"
+				>
+					<h2
+						id="subcategory-modal-heading"
+						class="modal-heading"
+					></h2>
+					<p
+						id="subcategory-modal-status"
+						class="status"
+						role="status"
+					></p>
+					<form id="subcategory-create-form">
+						<label>
+							New subcategory
+							<input
+								id="subcategory-name-input"
+								maxlength="80"
+								required
+							/>
+						</label>
+						<button type="submit">
+							<i class="fa-solid fa-plus"></i> Add subcategory
+						</button>
+					</form>
+					<ul id="subcategory-list" class="subcategory-list"></ul>
+					<div class="subcategory-modal-footer">
+						<button id="subcategory-modal-close-btn" type="button">
+							Done
 						</button>
 					</div>
 				</div>

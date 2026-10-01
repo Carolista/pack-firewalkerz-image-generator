@@ -9,7 +9,7 @@
 - `src/ui/` owns component-specific DOM queries, rendering, and event wiring. UI modules should not own global workflow policy.
 - `src/services/` owns catalog/data access, storage, API/network access, and sharing integrations.
 - `src/services/catalog.js` is the browser catalog boundary. UI modules consume normalized elements from it and must not import raw catalog data directly.
-- The normalized catalog contract is `element: { id, elementType, name, slug, variants }` and `variant: { variantId, variantName, variantDesc, image }`.
+- The normalized catalog contract is `element: { id, elementType, subcategoryId, subcategoryName, name, slug, variants }` and `variant: { variantId, variantName, variantDesc, image }`. Subcategory fields are nullable and element-level.
 - Variant display names come from catalog data; do not add category-specific hardcoded variant-name maps.
 - `src/prompt.js` must remain pure: prompt construction and related transformations may not read or mutate DOM, storage, network state, or global application state.
 - `server.js` owns backend/server concerns. Keep secrets, server-only behavior, and backend routing out of browser modules.

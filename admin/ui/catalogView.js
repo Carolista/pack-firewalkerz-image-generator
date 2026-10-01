@@ -33,11 +33,13 @@ export function createCatalogView({
 				button.setAttribute('aria-label', tabLabel);
 				const icon = document.createElement('i');
 				icon.className = categories[category].faClasses;
-				const label =
-					category === getActiveCategory()
-						? ` ${categories[category].shortPlural}`
-						: '';
-				button.append(icon, label);
+				button.append(icon);
+				if (category === getActiveCategory()) {
+					const label = document.createElement('span');
+					label.className = 'tab-label';
+					label.textContent = ` ${categories[category].shortPlural}`;
+					button.append(label);
+				}
 				button.addEventListener('click', () => {
 					setActiveCategory(category);
 					navigateTo({ name: 'view', category });
@@ -78,6 +80,18 @@ export function createCatalogView({
 		const name = document.createElement('h3');
 		name.textContent = element.name;
 		copy.append(name);
+		const subcategory = Array.isArray(element.game_element_subcategories)
+			? element.game_element_subcategories[0]
+			: element.game_element_subcategories;
+		if (subcategory?.name) {
+			const subcategorySummary = document.createElement('div');
+			subcategorySummary.className = 'subcategory-summary';
+			const subcategoryText = document.createElement('span');
+			subcategoryText.className = 'subcategory-summary-text';
+			subcategorySummary.append(subcategoryText);
+			subcategoryText.textContent = subcategory.name;
+			copy.append(subcategorySummary);
+		}
 		for (const [published, label] of [
 			[true, 'published'],
 			[false, 'unpublished'],

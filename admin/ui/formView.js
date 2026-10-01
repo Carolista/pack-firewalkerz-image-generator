@@ -69,6 +69,9 @@ export function createFormView({
 	formCategory,
 	formName,
 	formSlug,
+	formSubcategory,
+	manageSubcategoriesBtn,
+	subcategoryModal,
 	formStatus,
 	formSaveBtn,
 	variantFormRows,
@@ -133,6 +136,16 @@ export function createFormView({
 		autoSyncSlug = false;
 	});
 
+	formCategory.addEventListener('change', () => {
+		formSubcategory.value = '';
+		refreshSubcategories('').catch(error =>
+			setStatus(formStatus, error.message),
+		);
+	});
+	manageSubcategoriesBtn.addEventListener('click', () =>
+		subcategoryModal.open(formCategory.value),
+	);
+
 	addVariantBtn.addEventListener('click', () =>
 		addVariantFormRow({}, { scrollIntoView: true }),
 	);
@@ -160,8 +173,10 @@ export function createFormView({
 			autoSyncSlug = route.name === 'add';
 			try {
 				if (route.name === 'add') {
+					await refreshSubcategories('');
 					formName.value = '';
 					formSlug.value = '';
+					formSubcategory.value = '';
 					addVariantFormRow();
 					setInitialSnapshot();
 					return;
@@ -172,6 +187,7 @@ export function createFormView({
 				elementId = element.id;
 				formName.value = element.name;
 				formSlug.value = element.slug;
+				await refreshSubcategories(element.subcategory_id ?? '');
 				for (const variant of sortVariants(
 					element.game_element_variants,
 				))
@@ -192,6 +208,9 @@ export function createFormView({
 				setStatus(formStatus, error.message);
 			}
 		},
+		refreshSubcategories() {
+			return refreshSubcategories(formSubcategory.value);
+		},
 		async requestNavigation() {
 			if (initialSnapshot && getSnapshot() !== initialSnapshot) {
 				const confirmed = await modals.showConfirmation(
@@ -204,6 +223,21 @@ export function createFormView({
 			navigateTo({ name: 'view', category: formCategory.value });
 		},
 	};
+
+	async function refreshSubcategories(selectedId) {
+		const subcategories = await dataClient.listSubcategories(
+			formCategory.value,
+		);
+		formSubcategory.replaceChildren(new Option('None', ''));
+		for (const subcategory of subcategories) {
+			formSubcategory.add(new Option(subcategory.name, subcategory.id));
+		}
+		formSubcategory.value = subcategories.some(
+			subcategory => subcategory.id === selectedId,
+		)
+			? selectedId
+			: '';
+	}
 
 	function addVariantFormRow(variant = {}, { scrollIntoView = false } = {}) {
 		const row = document.createElement('div');
@@ -245,13 +279,15 @@ export function createFormView({
 							<input class="variant-name" required value="${variant.variant_name ?? ''}" />
 						</span>
 					</label>
+				</div>
+				<div class="variant-controls-row">
+					<label class="variant-publish-control">
+						<span class="variant-publication-status">${isPublished ? 'Published' : 'Unpublished'}</span>
+						<input class="variant-published" type="checkbox" role="switch" ${isPublished ? 'checked' : ''} />
+					</label>
 					<label class="variant-sort-field">Sort Order<input class="variant-sort" type="number" min="1" value="${variant.sort_order ?? ''}" /></label>
 					<button class="delete-variant-btn delete" type="button" title="Delete variant" aria-label="Delete variant"><i class="fa-solid fa-trash-can"></i></button>
 				</div>
-				<label class="variant-publish-control">
-										<input class="variant-published" type="checkbox" role="switch" ${isPublished ? 'checked' : ''} />
-					<span class="variant-publication-status" aria-hidden="true">${isPublished ? 'Published' : 'Unpublished'}</span>
-				</label>
 				<label class="variant-desc-field">Description*<textarea class="variant-desc" required>${variant.variant_desc ?? ''}</textarea></label>
 			</div>
 			<div class="variant-image-col">
@@ -757,6 +793,7 @@ export function createFormView({
 						element_type: formCategory.value,
 						name: formName.value.trim(),
 						slug,
+						subcategory_id: formSubcategory.value || null,
 					});
 					elementId = created.id;
 				} else {
@@ -764,6 +801,7 @@ export function createFormView({
 						element_type: formCategory.value,
 						name: formName.value.trim(),
 						slug,
+						subcategory_id: formSubcategory.value || null,
 					});
 				}
 				for (const row of rows) {
@@ -838,6 +876,7 @@ export function createFormView({
 			category: formCategory.value,
 			name: formName.value,
 			slug: formSlug.value,
+			subcategoryId: formSubcategory.value,
 			variants: [
 				...variantFormRows.querySelectorAll('.variant-form-row'),
 			].map(row => ({

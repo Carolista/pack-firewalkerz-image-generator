@@ -171,6 +171,8 @@ initEnemyRows({
 initItemRows({
 	container: document.getElementById('item-rows'),
 	addBtn: document.getElementById('add-item-btn'),
+	filterField: document.getElementById('item-subcategory-filter-field'),
+	filterSelect: document.getElementById('item-subcategory-filter'),
 	onPreview: showCatalogPreview,
 });
 

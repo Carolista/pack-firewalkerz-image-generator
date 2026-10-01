@@ -1,3 +1,27 @@
+export function getFilteredSelectionId(
+	elements,
+	currentId,
+	matchesFilter,
+	preferredId,
+	preferCurrentInScope = false,
+) {
+	const currentElement = elements.find(element => element.id === currentId);
+	if (
+		preferCurrentInScope &&
+		currentElement &&
+		matchesFilter(currentElement)
+	) {
+		return currentId;
+	}
+	const preferredElement = elements.find(
+		element => element.id === preferredId,
+	);
+	if (preferredElement && matchesFilter(preferredElement))
+		return preferredElement.id;
+	if (currentElement && matchesFilter(currentElement)) return currentId;
+	return elements.find(matchesFilter)?.id ?? '';
+}
+
 export function initVariantRows({
 	container,
 	addBtn,
@@ -12,35 +36,44 @@ export function initVariantRows({
 	entityLabel,
 	entityArticle,
 	onPreview,
+	filterSelect,
+	matchesFilter = () => true,
+	getFilterSelections = () => ({}),
+	setFilterSelections = () => {},
+	getAddRowSelection = () => null,
+	onSelectionChange = () => {},
 	showVariantWhenSingleVariant = false,
 }) {
 	let rowIdCounter = 0;
+	let filterChangeInProgress = false;
+	const rowChangeHandlers = new WeakMap();
 	const getElement = id => elements.find(element => element.id === id);
 
-	function getAvailableIds(excludeSelect) {
-		if (allowDuplicates) return elements.map(element => element.id);
+	function getAvailableIds(excludeSelect, preserveId) {
 		const chosen = [
 			...container.querySelectorAll(`.${elementSelectClassName}`),
 		]
 			.filter(select => select !== excludeSelect)
 			.map(select => select.value);
 		return elements
-			.filter(element => !chosen.includes(element.id))
+			.filter(
+				element =>
+					(matchesFilter(element) || element.id === preserveId) &&
+					(allowDuplicates || !chosen.includes(element.id)),
+			)
 			.map(element => element.id);
 	}
 
 	function refreshElementOptions() {
-		if (allowDuplicates) return;
 		for (const select of container.querySelectorAll(
 			`.${elementSelectClassName}`,
 		)) {
 			const current = select.value;
 			select.replaceChildren();
-			for (const id of getAvailableIds(select)) {
+			for (const id of getAvailableIds(select, current)) {
 				select.add(new Option(getElement(id).name, id));
 			}
-			if (getAvailableIds(select).includes(current))
-				select.value = current;
+			select.value = current;
 		}
 	}
 
@@ -60,7 +93,10 @@ export function initVariantRows({
 		select.className = variantSelectClassName;
 		select.id = `${elementSelect.id}-variant`;
 		label.htmlFor = select.id;
-		select.addEventListener('change', persistRows);
+		select.addEventListener('change', () => {
+			persistRows();
+			onSelectionChange(getRowSelection(elementSelect, row));
+		});
 		field.replaceChildren(label, select);
 		for (const variant of element.variants) {
 			select.add(new Option(variant.variantName, variant.variantId));
@@ -92,11 +128,22 @@ export function initVariantRows({
 		field.append(label, select);
 		row.append(field);
 		populateVariantField(select, row, presetVariantId);
-		select.addEventListener('change', () => {
+		const handleElementChange = preferredVariantId => {
 			populateVariantField(select, row);
+			if (preferredVariantId) {
+				const variantSelect = row.querySelector(
+					`.${variantSelectClassName}`,
+				);
+				if (variantSelect) variantSelect.value = preferredVariantId;
+			}
 			updateActionLabels();
 			refreshElementOptions();
 			persistRows();
+		};
+		rowChangeHandlers.set(select, handleElementChange);
+		select.addEventListener('change', () => {
+			handleElementChange();
+			onSelectionChange(getRowSelection(select, row));
 		});
 
 		const previewBtn = document.createElement('button');
@@ -144,6 +191,61 @@ export function initVariantRows({
 				: `<i class="fa-solid fa-circle-plus"></i> Add another ${entityLabel}`;
 	}
 
+	filterSelect?.addEventListener('change', handleFilterChange);
+
+	function handleFilterChange() {
+		const filterKey = filterSelect.value || '__all__';
+		const storedSelections = getFilterSelections();
+		const preferredRows = Array.isArray(storedSelections?.[filterKey])
+			? storedSelections[filterKey]
+			: [];
+		const isAllItems = filterKey === '__all__';
+		refreshElementOptions();
+		filterChangeInProgress = true;
+		try {
+			for (const [index, select] of [
+				...container.querySelectorAll(`.${elementSelectClassName}`),
+			].entries()) {
+				const preferredRow = preferredRows[index];
+				const nextId = getFilteredSelectionId(
+					elements,
+					select.value,
+					matchesFilter,
+					isAllItems ? undefined : preferredRow?.elementId,
+					isAllItems,
+				);
+				if (!nextId) continue;
+				const nextElement = getElement(nextId);
+				const preferredVariantId =
+					!isAllItems &&
+					preferredRow?.elementId === nextId &&
+					nextElement.variants.some(
+						variant => variant.variantId === preferredRow.variantId,
+					)
+						? preferredRow.variantId
+						: undefined;
+				const row = select.closest(`.${rowClassName}`);
+				const currentVariantId = row.querySelector(
+					`.${variantSelectClassName}`,
+				)?.value;
+				const nextVariantId = isAllItems
+					? currentVariantId
+					: (preferredVariantId ?? nextElement.variants[0].variantId);
+				if (
+					nextId !== select.value ||
+					(currentVariantId && currentVariantId !== nextVariantId)
+				) {
+					select.value = nextId;
+					rowChangeHandlers.get(select)?.(preferredVariantId);
+				}
+			}
+		} finally {
+			filterChangeInProgress = false;
+		}
+		refreshElementOptions();
+		persistRows();
+	}
+
 	function persistRows() {
 		setStoredRows(
 			[...container.querySelectorAll(`.${rowClassName}`)].map(row => {
@@ -159,10 +261,42 @@ export function initVariantRows({
 				};
 			}),
 		);
+		if (!filterSelect || filterChangeInProgress) return;
+		const filterKey = filterSelect.value || '__all__';
+		const selections = getFilterSelections();
+		setFilterSelections({
+			...selections,
+			[filterKey]: [
+				...container.querySelectorAll(`.${rowClassName}`),
+			].map(row => {
+				const elementId = row.querySelector(
+					`.${elementSelectClassName}`,
+				).value;
+				const element = getElement(elementId);
+				return {
+					elementId,
+					variantId:
+						row.querySelector(`.${variantSelectClassName}`)
+							?.value ?? element.variants[0].variantId,
+				};
+			}),
+		});
+	}
+
+	function getRowSelection(elementSelect, row) {
+		const element = getElement(elementSelect.value);
+		if (!element) return null;
+		return {
+			elementId: element.id,
+			variantId:
+				row.querySelector(`.${variantSelectClassName}`)?.value ??
+				element.variants[0].variantId,
+		};
 	}
 
 	addBtn.addEventListener('click', () => {
-		createRow();
+		const selection = getAddRowSelection();
+		createRow(selection?.elementId, selection?.variantId);
 		refreshElementOptions();
 		updateAddButtonState();
 		persistRows();
