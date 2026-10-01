@@ -9,7 +9,7 @@
 	--admin-light-blue: #79b1d6;
 	--admin-pale: #eef5f8;
 	--admin-light: #cfdde3;
-	--admin-line: #b8cad4;
+	--admin-line: var(--admin-dark-blue);
 	--admin-surface: #f8fbfc80;
 }
 
@@ -86,6 +86,10 @@ h1 {
 h2 {
 	color: var(--admin-pale);
 	margin-top: 0;
+}
+
+h2#details-name {
+    color: var(--admin-ink);
 }
 
 h3 {
@@ -594,7 +598,7 @@ textarea.variant-desc {
 }
 
 #details-panel {
-	margin-top: 2rem;
+	margin-top: 1.2rem;
 }
 
 #details-header {
@@ -654,8 +658,9 @@ textarea.variant-desc {
 	display: flex;
 	flex-direction: column;
 	padding: 20px;
-	border: 1px solid var(--admin-light);
-	border-top: 4px solid var(--admin-light);
+	border: 2px solid var(--admin-light);
+	border-top: 10px solid var(--admin-light);
+	border-bottom: 10px solid var(--admin-light);
 }
 
 .element-list {
