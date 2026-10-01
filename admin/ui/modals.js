@@ -43,8 +43,11 @@ export function createModalController({
 		}
 	});
 	document.addEventListener('keydown', e => {
-		if (e.key === 'Escape' && !confirmOverlay.hidden)
+		if (e.key === 'Escape' && !confirmOverlay.hidden) {
+			// Stops an underlying modal's Escape handler from also closing.
+			e.preventDefault();
 			resolveConfirmation(false);
+		}
 	});
 
 	return {

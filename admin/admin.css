@@ -204,6 +204,30 @@ textarea.variant-desc {
 	margin: 0 0 0.4rem;
 }
 
+.catalog-toolbar-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	justify-content: flex-end;
+}
+
+.catalog-filter-field {
+	display: flex;
+}
+
+.catalog-filter-field select {
+	width: auto;
+}
+
+.catalog-filter-field[hidden],
+.catalog-toolbar .status:empty {
+	display: none;
+}
+
+.catalog-toolbar .status:not(:empty) + .catalog-filter-field {
+	margin-top: 0.5rem;
+}
+
 .subcategory-summary-text {
 	color: white;
 	background-color: var(--admin-blue);
@@ -721,9 +745,19 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
+#confirm-modal-overlay .modal {
+	width: min(100%, 32rem);
+}
+
 #confirm-modal-overlay .confirm-actions {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
+}
+
+#confirm-modal-overlay .confirm-actions button {
+	height: auto;
+	min-height: var(--form-control-height);
+	padding-block: 0.4rem;
 }
 
 #confirm-modal-extra-btn {
@@ -871,6 +905,18 @@ textarea.variant-desc {
 	.element-card {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.catalog-toolbar-actions {
+		justify-content: stretch;
+	}
+
+	#confirm-modal-overlay .confirm-actions {
+		grid-template-columns: 1fr;
+	}
+
+	.catalog-toolbar-actions button {
+		flex: 1 1 auto;
 	}
 
 	.element-card img {
