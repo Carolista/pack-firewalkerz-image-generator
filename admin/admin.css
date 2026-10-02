@@ -11,6 +11,7 @@
 	--admin-light: #cfdde3;
 	--admin-line: var(--admin-dark-blue);
 	--admin-surface: #f8fbfc80;
+    --admin-published: #195e32;
 }
 
 html::before {
@@ -358,7 +359,7 @@ textarea.variant-desc {
 }
 
 .variant-published:checked {
-	background: #287a46;
+	background: var(--admin-published);
 }
 
 .variant-published:checked::before {

@@ -95,7 +95,7 @@ export function createDetailsView({
 			editButton.type = 'button';
 			editButton.className = 'edit-variant';
 			editButton.innerHTML =
-				'<i class="fa-solid fa-pen-to-square"></i> Edit';
+				'<i class="fa-solid fa-pen"></i> Edit';
 			editButton.addEventListener('click', () => {
 				setPendingVariantId(variant.id);
 				navigateTo({

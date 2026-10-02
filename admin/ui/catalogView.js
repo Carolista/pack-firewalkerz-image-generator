@@ -7,7 +7,7 @@ import {
 
 const BUTTON_ACTIONS = {
 	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },
-	edit: { label: 'Edit', faClasses: 'fa-solid fa-pen-to-square' },
+	edit: { label: 'Edit', faClasses: 'fa-solid fa-pen' },
 	delete: { label: 'Delete', faClasses: 'fa-solid fa-trash-can' },
 };
 
