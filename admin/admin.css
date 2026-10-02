@@ -251,13 +251,13 @@ textarea.variant-desc {
 .element-pill {
 	color: white;
 	font-size: 0.9rem;
+    text-transform: uppercase;
 	padding: 0.2rem 0.6rem;
 	border-radius: 9999px;
 }
 
 .subcategory-summary-text {
 	background-color: var(--admin-blue);
-	text-transform: uppercase;
 }
 
 .published-count {
@@ -267,6 +267,15 @@ textarea.variant-desc {
 .unpublished-count {
 	background-color: var(--admin-ink);
 	color: var(--admin-light);
+}
+
+.variant-list-label {
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.variant-names-text {
+    text-transform: capitalize;
 }
 
 .variant-form-row {
@@ -1069,19 +1078,16 @@ textarea.variant-desc {
 		width: 100%;
 	}
 	#details-header {
-		flex-direction: column;
+        flex-direction: column;
 		align-items: flex-start;
 	}
 	#details-status {
-		margin-bottom: 10px;
+        margin-bottom: 10px;
 	}
-}
-
-@media (max-width: 1000px) {
-	.admin-header {
-		align-items: stretch;
-		flex-direction: column;
-	}
+    .admin-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
 }
 
 @media (min-width: 1001px) {
