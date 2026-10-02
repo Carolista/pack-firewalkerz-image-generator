@@ -151,30 +151,41 @@ export function createCatalogView({
 		const name = document.createElement('h3');
 		name.textContent = element.name;
 		copy.append(name);
+		const pills = document.createElement('div');
+		pills.className = 'element-pills';
 		const subcategory = Array.isArray(element.game_element_subcategories)
 			? element.game_element_subcategories[0]
 			: element.game_element_subcategories;
 		if (subcategory?.name) {
-			const subcategorySummary = document.createElement('div');
-			subcategorySummary.className = 'subcategory-summary';
 			const subcategoryText = document.createElement('span');
-			subcategoryText.className = 'subcategory-summary-text';
-			subcategorySummary.append(subcategoryText);
+			subcategoryText.className = 'element-pill subcategory-summary-text';
 			subcategoryText.textContent = subcategory.name;
-			copy.append(subcategorySummary);
+			pills.append(subcategoryText);
 		}
+		const summary = document.createElement('p');
+		summary.className = 'variant-summary';
+		summary.append('Variants: ');
+		let hasVariants = false;
 		for (const [published, label] of [
-			[true, 'published'],
-			[false, 'unpublished'],
+			[true, 'Published'],
+			[false, 'Unpublished'],
 		]) {
 			const names = variants
 				.filter(variant => variant.is_published === published)
 				.map(variant => variant.variant_name);
-			const summary = document.createElement('p');
-			if (!published) summary.className = 'unpublished-summary';
-			summary.textContent = `${names.length} variant${names.length === 1 ? '' : 's'} ${label}${names.length ? `: ${names.join(', ')}` : ''}`;
-			copy.append(summary);
+			if (!names.length) continue;
+			const count = document.createElement('span');
+			count.className = `element-pill ${published ? 'published-count' : 'unpublished-count'}`;
+			count.textContent = `${names.length} ${label}`;
+			pills.append(count);
+			if (hasVariants) summary.append(', ');
+			const namesText = document.createElement('span');
+			if (!published) namesText.className = 'unpublished-summary';
+			namesText.textContent = names.join(', ');
+			summary.append(namesText);
+			hasVariants = true;
 		}
+		if (pills.childElementCount) copy.append(pills);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
 		for (const action of Object.keys(BUTTON_ACTIONS)) {
@@ -195,7 +206,9 @@ export function createCatalogView({
 			});
 			actions.append(button);
 		}
-		article.append(copy, actions);
+		copy.append(actions);
+		article.append(copy);
+		if (hasVariants) article.append(summary);
 		if (firstVariant?.image) {
 			const imageLink = document.createElement('a');
 			imageLink.className = 'element-image-link';
@@ -209,6 +222,8 @@ export function createCatalogView({
 			image.alt = `${element.name} reference image`;
 			imageLink.append(image);
 			article.prepend(imageLink);
+		} else {
+			article.classList.add('element-card-no-image');
 		}
 		return article;
 	}

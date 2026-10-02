@@ -11,7 +11,7 @@
 	--admin-light: #cfdde3;
 	--admin-line: var(--admin-dark-blue);
 	--admin-surface: #f8fbfc80;
-    --admin-published: #195e32;
+	--admin-published: #195e32;
 }
 
 html::before {
@@ -90,7 +90,7 @@ h2 {
 }
 
 h2#details-name {
-    color: var(--admin-ink);
+	color: var(--admin-ink);
 }
 
 h3 {
@@ -205,10 +205,6 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
-.subcategory-summary {
-	margin: 0 0 0.4rem;
-}
-
 .catalog-toolbar-actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -233,13 +229,25 @@ textarea.variant-desc {
 	margin-top: 0.5rem;
 }
 
-.subcategory-summary-text {
+.element-pill {
 	color: white;
-	background-color: var(--admin-blue);
 	font-size: 0.9rem;
-	text-transform: uppercase;
 	padding: 0.2rem 0.6rem;
 	border-radius: 9999px;
+}
+
+.subcategory-summary-text {
+	background-color: var(--admin-blue);
+	text-transform: uppercase;
+}
+
+.published-count {
+	background-color: var(--admin-published);
+}
+
+.unpublished-count {
+	background-color: var(--admin-ink);
+	color: var(--admin-light);
 }
 
 .variant-form-row {
@@ -670,18 +678,16 @@ textarea.variant-desc {
 }
 
 .element-card {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
+	display: grid;
 	gap: 1rem;
+	grid-template-columns: 10rem minmax(0, 1fr);
 }
 
 .element-image-link {
 	border-radius: var(--border-radius-form-elements);
 	display: block;
-	flex-shrink: 0;
-	height: 7rem;
-	width: 7rem;
+	height: 10rem;
+	width: 10rem;
 }
 
 .element-image-link:focus-visible {
@@ -699,20 +705,40 @@ textarea.variant-desc {
 }
 
 .element-copy {
-	flex: 1;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.element-card-no-image .element-copy {
+	grid-column: 1 / -1;
 }
 
 .element-copy h3 {
-	margin-bottom: 0.25rem;
+	margin: 0 0 0.5rem;
 }
 
-.element-copy p {
+.element-pills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.4rem;
+}
+
+.element-card .variant-summary {
+	grid-column: 1 / -1;
 	margin: 0;
+	overflow-wrap: anywhere;
 }
 
-.element-copy .unpublished-summary {
+.variant-summary .unpublished-summary {
 	color: var(--admin-dark-blue);
 	font-style: italic;
+}
+
+.element-card .element-actions {
+	justify-content: flex-end;
+	margin-top: auto;
+	padding-top: 0.75rem;
 }
 
 .variant-detail {
@@ -916,10 +942,17 @@ textarea.variant-desc {
 		display: none;
 	}
 
-	.catalog-toolbar,
-	.element-card {
+	.catalog-toolbar {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.element-card {
+		grid-template-columns: minmax(0, 1fr);
+	}
+
+	.element-card .element-copy {
+		grid-column: 1 / -1;
 	}
 
 	.catalog-toolbar-actions {
@@ -947,10 +980,6 @@ textarea.variant-desc {
 		height: auto;
 		max-width: 100%;
 		width: 100%;
-	}
-
-	.element-actions {
-		justify-content: flex-end;
 	}
 
 	.form-actions {
