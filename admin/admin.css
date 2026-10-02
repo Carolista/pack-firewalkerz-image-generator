@@ -29,6 +29,14 @@ select,
 textarea {
 	font-size: 1.1rem;
 	background-color: var(--admin-pale);
+	border: 1px solid var(--admin-surface);
+}
+
+select,
+input:not([type='checkbox']):not([type='radio']):not([type='file']):not(
+		[type='range']
+	):not([type='hidden']) {
+	height: calc(var(--form-control-height) - 4px);
 }
 
 .admin-header,
@@ -42,7 +50,7 @@ textarea {
 }
 
 .admin-header {
-	margin-bottom: 2rem;
+	margin-bottom: 0.5rem;
 }
 
 #tagline {
@@ -164,7 +172,7 @@ textarea.variant-desc {
 }
 
 .subcategory-assignment button {
-	margin-bottom: 0.5rem;
+	margin-bottom: 0.4rem;
 }
 
 .subcategory-modal {
@@ -306,7 +314,7 @@ textarea.variant-desc {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.25rem;
-	min-height: var(--form-control-height);
+	min-height: calc(var(--form-control-height) - 4px);
 	padding: 0 0.6rem;
 	width: 100%;
 }
@@ -325,7 +333,8 @@ textarea.variant-desc {
 }
 
 .variant-sort-field {
-	margin-bottom: 0;
+	justify-content: flex-end;
+	margin-bottom: 2px;
 	min-width: 0;
 }
 
