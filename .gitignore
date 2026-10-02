@@ -143,7 +143,6 @@ vite.config.ts.timestamp-*
 .vite/
 
 .DS_Store
+.local
 .vscode
 CONTEXT.md
-REACT_PLANNING.md
-FUTURE_WORK.md
