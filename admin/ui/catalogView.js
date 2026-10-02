@@ -7,7 +7,7 @@ import {
 
 const BUTTON_ACTIONS = {
 	details: { label: 'View Details', faClasses: 'fa-regular fa-eye' },
-	edit: { label: 'Edit', faClasses: 'fa-solid fa-pen-to-square' },
+	edit: { label: 'Edit', faClasses: 'fa-solid fa-pen' },
 	delete: { label: 'Delete', faClasses: 'fa-solid fa-trash-can' },
 };
 
@@ -151,30 +151,65 @@ export function createCatalogView({
 		const name = document.createElement('h3');
 		name.textContent = element.name;
 		copy.append(name);
+		const pills = document.createElement('div');
+		pills.className = 'element-pills';
 		const subcategory = Array.isArray(element.game_element_subcategories)
 			? element.game_element_subcategories[0]
 			: element.game_element_subcategories;
 		if (subcategory?.name) {
-			const subcategorySummary = document.createElement('div');
-			subcategorySummary.className = 'subcategory-summary';
 			const subcategoryText = document.createElement('span');
-			subcategoryText.className = 'subcategory-summary-text';
-			subcategorySummary.append(subcategoryText);
+			subcategoryText.className = 'element-pill subcategory-summary-text';
 			subcategoryText.textContent = subcategory.name;
-			copy.append(subcategorySummary);
+			pills.append(subcategoryText);
 		}
+		const summary = document.createElement('p');
+		summary.className = 'variant-summary';
+		const variantLabel = document.createElement('span');
+		variantLabel.className = 'variant-list-label';
+		variantLabel.textContent = 'Variants: ';
+		summary.append(variantLabel);
+		let hasVariants = false;
 		for (const [published, label] of [
-			[true, 'published'],
-			[false, 'unpublished'],
+			[true, 'Published'],
+			[false, 'Unpublished'],
 		]) {
 			const names = variants
 				.filter(variant => variant.is_published === published)
 				.map(variant => variant.variant_name);
-			const summary = document.createElement('p');
-			if (!published) summary.className = 'unpublished-summary';
-			summary.textContent = `${names.length} variant${names.length === 1 ? '' : 's'} ${label}${names.length ? `: ${names.join(', ')}` : ''}`;
-			copy.append(summary);
+			if (!names.length) continue;
+			const count = document.createElement('span');
+			count.className = `element-pill ${published ? 'published-count' : 'unpublished-count'}`;
+			count.textContent = `${names.length} ${label}`;
+			pills.append(count);
+			if (hasVariants) summary.append(', ');
+			const namesText = document.createElement('span');
+			namesText.className = 'variant-names-text';
+			if (!published) namesText.className = 'unpublished-summary';
+			namesText.textContent = names.join(', ');
+			summary.append(namesText);
+			hasVariants = true;
 		}
+		if (pills.childElementCount) copy.append(pills);
+		if (hasVariants) copy.append(summary);
+		const media = document.createElement('div');
+		media.className = 'element-media';
+		const imageFrame = document.createElement('div');
+		imageFrame.className = 'element-image';
+		if (firstVariant?.image) {
+			const image = document.createElement('img');
+			image.alt = `${element.name} reference image`;
+			image.addEventListener(
+				'error',
+				() => {
+					console.warn('Could not load catalog image:', image.src);
+					image.remove();
+				},
+				{ once: true },
+			);
+			image.src = getPublicImageUrl(firstVariant.image);
+			imageFrame.append(image);
+		}
+		media.append(imageFrame);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
 		for (const action of Object.keys(BUTTON_ACTIONS)) {
@@ -183,6 +218,7 @@ export function createCatalogView({
 			button.title = `${BUTTON_ACTIONS[action].label}: ${element.name}`;
 			button.setAttribute('aria-label', button.title);
 			button.innerHTML = `<i class="${BUTTON_ACTIONS[action].faClasses}"></i>`;
+			if (action === 'edit') button.classList.add('edit');
 			if (action === 'delete') button.classList.add('delete');
 			button.addEventListener('click', () => {
 				if (action === 'delete') requestElementDeletion(element);
@@ -195,21 +231,8 @@ export function createCatalogView({
 			});
 			actions.append(button);
 		}
-		article.append(copy, actions);
-		if (firstVariant?.image) {
-			const imageLink = document.createElement('a');
-			imageLink.className = 'element-image-link';
-			imageLink.href = `#/details/${getActiveCategory()}/${encodeURIComponent(element.slug)}`;
-			imageLink.setAttribute(
-				'aria-label',
-				`View details for ${element.name}`,
-			);
-			const image = document.createElement('img');
-			image.src = getPublicImageUrl(firstVariant.image);
-			image.alt = `${element.name} reference image`;
-			imageLink.append(image);
-			article.prepend(imageLink);
-		}
+		media.append(actions);
+		article.append(media, copy);
 		return article;
 	}
 

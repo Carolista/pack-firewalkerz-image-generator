@@ -277,7 +277,7 @@ button {
 	font-weight: 400;
 	text-transform: capitalize;
 	height: var(--form-control-height);
-	padding: 0 1rem;
+	padding: 0 0.8rem;
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
