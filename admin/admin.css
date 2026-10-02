@@ -54,15 +54,24 @@ textarea {
 
 button {
 	color: white;
+	background: var(--admin-dark-blue);
+    border: 1px var(--admin-surface) solid;
+}
+
+button:hover, button.edit {
 	background: var(--admin-blue);
 }
 
-button:hover {
-	background: var(--admin-bright-blue);
+button.edit:hover {
+    background: var(--admin-bright-blue);
+}
+
+button.edit:active {
+	background: var(--admin-dark-blue);
 }
 
 button:active {
-	background: var(--admin-dark-blue);
+	background: var(--admin-ink);
 }
 
 button.cancel,
@@ -400,6 +409,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
+    border: none;
 }
 
 .delete-variant:hover {
@@ -425,6 +435,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
+    border: none;
 }
 
 .share-variant:hover {
@@ -444,6 +455,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
+    border: none;
 }
 
 .edit-variant:hover {
@@ -680,26 +692,23 @@ textarea.variant-desc {
 .element-card {
 	display: grid;
 	gap: 1rem;
-	grid-template-columns: 10rem minmax(0, 1fr);
+	grid-template-columns: 11.25rem minmax(0, 1fr);
 }
 
-.element-image-link {
-	border-radius: var(--border-radius-form-elements);
-	display: block;
-	height: 10rem;
-	width: 10rem;
+.element-media {
+	min-width: 0;
 }
 
-.element-image-link:focus-visible {
-	outline: 3px solid var(--focus-color);
-	outline-offset: 2px;
-}
-
-.element-card img {
+.element-image {
 	aspect-ratio: 1;
+	background-color: var(--admin-ink);
 	border-radius: var(--border-radius-form-elements);
+	overflow: hidden;
+}
+
+.element-image img {
 	display: block;
-	max-width: 100%;
+	height: 100%;
 	object-fit: cover;
 	width: 100%;
 }
@@ -708,10 +717,6 @@ textarea.variant-desc {
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
-}
-
-.element-card-no-image .element-copy {
-	grid-column: 1 / -1;
 }
 
 .element-copy h3 {
@@ -725,8 +730,8 @@ textarea.variant-desc {
 }
 
 .element-card .variant-summary {
-	grid-column: 1 / -1;
-	margin: 0;
+	margin: auto 0 0;
+	padding-top: 0.75rem;
 	overflow-wrap: anywhere;
 }
 
@@ -736,9 +741,15 @@ textarea.variant-desc {
 }
 
 .element-card .element-actions {
-	justify-content: flex-end;
-	margin-top: auto;
-	padding-top: 0.75rem;
+	flex-wrap: nowrap;
+	gap: 0.25rem;
+	margin-top: 0.5rem;
+}
+
+.element-card .element-actions button {
+	flex: 1 1 0;
+	min-width: 0;
+	padding-inline: 0;
 }
 
 .variant-detail {
@@ -955,6 +966,23 @@ textarea.variant-desc {
 		grid-column: 1 / -1;
 	}
 
+	.element-media {
+		position: relative;
+	}
+
+	.element-card .element-actions {
+		bottom: 0.5rem;
+		justify-content: flex-end;
+		margin: 0;
+		position: absolute;
+		right: 0.5rem;
+	}
+
+	.element-card .element-actions button {
+		flex: 0 0 auto;
+		padding-inline: 0.75rem;
+	}
+
 	.catalog-toolbar-actions {
 		justify-content: stretch;
 	}
@@ -969,17 +997,6 @@ textarea.variant-desc {
 
 	.catalog-toolbar-actions button {
 		flex: 1 1 auto;
-	}
-
-	.element-card img {
-		max-width: 100%;
-		width: 100%;
-	}
-
-	.element-image-link {
-		height: auto;
-		max-width: 100%;
-		width: 100%;
 	}
 
 	.form-actions {

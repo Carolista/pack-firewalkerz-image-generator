@@ -186,6 +186,26 @@ export function createCatalogView({
 			hasVariants = true;
 		}
 		if (pills.childElementCount) copy.append(pills);
+		if (hasVariants) copy.append(summary);
+		const media = document.createElement('div');
+		media.className = 'element-media';
+		const imageFrame = document.createElement('div');
+		imageFrame.className = 'element-image';
+		if (firstVariant?.image) {
+			const image = document.createElement('img');
+			image.alt = `${element.name} reference image`;
+			image.addEventListener(
+				'error',
+				() => {
+					console.warn('Could not load catalog image:', image.src);
+					image.remove();
+				},
+				{ once: true },
+			);
+			image.src = getPublicImageUrl(firstVariant.image);
+			imageFrame.append(image);
+		}
+		media.append(imageFrame);
 		const actions = document.createElement('div');
 		actions.className = 'element-actions';
 		for (const action of Object.keys(BUTTON_ACTIONS)) {
@@ -194,6 +214,7 @@ export function createCatalogView({
 			button.title = `${BUTTON_ACTIONS[action].label}: ${element.name}`;
 			button.setAttribute('aria-label', button.title);
 			button.innerHTML = `<i class="${BUTTON_ACTIONS[action].faClasses}"></i>`;
+			if (action === 'edit') button.classList.add('edit');
 			if (action === 'delete') button.classList.add('delete');
 			button.addEventListener('click', () => {
 				if (action === 'delete') requestElementDeletion(element);
@@ -206,25 +227,8 @@ export function createCatalogView({
 			});
 			actions.append(button);
 		}
-		copy.append(actions);
-		article.append(copy);
-		if (hasVariants) article.append(summary);
-		if (firstVariant?.image) {
-			const imageLink = document.createElement('a');
-			imageLink.className = 'element-image-link';
-			imageLink.href = `#/details/${getActiveCategory()}/${encodeURIComponent(element.slug)}`;
-			imageLink.setAttribute(
-				'aria-label',
-				`View details for ${element.name}`,
-			);
-			const image = document.createElement('img');
-			image.src = getPublicImageUrl(firstVariant.image);
-			image.alt = `${element.name} reference image`;
-			imageLink.append(image);
-			article.prepend(imageLink);
-		} else {
-			article.classList.add('element-card-no-image');
-		}
+		media.append(actions);
+		article.append(media, copy);
 		return article;
 	}
 
