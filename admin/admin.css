@@ -58,21 +58,22 @@ input:not([type='checkbox']):not([type='radio']):not([type='file']):not(
 	font-family: var(--font-mono);
 	font-weight: 200;
 	font-size: 1.4rem;
-    margin-top: 0;
+	margin-top: 0;
 }
 
 button {
 	color: white;
 	background: var(--admin-dark-blue);
-    border: 1px var(--admin-surface) solid;
+	border: 1px var(--admin-surface) solid;
 }
 
-button:hover, button.edit {
+button:hover,
+button.edit {
 	background: var(--admin-blue);
 }
 
 button.edit:hover {
-    background: var(--admin-bright-blue);
+	background: var(--admin-bright-blue);
 }
 
 button.edit:active {
@@ -100,7 +101,7 @@ button.delete:active {
 
 h1 {
 	color: var(--admin-bright-blue);
-    margin: 0.4rem 0;
+	margin: 0.4rem 0;
 }
 
 h2 {
@@ -251,7 +252,7 @@ textarea.variant-desc {
 .element-pill {
 	color: white;
 	font-size: 0.9rem;
-    text-transform: uppercase;
+	text-transform: uppercase;
 	padding: 0.2rem 0.6rem;
 	border-radius: 9999px;
 }
@@ -270,12 +271,12 @@ textarea.variant-desc {
 }
 
 .variant-list-label {
-    font-weight: 600;
-    text-transform: uppercase;
+	font-weight: 600;
+	text-transform: uppercase;
 }
 
 .variant-names-text {
-    text-transform: capitalize;
+	text-transform: capitalize;
 }
 
 .variant-form-row {
@@ -429,7 +430,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
-    border: none;
+	border: none;
 }
 
 .delete-variant:hover {
@@ -455,7 +456,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
-    border: none;
+	border: none;
 }
 
 .share-variant:hover {
@@ -475,7 +476,7 @@ textarea.variant-desc {
 	padding: 0;
 	height: auto;
 	width: auto;
-    border: none;
+	border: none;
 }
 
 .edit-variant:hover {
@@ -1007,6 +1008,10 @@ textarea.variant-desc {
 		justify-content: stretch;
 	}
 
+	#catalog-subcategory-filter {
+		width: 100%;
+	}
+
 	#confirm-modal-overlay .confirm-actions {
 		grid-template-columns: 1fr;
 	}
@@ -1078,16 +1083,16 @@ textarea.variant-desc {
 		width: 100%;
 	}
 	#details-header {
-        flex-direction: column;
+		flex-direction: column;
 		align-items: flex-start;
 	}
 	#details-status {
-        margin-bottom: 10px;
+		margin-bottom: 10px;
 	}
-    .admin-header {
-        align-items: stretch;
-        flex-direction: column;
-    }
+	.admin-header {
+		align-items: stretch;
+		flex-direction: column;
+	}
 }
 
 @media (min-width: 1001px) {

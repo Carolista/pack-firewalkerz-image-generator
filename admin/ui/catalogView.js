@@ -164,9 +164,9 @@ export function createCatalogView({
 		}
 		const summary = document.createElement('p');
 		summary.className = 'variant-summary';
-        const variantLabel = document.createElement('span');
-        variantLabel.className = 'variant-list-label';
-        variantLabel.textContent = 'Variants: ';
+		const variantLabel = document.createElement('span');
+		variantLabel.className = 'variant-list-label';
+		variantLabel.textContent = 'Variants: ';
 		summary.append(variantLabel);
 		let hasVariants = false;
 		for (const [published, label] of [
@@ -183,7 +183,7 @@ export function createCatalogView({
 			pills.append(count);
 			if (hasVariants) summary.append(', ');
 			const namesText = document.createElement('span');
-            namesText.className = 'variant-names-text';
+			namesText.className = 'variant-names-text';
 			if (!published) namesText.className = 'unpublished-summary';
 			namesText.textContent = names.join(', ');
 			summary.append(namesText);
