@@ -40,7 +40,7 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 				throw new Error('Invalid admin catalog response.');
 			}
 			const elementsResponse = await fetch(
-				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)`,
+				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)&campaign_id=is.null`,
 				{
 					headers: {
 						apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -72,7 +72,7 @@ export async function loadCatalog({ adminAccessToken } = {}) {
 		};
 		const [elementsResponse, variantsResponse] = await Promise.all([
 			fetch(
-				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)`,
+				`${SUPABASE_URL}/rest/v1/game_elements?select=*,game_element_subcategories(id,name)&campaign_id=is.null`,
 				{
 					headers,
 				},
