@@ -56,17 +56,17 @@ export function createAdminDataClient(getSession, onAuthExpired) {
 	return {
 		listElements(category) {
 			return request(
-				`${ELEMENTS_URL}?element_type=eq.${encodeURIComponent(category)}&select=*,game_element_variants(*),game_element_subcategories(id,name)&order=name.asc`,
+				`${ELEMENTS_URL}?element_type=eq.${encodeURIComponent(category)}&select=*,game_element_variants(*),game_element_subcategories(id,name)&order=name.asc&campaign_id=is.null`,
 			);
 		},
 		getElementBySlug(slug) {
 			return request(
-				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*),game_element_subcategories(id,name)`,
+				`${ELEMENTS_URL}?slug=eq.${encodeURIComponent(slug)}&select=*,game_element_variants(*),game_element_subcategories(id,name)&campaign_id=is.null`,
 			);
 		},
 		listSubcategories(elementType) {
 			return request(
-				`${SUBCATEGORIES_URL}?element_type=eq.${encodeURIComponent(elementType)}&select=id,element_type,name&order=name.asc`,
+				`${SUBCATEGORIES_URL}?element_type=eq.${encodeURIComponent(elementType)}&select=id,element_type,name&order=name.asc&campaign_id=is.null`,
 			);
 		},
 		createSubcategory(subcategory) {
