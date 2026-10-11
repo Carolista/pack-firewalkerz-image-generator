@@ -7,7 +7,7 @@ export const ADMIN_SESSION_KEY = 'packFirewalkerzAdminSession';
 
 export function createAuthClient({ onSessionExpired } = {}) {
 	let session = readSession();
-	let reauthenticationResolver;
+	let pendingReauthentication;
 
 	async function authenticate(email, password) {
 		const response = await fetch(
@@ -53,16 +53,22 @@ export function createAuthClient({ onSessionExpired } = {}) {
 			session = null;
 		},
 		async reauthenticate() {
-			const pending = new Promise(resolve => {
-				reauthenticationResolver = resolve;
-			});
-			onSessionExpired?.();
-			return pending;
+			// Concurrent 401s share one pending promise so every caller's
+			// retry resolves once the modal completes, not just the latest.
+			if (!pendingReauthentication) {
+				let resolve;
+				const promise = new Promise(res => {
+					resolve = res;
+				});
+				pendingReauthentication = { promise, resolve };
+				onSessionExpired?.();
+			}
+			return pendingReauthentication.promise;
 		},
 		async completeReauthentication(email, password) {
 			await authenticate(email, password);
-			reauthenticationResolver?.();
-			reauthenticationResolver = null;
+			pendingReauthentication?.resolve();
+			pendingReauthentication = null;
 		},
 	};
 }

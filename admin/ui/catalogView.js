@@ -3,6 +3,8 @@ import {
 	getCatalogFilterOptions,
 	isKnownFilterValue,
 	matchesCatalogFilter,
+	SORT_OPTIONS,
+	sortCatalogElements,
 } from './catalogFilter.js';
 
 const BUTTON_ACTIONS = {
@@ -21,6 +23,7 @@ export function createCatalogView({
 	filterField,
 	manageSubcategoriesBtn,
 	filterSelect,
+	sortSelect,
 	dataClient,
 	storageService,
 	modals,
@@ -29,6 +32,8 @@ export function createCatalogView({
 	setActiveCategory,
 	getActiveFilter,
 	onStaleFilter,
+	getActiveSort,
+	setActiveSort,
 }) {
 	let loadToken = 0;
 	filterSelect.addEventListener('change', () =>
@@ -38,6 +43,13 @@ export function createCatalogView({
 			subcategory: filterSelect.value,
 		}),
 	);
+	sortSelect.replaceChildren(
+		...SORT_OPTIONS.map(({ value, label }) => new Option(label, value)),
+	);
+	sortSelect.addEventListener('change', () => {
+		setActiveSort(getActiveCategory(), sortSelect.value);
+		view.loadElements();
+	});
 	const view = {
 		renderTabs() {
 			categoryTabs.replaceChildren();
@@ -103,13 +115,18 @@ export function createCatalogView({
 				);
 				filterSelect.value = filter;
 				filterField.hidden = !options.length;
+				sortSelect.value = getActiveSort(category);
 				// A failed lookup (null) keeps the generic Manage label.
 				setManageButtonLabel(
 					subcategories?.length === 0 ? 'Create' : 'Manage',
 				);
 
-				const visible = elements.filter(element =>
-					matchesCatalogFilter(element, filter),
+				const visible = sortCatalogElements(
+					elements.filter(element =>
+						matchesCatalogFilter(element, filter),
+					),
+					sortSelect.value,
+					subcategories ?? [],
 				);
 				for (const element of visible)
 					elementList.append(renderElement(element));
