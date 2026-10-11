@@ -1,5 +1,29 @@
 export const NO_SUBCATEGORY_FILTER = 'none';
 
+export const SORT_OPTIONS = [
+	{ value: 'name', label: 'Alphabetical' },
+	{ value: 'subcategory', label: 'By Subcategory' },
+];
+export const DEFAULT_SORT = SORT_OPTIONS[0].value;
+
+// Sorts alphabetically by default; 'subcategory' groups by the subcategories'
+// own order (then uncategorized last), alphabetical within each group.
+export function sortCatalogElements(elements, sortValue, subcategories = []) {
+	if (sortValue !== 'subcategory')
+		return [...elements].sort((left, right) =>
+			left.name.localeCompare(right.name),
+		);
+	const order = new Map(
+		subcategories.map((subcategory, index) => [subcategory.id, index]),
+	);
+	const rank = element =>
+		order.get(element.subcategory_id) ?? Number.POSITIVE_INFINITY;
+	return [...elements].sort(
+		(left, right) =>
+			rank(left) - rank(right) || left.name.localeCompare(right.name),
+	);
+}
+
 export function matchesCatalogFilter(element, filterValue) {
 	if (!filterValue) return true;
 	if (filterValue === NO_SUBCATEGORY_FILTER) return !element.subcategory_id;

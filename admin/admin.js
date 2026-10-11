@@ -2,6 +2,7 @@ import { getRoute, navigateTo as navigateToRoute } from './routing.js';
 import { createAdminDataClient } from './services/adminData.js';
 import { createAuthClient } from './services/auth.js';
 import { createStorageService } from './services/storageService.js';
+import { DEFAULT_SORT } from './ui/catalogFilter.js';
 import { createCatalogView } from './ui/catalogView.js';
 import { createCropModal } from './ui/cropModal.js';
 import { createDetailsView } from './ui/detailsView.js';
@@ -50,6 +51,8 @@ const CATEGORIES = {
 let activeCategory = 'character';
 // Last catalog subcategory filter per category, so returning to a list keeps it.
 const rememberedFilters = {};
+// Last catalog sort per category, so returning to a list keeps it.
+const rememberedSort = {};
 const authClient = createAuthClient({
 	onSessionExpired: showReauthenticationModal,
 });
@@ -173,6 +176,7 @@ const catalogView = createCatalogView({
 	filterField: document.getElementById('catalog-filter-field'),
 	manageSubcategoriesBtn,
 	filterSelect: document.getElementById('catalog-subcategory-filter'),
+	sortSelect: document.getElementById('catalog-sort'),
 	dataClient,
 	storageService,
 	modals,
@@ -187,6 +191,10 @@ const catalogView = createCatalogView({
 		if (getRoute()?.subcategory) {
 			history.replaceState(null, '', `#/view/${activeCategory}`);
 		}
+	},
+	getActiveSort: category => rememberedSort[category] ?? DEFAULT_SORT,
+	setActiveSort: (category, value) => {
+		rememberedSort[category] = value;
 	},
 });
 const detailsView = createDetailsView({

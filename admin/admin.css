@@ -43,14 +43,20 @@ input:not([type='checkbox']):not([type='radio']):not([type='file']):not(
 .catalog-toolbar {
 	display: flex;
 	flex-direction: row;
-	align-items: flex-start;
 	justify-content: space-between;
 	gap: 1rem;
 	padding: 0 0 0.8rem;
 }
 
 .admin-header {
+	align-items: flex-start;
 	margin-bottom: 0.5rem;
+}
+
+.catalog-toolbar {
+	/* Bottoms-up so the selects/buttons line up with the first card below,
+	   regardless of the label text stacked above the selects. */
+	align-items: flex-end;
 }
 
 #tagline {
@@ -232,12 +238,25 @@ textarea.variant-desc {
 	justify-content: flex-end;
 }
 
+.catalog-toolbar-actions button {
+	/* Offsets the label text's margin-bottom above the filter/sort selects
+	   so these buttons stay bottom-aligned with those selects. */
+	margin-bottom: 0.4rem;
+}
+
 .catalog-filter-field {
 	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
 }
 
 .catalog-filter-field select {
 	width: auto;
+}
+
+.catalog-filter-field label {
+	/* Matches .status so label text stays legible over the dark background. */
+	color: var(--admin-light-blue);
 }
 
 .catalog-filter-field[hidden],
@@ -1008,7 +1027,11 @@ textarea.variant-desc {
 		justify-content: stretch;
 	}
 
-	#catalog-subcategory-filter {
+	.catalog-filter-field {
+		flex-direction: column;
+	}
+
+	.catalog-filter-field select {
 		width: 100%;
 	}
 
@@ -1050,6 +1073,36 @@ textarea.variant-desc {
 		order: initial;
 		margin-right: 0;
 		width: 100%;
+	}
+}
+
+@media (min-width: 601px) and (max-width: 1000px) {
+	/* Mid-width: selects share a row, buttons share the row below them,
+	   avoiding the awkward wrap of the default side-by-side layout. */
+	.catalog-toolbar {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.catalog-filter-field {
+		flex-wrap: nowrap;
+	}
+
+	.catalog-filter-field label {
+		flex: 1 1 0;
+		min-width: 0;
+	}
+
+	.catalog-filter-field select {
+		width: 100%;
+	}
+
+	.catalog-toolbar-actions {
+		justify-content: stretch;
+	}
+
+	.catalog-toolbar-actions button {
+		flex: 1 1 0;
 	}
 }
 
